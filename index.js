@@ -2,6 +2,7 @@ const express = require("express");
 const es6Renderer = require("express-es6-template-engine");
 const router = require("./server/routes");
 const db = require("./server/db");
+const config = require("./config");
 
 db.init();
 
@@ -14,4 +15,4 @@ app.use(express.json());
 
 app.use(router);
 
-app.listen(8080);
+app.listen(config.port || 8080);
