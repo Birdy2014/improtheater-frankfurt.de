@@ -9,7 +9,7 @@ db.init();
 const app = express();
 
 app.engine("html", es6Renderer);
-app.set("views", "client/views");
+app.set("views", __dirname + "/client/views");
 app.set("view engine", "html");
 app.use(express.json());
 

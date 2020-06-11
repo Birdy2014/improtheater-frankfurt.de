@@ -30,7 +30,7 @@ router.get("/", (req, res) => {
 
 router.get("/:route", (req, res) => {
     if (!routes.includes(req.params.route)) {
-        res.render("404.html");
+        res.render("404");
     } else {
         if (req.query.partial) {
             res.render("routes/" + req.params.route);
