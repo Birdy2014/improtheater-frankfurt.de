@@ -1,0 +1,63 @@
+:root {
+    --nav-background-color: antiquewhite;
+    --nav-active-link-color: red;
+}
+
+@media only screen and (min-width: 1100px) {
+    :root {
+        --site-width: 1100px;
+    }
+}
+
+@media only screen and (max-width: 1100px) {
+    :root {
+        --site-width: 100%;
+    }
+}
+
+nav {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    text-align: center;
+}
+
+nav #menu {
+    margin: 0 auto;
+    height: 60px;
+    width: var(--site-width);
+    background-color: var(--nav-background-color);
+}
+
+nav #menu img {
+    float: left;
+}
+
+nav #menu #main-menu {
+    float: right;
+    display: block;
+}
+
+nav #menu #main-menu a {
+    display: inline-block;
+    text-align: center;
+    padding: 20px 16px;
+    color: black;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+nav #menu #main-menu .active {
+    color: var(--nav-active-link-color);
+}
+
+#wrapper {
+    position: absolute;
+    top: 60px;
+    width: 100%;
+}
+
+#wrapper .container {
+    width: var(--site-width);
+    margin: 0 auto;
+}

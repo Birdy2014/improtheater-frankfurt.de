@@ -1,0 +1,19 @@
+{
+  "name": "improtheater-frankfurt",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "author": "Moritz Vogel",
+  "license": "",
+  "dependencies": {
+    "axios": "^0.19.2",
+    "express": "^4.17.1",
+    "express-es6-template-engine": "^2.2.2",
+    "nprogress": "^0.2.0",
+    "sqlite3": "^4.2.0"
+  }
+}
