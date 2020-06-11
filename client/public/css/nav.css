@@ -52,7 +52,7 @@ nav #menu #main-menu .active {
 }
 
 #wrapper {
-    position: absolute;
+    position: relative;
     top: 60px;
     width: 100%;
 }
@@ -60,4 +60,16 @@ nav #menu #main-menu .active {
 #wrapper .container {
     width: var(--site-width);
     margin: 0 auto;
+}
+
+footer {
+    text-align: center;
+    position: relative;
+    top: 60px;
+}
+
+footer a {
+    text-decoration: none;
+    font-weight: bold;
+    color: black;
 }

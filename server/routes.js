@@ -40,7 +40,8 @@ router.get("/:route", (req, res) => {
                     route: req.params.route
                 },
                 partials: {
-                    nav: "nav"
+                    nav: "nav",
+                    footer: "footer"
                 }
             });
         }
