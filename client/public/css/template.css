@@ -40,6 +40,11 @@ nav #menu #main-menu a {
     text-decoration: none;
     font-weight: 700;
     font-size: 14px;
+    transition: color .3s ease-out;
+}
+
+nav #menu #main-menu a:hover {
+    color: var(--nav-active-link-color);
 }
 
 nav #menu #main-menu .active {
