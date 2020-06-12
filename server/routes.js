@@ -1,7 +1,6 @@
 const express = require("express");
 const fs = require("fs");
 const path = require("path");
-const newsletter = require("./newsletter");
 
 const router = express.Router();
 
@@ -14,8 +13,6 @@ for (let route of content) {
 }
 
 // Backend
-router.post("/api/newsletter", newsletter.signup);
-router.get("/api/newsletter", newsletter.verify);
 
 // Libraries
 router.get("/lib/nprogress.js", (req, res) => res.sendFile(path.join(__dirname, "/../node_modules/nprogress/nprogress.js")));
@@ -25,6 +22,11 @@ router.use("/public", express.static(path.join(__dirname, "/../client/public")))
 
 // Frontend
 router.get("/", (req, res) => {
+    res.redirect("/start");
+});
+
+// Workaround for apache
+router.get("/index.html", (req, res) => {
     res.redirect("/start");
 });
 
