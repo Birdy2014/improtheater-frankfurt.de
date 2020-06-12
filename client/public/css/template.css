@@ -1,18 +1,11 @@
 :root {
     --nav-background-color: antiquewhite;
     --nav-active-link-color: red;
+    --site-width: 1100px;
 }
 
-@media only screen and (min-width: 1100px) {
-    :root {
-        --site-width: 1100px;
-    }
-}
-
-@media only screen and (max-width: 1100px) {
-    :root {
-        --site-width: 100%;
-    }
+body {
+    font-family: Roboto;
 }
 
 nav {
@@ -20,12 +13,13 @@ nav {
     top: 0;
     width: 100%;
     text-align: center;
+    z-index: 10;
 }
 
 nav #menu {
     margin: 0 auto;
     height: 60px;
-    width: var(--site-width);
+    max-width: var(--site-width);
     background-color: var(--nav-background-color);
 }
 
@@ -41,10 +35,11 @@ nav #menu #main-menu {
 nav #menu #main-menu a {
     display: inline-block;
     text-align: center;
-    padding: 20px 16px;
+    padding: 20px 7.5px;
     color: black;
     text-decoration: none;
-    font-weight: bold;
+    font-weight: 700;
+    font-size: 14px;
 }
 
 nav #menu #main-menu .active {
@@ -58,14 +53,17 @@ nav #menu #main-menu .active {
 }
 
 #wrapper .container {
-    width: var(--site-width);
+    max-width: var(--site-width);
     margin: 0 auto;
+    font-size: 20px;
+    font-weight: 400;
 }
 
 footer {
     text-align: center;
     position: relative;
     top: 60px;
+    font-size: 14px;
 }
 
 footer a {
