@@ -55,5 +55,34 @@ async function navigate(to) {
         container.style = "display: none";
     }
     targetContainer.style = "display: block";
+    // collapse menu
+    toggleMenu(true);
     history.pushState({}, "", "/" + to);
+}
+
+function toggleMenu(hideMenu) {
+    let menu = document.getElementById("main-menu");
+    let logo = document.getElementById("logo");
+
+    if (hideMenu) {
+        hide();
+        return;
+    }
+
+    // toggle
+    if (menu.style.display) {
+        hide();
+    } else {
+        show();
+    }
+
+    function hide() {
+        menu.style.display = "";
+        logo.style.display = ""
+    }
+
+    function show() {
+        menu.style.display = "block";
+        logo.style.display = "none";
+    }
 }

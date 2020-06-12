@@ -9,10 +9,11 @@ body {
 }
 
 nav {
-    position: fixed;
-    top: 0;
+    position: sticky;
+    position: -webkit-sticky;
+    top: 0px;
+    margin: -10px;
     width: 100%;
-    text-align: center;
     z-index: 10;
 }
 
@@ -25,11 +26,6 @@ nav #menu {
 
 nav #menu img {
     float: left;
-}
-
-nav #menu #main-menu {
-    float: right;
-    display: block;
 }
 
 nav #menu #main-menu a {
@@ -51,9 +47,41 @@ nav #menu #main-menu .active {
     color: var(--nav-active-link-color);
 }
 
+@media screen and (min-width: 600px) {
+    nav #menu #main-menu {
+        float: right;
+        display: block;
+    }
+
+    nav #menu .icon {
+        display: none;
+    }
+}
+
+@media screen and (max-width: 600px) {
+    nav #menu #main-menu {
+        display: none;
+        background-color: var(--nav-background-color);
+    }
+
+    nav #menu #main-menu a {
+        display: block;
+    }
+
+    nav #menu .icon {
+        display: block;
+        text-decoration: none;
+        padding: 20px 20px;
+        position: fixed;
+        top: 0;
+        right: 0;
+        color: black;
+        font-weight: bold;
+    }
+}
+
 #wrapper {
     position: relative;
-    top: 60px;
     width: 100%;
 }
 
@@ -67,7 +95,6 @@ nav #menu #main-menu .active {
 footer {
     text-align: center;
     position: relative;
-    top: 60px;
     font-size: 14px;
 }
 
