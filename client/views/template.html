@@ -2,7 +2,8 @@
 <html>
     <head>
         <script>
-            var route = "${route}";
+            var currentRoute = "${route}";
+            var loggedIn = "${loggedIn}" === "true";
         </script>
         <title>Improtheater Frankfurt</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -21,6 +22,4 @@
 
         ${footer}
     </body>
-
-    ${script}
 </html>

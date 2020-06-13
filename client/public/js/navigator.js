@@ -1,13 +1,14 @@
 window.onload = () => {
     NProgress.configure({ showSpinner: false });
-    navigate(route);
+    navigate(currentRoute);
 }
 
 document.onclick = e => {
     e = e || window.event;
     let element = e.target || e.srcElement;
 
-    if (element.tagName === "A") {
+    if (element.tagName !== "A") element = element.closest("a");
+    if (element) {
         let host = window.location.href.substring(0, window.location.href.indexOf("/", window.location.protocol.length + 2));
         if (!element.href || !element.href.startsWith(host) || element.classList.contains("forceReload"))
             return true;
@@ -17,7 +18,7 @@ document.onclick = e => {
     }
 }
 
-async function navigate(to) {
+async function navigate(to, reload) {
     if (to.startsWith("/")) to = to.substring(1);
     let targetContainer = document.getElementById(to);
     if (!targetContainer) {
@@ -27,7 +28,9 @@ async function navigate(to) {
         document.getElementById("wrapper").appendChild(targetContainer);
     }
     let containers = document.getElementsByClassName("container");
-    if (targetContainer.childElementCount === 0) {
+    if (targetContainer.childElementCount === 0 || reload) {
+        // clear container
+        targetContainer.innerHTML = "";
         // download page
         let website = { data: "Error" };
         NProgress.start();
@@ -50,6 +53,12 @@ async function navigate(to) {
             link.classList.add("active");
         else
             link.classList.remove("active");
+    }
+    // set variable
+    currentRoute = to;
+    // hide / unhide fields where login is required
+    for (let element of document.getElementsByClassName("loginrequired")) {
+        element.style.display = loggedIn ? "inline-block" : "";
     }
     // navigate
     for (let container of containers) {
@@ -96,21 +105,21 @@ function loadPage(parent, page) {
             script.src = "/public/js/admin.js";
             parent.appendChild(script);
         }
-    }
-}
-
-function loggedIn() {
-    // Unhide links
-    for (let element of document.getElementsByClassName("loginrequired")) {
-        element.style.display = "inline-block";
+        case "workshops": {
+            let script = document.createElement("script");
+            script.src = "/public/js/workshops.js";
+            parent.appendChild(script);
+        }
+        case "workshop": {
+            let script = document.createElement("script");
+            script.src = "/public/js/workshop.js";
+            parent.appendChild(script);
+        }
     }
 }
 
 function logout() {
     axios.post("/api/logout");
-    // Hide links
-    for (let element of document.getElementsByClassName("loginrequired")) {
-        element.style.display = "";
-    }
+    loggedIn = false;
     navigate("start");
 }

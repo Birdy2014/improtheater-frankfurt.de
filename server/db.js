@@ -3,20 +3,25 @@ const { promisify } = require("util");
 
 exports.init = async () => {
     exports.db = new sqlite3.Database(__dirname + "/../improtheater-frankfurt.db");
-    exports.query = promisify(exports.db.get).bind(exports.db);
+    exports.exec = promisify(exports.db.exec).bind(exports.db);
+    exports.get = promisify(exports.db.get).bind(exports.db);
+    exports.all = promisify(exports.db.all).bind(exports.db);
 
-    exports.query(`
-        CREATE TABLE IF NOT EXISTS workshops (
+    exports.exec(`
+        CREATE TABLE IF NOT EXISTS workshop (
             created INTEGER NOT NULL,
-            date INTEGER NOT NULL,
+            begin INTEGER NOT NULL,
+            end INTEGER NOT NULL,
             title TEXT NOT NULL,
             content TEXT NOT NULL,
             img TEXT NOT NULL,
-            PRIMARY KEY (date, title)
+            color TEXT NOT NULL,
+            visible INTEGER DEFAULT 0,
+            PRIMARY KEY (created)
         )
     `);
 
-    exports.query(`
+    exports.exec(`
         CREATE TABLE IF NOT EXISTS newsletter (
             name TEXT NOT NULL,
             email TEXT NOT NULL,

@@ -5,7 +5,7 @@ const router = require("./server/routes");
 const db = require("./server/db");
 const config = require("./config");
 
-//db.init();
+db.init();
 
 const app = express();
 

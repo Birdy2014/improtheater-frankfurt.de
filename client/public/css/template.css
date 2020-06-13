@@ -8,6 +8,14 @@ body {
     font-family: Roboto;
 }
 
+.loginrequired {
+    display: none;
+}
+
+nav #menu #main-menu .loginrequired {
+    display: none;
+}
+
 nav {
     position: sticky;
     position: -webkit-sticky;
@@ -45,10 +53,6 @@ nav #menu #main-menu a:hover {
 
 nav #menu #main-menu .active {
     color: var(--nav-active-link-color);
-}
-
-nav #menu #main-menu .loginrequired {
-    display: none;
 }
 
 @media screen and (min-width: 600px) {

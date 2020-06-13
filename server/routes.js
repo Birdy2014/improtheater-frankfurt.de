@@ -2,6 +2,7 @@ const express = require("express");
 const fs = require("fs");
 const path = require("path");
 const auth = require("./auth");
+const workshops = require("./workshops");
 
 const router = express.Router();
 
@@ -16,6 +17,7 @@ for (let route of content) {
 // Backend
 router.get("/api/authhook", auth.authhook);
 router.post("/api/logout", auth.logout);
+router.post("/api/workshops", auth.getUser, workshops.post);
 
 // Libraries
 router.get("/lib/nprogress.js", (req, res) => res.sendFile(path.join(__dirname, "/../node_modules/nprogress/nprogress.js")));
@@ -33,17 +35,39 @@ router.get("/index.html", (req, res) => {
     res.redirect("/start");
 });
 
-router.get("/:route", auth.getUser, (req, res) => {
+router.get("/workshop/:workshopID", auth.getUser, async (req, res) => {
+    let w = await workshops.getWorkshop(req.params.workshopID);
+    if (!w) {
+        res.render("404");
+    } else {
+        if (req.query.partial) {
+            res.render("routes/workshop", { locals: w });
+        } else {
+            res.render("template", {
+                locals: {
+                    route: "workshop/" + req.params.workshopID,
+                    loggedIn: req.user !== undefined
+                },
+                partials: {
+                    nav: "nav",
+                    footer: "footer"
+                }
+            });
+        }
+    }
+});
+
+router.get("/:route", auth.getUser, async (req, res) => {
     if (!routes.includes(req.params.route)) {
         res.render("404");
     } else {
         if (req.query.partial) {
-            res.render("routes/" + req.params.route);
+            res.render("routes/" + req.params.route, await getRenderOptions(req.params.route));
         } else {
             res.render("template.html", {
                 locals: {
                     route: req.params.route,
-                    script: req.user !== undefined ? "<script>loggedIn()</script>" : ""
+                    loggedIn: req.user !== undefined
                 },
                 partials: {
                     nav: "nav",
@@ -55,3 +79,12 @@ router.get("/:route", auth.getUser, (req, res) => {
 });
 
 module.exports = router;
+
+async function getRenderOptions(route) {
+    switch(route) {
+        case "workshops":
+            return { locals: { workshops: await workshops.getWorkshops() } }
+        default:
+            return {};
+    }
+}
