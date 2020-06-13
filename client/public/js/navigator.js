@@ -9,7 +9,7 @@ document.onclick = e => {
 
     if (element.tagName === "A") {
         let host = window.location.href.substring(0, window.location.href.indexOf("/", window.location.protocol.length + 2));
-        if (!element.href || !element.href.startsWith(host))
+        if (!element.href || !element.href.startsWith(host) || element.classList.contains("forceReload"))
             return true;
 
         navigate(element.href.substring(host.length));
@@ -41,6 +41,7 @@ async function navigate(to) {
             return;
         }
         targetContainer.innerHTML = website.data;
+        loadPage(targetContainer, to);
     }
     // set link anctive
     let links = document.getElementsByClassName("navlink");
@@ -85,4 +86,31 @@ function toggleMenu(hideMenu) {
         menu.style.display = "block";
         logo.style.display = "none";
     }
+}
+
+// Initial page load scripts
+function loadPage(parent, page) {
+    switch(page) {
+        case "admin": {
+            let script = document.createElement("script");
+            script.src = "/public/js/admin.js";
+            parent.appendChild(script);
+        }
+    }
+}
+
+function loggedIn() {
+    // Unhide links
+    for (let element of document.getElementsByClassName("loginrequired")) {
+        element.style.display = "inline-block";
+    }
+}
+
+function logout() {
+    axios.post("/api/logout");
+    // Hide links
+    for (let element of document.getElementsByClassName("loginrequired")) {
+        element.style.display = "";
+    }
+    navigate("start");
 }

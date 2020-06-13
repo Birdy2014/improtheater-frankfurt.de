@@ -47,6 +47,10 @@ nav #menu #main-menu .active {
     color: var(--nav-active-link-color);
 }
 
+nav #menu #main-menu .loginrequired {
+    display: none;
+}
+
 @media screen and (min-width: 600px) {
     nav #menu #main-menu {
         float: right;

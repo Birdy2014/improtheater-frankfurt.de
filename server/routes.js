@@ -1,6 +1,7 @@
 const express = require("express");
 const fs = require("fs");
 const path = require("path");
+const auth = require("./auth");
 
 const router = express.Router();
 
@@ -13,6 +14,8 @@ for (let route of content) {
 }
 
 // Backend
+router.get("/api/authhook", auth.authhook);
+router.post("/api/logout", auth.logout);
 
 // Libraries
 router.get("/lib/nprogress.js", (req, res) => res.sendFile(path.join(__dirname, "/../node_modules/nprogress/nprogress.js")));
@@ -30,7 +33,7 @@ router.get("/index.html", (req, res) => {
     res.redirect("/start");
 });
 
-router.get("/:route", (req, res) => {
+router.get("/:route", auth.getUser, (req, res) => {
     if (!routes.includes(req.params.route)) {
         res.render("404");
     } else {
@@ -39,7 +42,8 @@ router.get("/:route", (req, res) => {
         } else {
             res.render("template.html", {
                 locals: {
-                    route: req.params.route
+                    route: req.params.route,
+                    script: req.user !== undefined ? "<script>loggedIn()</script>" : ""
                 },
                 partials: {
                     nav: "nav",
