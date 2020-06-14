@@ -18,7 +18,11 @@ document.onclick = e => {
     }
 }
 
-async function navigate(to, reload) {
+window.onpopstate = e => {
+    navigate(document.location.pathname.substring(1), false, true);
+}
+
+async function navigate(to, reload, skipPushState) {
     if (to.startsWith("/")) to = to.substring(1);
     let targetContainer = document.getElementById(to);
     if (!targetContainer) {
@@ -67,7 +71,9 @@ async function navigate(to, reload) {
     targetContainer.style = "display: block";
     // collapse menu
     toggleMenu(true);
-    history.pushState({}, "", "/" + to);
+    // Push state
+    if (!skipPushState)
+        history.pushState({}, "", "/" + to);
 }
 
 function toggleMenu(hideMenu) {
