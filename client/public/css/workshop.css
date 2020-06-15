@@ -1,0 +1,10 @@
+.edit-save {
+    text-decoration: none;
+    color: black;
+    font-weight: 700;
+    transition: color .3s ease-out;
+}
+
+.edit-save:hover {
+    color: red;
+}

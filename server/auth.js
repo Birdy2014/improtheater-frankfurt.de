@@ -56,8 +56,7 @@ async function getUserInfo(access_token) {
         });
         return result.data.data;
     } catch(e) {
-        console.log(e); //TODO: fix this
-        if (e.data.error === "Invalid access_token") {
+        if (e.response.data.error === "Invalid access_token") {
             return { active: false };
         } else {
             throw e;

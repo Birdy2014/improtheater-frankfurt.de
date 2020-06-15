@@ -18,6 +18,8 @@ for (let route of content) {
 router.get("/api/authhook", auth.authhook);
 router.post("/api/logout", auth.logout);
 router.post("/api/workshops", auth.getUser, workshops.post);
+router.put("/api/workshops", auth.getUser, workshops.put);
+router.delete("/api/workshops", auth.getUser, workshops.delete);
 
 // Libraries
 router.get("/lib/nprogress.js", (req, res) => res.sendFile(path.join(__dirname, "/../node_modules/nprogress/nprogress.js")));

@@ -1,1 +1,10 @@
-<h1>${title}</h1>
+<link rel="stylesheet" href="/public/css/workshop.css">
+<h1><span class="edit edit-title">${title}</span> <a href="javascript:void(0)" onclick="deleteWorkshop()" class="loginrequired">-</a></h1>
+
+<img src="${img}">
+
+<div class="edit edit-content">${content}</div>
+
+<a href="javascript:void(0)" onclick="changeWorkshopValues()" class="loginrequired edit-save">Speichern</a>
+
+<a href="javascript:void(0)" onclick="publishWorkshop()" class="loginrequired edit-save">Veröffentlichen</a>

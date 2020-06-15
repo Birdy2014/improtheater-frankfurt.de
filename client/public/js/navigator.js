@@ -62,7 +62,11 @@ async function navigate(to, reload, skipPushState) {
     currentRoute = to;
     // hide / unhide fields where login is required
     for (let element of document.getElementsByClassName("loginrequired")) {
-        element.style.display = loggedIn ? "inline-block" : "";
+        element.style.display = loggedIn ? "" : "none";
+    }
+    // make edit fields editable
+    for (let element of document.getElementsByClassName("edit")) {
+        element.setAttribute("contenteditable", loggedIn ? "true" : "false");
     }
     // navigate
     for (let container of containers) {
@@ -105,6 +109,7 @@ function toggleMenu(hideMenu) {
 
 // Initial page load scripts
 function loadPage(parent, page) {
+    if (page.includes("/")) page = page.substring(0, page.indexOf("/"));
     switch(page) {
         case "admin": {
             let script = document.createElement("script");

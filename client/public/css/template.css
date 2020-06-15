@@ -8,14 +8,6 @@ body {
     font-family: Roboto;
 }
 
-.loginrequired {
-    display: none;
-}
-
-nav #menu #main-menu .loginrequired {
-    display: none;
-}
-
 nav {
     position: sticky;
     position: -webkit-sticky;
