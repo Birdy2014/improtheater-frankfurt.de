@@ -1,4 +1,4 @@
-.edit-save {
+.edit-button {
     text-decoration: none;
     color: black;
     font-weight: 700;
@@ -7,4 +7,25 @@
 
 .edit-save:hover {
     color: red;
+}
+
+.workshop-image {
+    position: relative;
+    height: 350px;
+    width: fit-content;
+}
+
+.workshop-image img {
+    z-index: 0;
+    height: 100%;
+}
+
+.workshop-image .edit-workshop-image {
+    --margin: 20px;
+    z-index: 1;
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin: var(--margin);
+    height: calc(100% - calc(var(--margin) * 2));
 }

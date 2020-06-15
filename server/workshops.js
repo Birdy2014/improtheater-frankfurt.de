@@ -43,7 +43,14 @@ exports.getWorkshop = async (id) => {
 }
 
 exports.createWorkshop = async (begin, end, title, content, img, color, visible) => {
-    await db.exec(`INSERT INTO workshop (created, begin, end, title, content, img, color, visible) VALUES ('${utils.getCurrentTimestamp()}', '${begin}', '${end}', '${title}', '${content}', '${img}', '${color}', '${visible}')`);
+    let created = utils.getCurrentTimestamp();
+    if (!begin) begin = created;
+    if (!end) end = created + 7200;
+    if (!title) title = "Name des Workshops";
+    if (!content) content = "Eine Beschreibung des Workshops";
+    if (!color) color = "#FFFFFF";
+    if (!visible) visible = 0;
+    await db.exec(`INSERT INTO workshop (created, begin, end, title, content, img, color, visible) VALUES ('${created}', '${begin}', '${end}', '${title}', '${content}', '${img}', '${color}', '${visible}')`);
 }
 
 exports.editWorkshop = async (id, begin, end, title, content, img, color, visible) => {

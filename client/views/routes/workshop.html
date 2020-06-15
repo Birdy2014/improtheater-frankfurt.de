@@ -1,10 +1,15 @@
 <link rel="stylesheet" href="/public/css/workshop.css">
 <h1><span class="edit edit-title">${title}</span> <a href="javascript:void(0)" onclick="deleteWorkshop()" class="loginrequired">-</a></h1>
 
-<img src="${img}">
+<div class="workshop-image" onclick="toggleEditWorkshopImage()">
+    <img src="${img}">
+    <div class="edit edit-workshop-image" onclick="event.stopPropagation()" style="display: none;">
+        ${img}
+    </div>
+</div>
 
 <div class="edit edit-content">${content}</div>
 
-<a href="javascript:void(0)" onclick="changeWorkshopValues()" class="loginrequired edit-save">Speichern</a>
+<a href="javascript:void(0)" onclick="changeWorkshopValues()" class="loginrequired edit-button edit-save">Speichern</a>
 
-<a href="javascript:void(0)" onclick="publishWorkshop()" class="loginrequired edit-save">Veröffentlichen</a>
+<a href="javascript:void(0)" onclick="publishWorkshop()" class="loginrequired edit-button edit-publish">${visible ? "Unsichtbar machen" : "Veröffentlichen"}</a>
