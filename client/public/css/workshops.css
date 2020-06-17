@@ -1,15 +1,36 @@
-.workshop-list {
+#workshop-list {
     width: 100%;
+    overflow: auto;
 }
 
 .workshop-item {
     background-color: bisque;
     margin: 10px;
+    float: left;
+}
+
+@media only screen and (min-width: 1000px) {
+    .workshop-item {
+        width: 47%;
+    }
+}
+
+@media only screen and (max-width: 1000px) {
+    .workshop-item {
+        width: 100%;
+    }
 }
 
 .workshop-item a {
+    display: block;
     width: 100%;
     height: 100%;
+    text-decoration: none;
+}
+
+.workshop-item img {
+    height: auto;
+    width: 100%;
 }
 
 .workshop-text h2 {
