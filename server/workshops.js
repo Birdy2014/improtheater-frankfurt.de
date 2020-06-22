@@ -61,7 +61,13 @@ exports.editWorkshop = async (id, begin, end, title, content, img, color, visibl
     if (content) set += `content = '${content}', `;
     if (img) set += `img = '${img}', `;
     if (color) set += `color = '${color}', `;
-    set += `visible = '${visible ? 1 : 0}' `;
+    if (visible !== undefined) set += `visible = '${visible ? 1 : 0}', `;
+    if (set === "") {
+        res.status(400);
+        res.json({ status: 400 });
+        return;
+    }
+    set = set.substring(0, set.length - 2);
     await db.exec(`UPDATE workshop SET ${set} WHERE created = '${id}'`);
 }
 
