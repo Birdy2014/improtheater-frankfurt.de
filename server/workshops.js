@@ -38,7 +38,7 @@ exports.delete = async (req, res) => {
 }
 
 exports.getWorkshops = async () => {
-    return await db.all(`SELECT * FROM workshop`) || [];
+    return await db.all(`SELECT * FROM workshop ORDER BY begin DESC`) || [];
 }
 
 exports.getWorkshop = async (id) => {
