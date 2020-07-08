@@ -16,6 +16,7 @@ for (let route of content) {
 
 // Backend
 router.get("/api/authhook", auth.authhook);
+router.get("/api/login", auth.getUser, (req, res) => res.redirect(req.cookies.route || "/"));
 router.post("/api/logout", auth.logout);
 router.post("/api/workshops", auth.getUser, workshops.post);
 router.put("/api/workshops", auth.getUser, workshops.put);

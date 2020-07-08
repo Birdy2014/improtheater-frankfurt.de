@@ -10,8 +10,10 @@ document.onclick = e => {
     if (element.tagName !== "A") element = element.closest("a");
     if (element) {
         let host = window.location.href.substring(0, window.location.href.indexOf("/", window.location.protocol.length + 2));
-        if (!element.href || !element.href.startsWith(host) || element.classList.contains("forceReload"))
+        if (!element.href || !element.href.startsWith(host) || element.classList.contains("forceReload")) {
+            document.cookie='route=' + window.location.pathname;
             return true;
+        }
 
         navigate(element.href.substring(host.length));
         return false;

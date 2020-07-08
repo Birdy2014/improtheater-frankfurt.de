@@ -2,7 +2,7 @@ const axios = require("axios").default;
 const crypto = require("crypto");
 const config = require("../config.json");
 
-let loggedInRoutes = [ "/admin" ];
+let loggedInRoutes = [ "/admin", "/api/login" ];
 
 exports.users = {};
 
@@ -39,7 +39,8 @@ exports.authhook = async (req, res) => {
         });
         res.cookie("access_token", response.data.data.access_token, { maxAge: response.data.data.expires * 1000 });
         res.cookie("refresh_token", response.data.data.refresh_token);
-        res.redirect("/admin");
+        res.clearCookie("route")
+        res.redirect(req.cookies.route || "/");
     } catch(e) {
         console.error(e);
         res.status(500);
