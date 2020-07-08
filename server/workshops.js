@@ -2,20 +2,22 @@ const db = require("./db");
 const utils = require("./utils");
 
 exports.post = async (req, res) => {
-    if (!req.user || !req.body.title) {
+    if (!req.user) {
         res.status(400);
         res.json({ status: 400 });
+        return;
     }
 
-    await exports.createWorkshop(req.body.begin, req.body.end, req.body.title, req.body.content, req.body.img, req.body.color, req.body.visible);
+    let id = await exports.createWorkshop(req.body.begin, req.body.end, req.body.title, req.body.content, req.body.img, req.body.color, req.body.visible);
     res.status(200);
-    res.json({ status: 200 });
+    res.json({ status: 200, data: { id } });
 }
 
 exports.put = async (req, res) => {
     if (!req.user || !req.body.id) {
         res.status(400);
         res.json({ status: 400 });
+        return;
     }
 
     await exports.editWorkshop(req.body.id, req.body.begin, req.body.end, req.body.title, req.body.content, req.body.img, req.body.color, req.body.visible);
@@ -27,6 +29,7 @@ exports.delete = async (req, res) => {
     if (!req.user || !req.body.id) {
         res.status(400);
         res.json({ status: 400 });
+        return;
     }
 
     await exports.deleteWorkshop(req.body.id);
@@ -51,6 +54,7 @@ exports.createWorkshop = async (begin, end, title, content, img, color, visible)
     if (!color) color = "#FFFFFF";
     if (!visible) visible = 0;
     await db.exec(`INSERT INTO workshop (created, begin, end, title, content, img, color, visible) VALUES ('${created}', '${begin}', '${end}', '${title}', '${content}', '${img}', '${color}', '${visible}')`);
+    return created;
 }
 
 exports.editWorkshop = async (id, begin, end, title, content, img, color, visible) => {

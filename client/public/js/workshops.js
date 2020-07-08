@@ -1,9 +1,10 @@
 async function createWorkshop() {
-    let title = document.getElementById("create-workshop-title").value;
-    if (!title) {
-        alert("Bitte geben sie einen Namen an");
-        return;
+    try {
+        let response = await axios.post("/api/workshops");
+        let id = response.data.data.id;
+        await navigate("workshops", true, true, true);
+        await navigate(`workshop/${id}`, true);
+    } catch(e) {
+        alert("Fehler: " + e);
     }
-    await axios.post("/api/workshops", { title });
-    await navigate("workshops", true);
 }

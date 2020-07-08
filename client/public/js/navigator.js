@@ -24,7 +24,14 @@ window.onpopstate = e => {
     navigate(document.location.pathname.substring(1), false, true);
 }
 
-async function navigate(to, reload, skipPushState) {
+/**
+ * 
+ * @param {string} to - target route
+ * @param {boolean} reload - download page again
+ * @param {boolean} skipPushState - don't push route to browser history
+ * @param {boolean} preload - only download, don't navigate
+ */
+async function navigate(to, reload, skipPushState, preload) {
     if (to.startsWith("/")) to = to.substring(1);
     let targetContainer = document.getElementById(to);
     if (!targetContainer) {
@@ -52,6 +59,7 @@ async function navigate(to, reload, skipPushState) {
         targetContainer.innerHTML = website.data;
         loadPage(targetContainer, to);
     }
+    if (preload) return;
     // set link anctive
     let links = document.getElementsByClassName("navlink");
     for (let link of links) {

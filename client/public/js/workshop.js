@@ -8,6 +8,7 @@ async function changeWorkshopValues() {
     toggleEditWorkshopImage(true);
     await axios.put("/api/workshops", { id, title, content, img });
     await navigate(currentRoute, true);
+    await navigate("workshops", true, true, true);
     alert("Daten gespeichert");
 }
 
