@@ -24,8 +24,9 @@ nav #menu {
     background-color: var(--nav-background-color);
 }
 
-nav #menu img {
+nav #logo {
     float: left;
+    height: 100%;
 }
 
 nav #menu #main-menu a {
