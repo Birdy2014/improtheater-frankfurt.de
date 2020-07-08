@@ -101,6 +101,7 @@ exports.getUser = async (req, res, next) => {
             token = response.data.data.access_token;
             res.cookie("access_token", token, { maxAge: response.data.data.expires * 1000 });
             req.user = await getUserInfo(token);
+            next();
         } catch(e) {
             token = undefined;
             refresh_token = undefined;
