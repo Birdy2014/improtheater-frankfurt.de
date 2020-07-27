@@ -30,12 +30,12 @@ router.use("/public", express.static(path.join(__dirname, "/../client/public")))
 
 // Frontend
 router.get("/", (req, res) => {
-    res.redirect("/start");
+    res.render("under-construction");
 });
 
 // Workaround for apache
 router.get("/index.html", (req, res) => {
-    res.redirect("/start");
+    res.render("under-construction");
 });
 
 router.get("/workshop/:workshopID", auth.getUser, async (req, res) => {
