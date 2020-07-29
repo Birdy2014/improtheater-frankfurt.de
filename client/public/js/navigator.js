@@ -11,7 +11,7 @@ document.onclick = e => {
     if (element) {
         let host = window.location.href.substring(0, window.location.href.indexOf("/", window.location.protocol.length + 2));
         if (!element.href || !element.href.startsWith(host) || element.classList.contains("forceReload")) {
-            document.cookie='route=' + window.location.pathname;
+            if (element.href.endsWith("/api/login")) document.cookie='route=' + window.location.pathname;
             return true;
         }
 
@@ -134,6 +134,11 @@ function loadPage(parent, page) {
         case "workshop": {
             let script = document.createElement("script");
             script.src = "/public/js/workshop.js";
+            parent.appendChild(script);
+        }
+        case "newsletter": {
+            let script = document.createElement("script");
+            script.src = "/public/js/newsletter.js";
             parent.appendChild(script);
         }
     }
