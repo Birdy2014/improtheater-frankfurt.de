@@ -125,21 +125,25 @@ function loadPage(parent, page) {
             let script = document.createElement("script");
             script.src = "/public/js/admin.js";
             parent.appendChild(script);
+            break;
         }
         case "workshops": {
             let script = document.createElement("script");
             script.src = "/public/js/workshops.js";
             parent.appendChild(script);
+            break;
         }
         case "workshop": {
             let script = document.createElement("script");
             script.src = "/public/js/workshop.js";
             parent.appendChild(script);
+            break;
         }
         case "newsletter": {
             let script = document.createElement("script");
             script.src = "/public/js/newsletter.js";
             parent.appendChild(script);
+            break;
         }
     }
 }
