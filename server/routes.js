@@ -3,6 +3,7 @@ const fs = require("fs");
 const path = require("path");
 const auth = require("./auth");
 const workshops = require("./workshops");
+const newsletter = require("./newsletter");
 
 const router = express.Router();
 
@@ -21,6 +22,7 @@ router.post("/api/logout", auth.logout);
 router.post("/api/workshops", auth.getUser, workshops.post);
 router.put("/api/workshops", auth.getUser, workshops.put);
 router.delete("/api/workshops", auth.getUser, workshops.delete);
+router.post("/api/newsletter/subscribe", newsletter.subscribe);
 
 // Libraries
 router.get("/lib/nprogress.js", (req, res) => res.sendFile(path.join(__dirname, "/../node_modules/nprogress/nprogress.js")));

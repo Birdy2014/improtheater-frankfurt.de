@@ -1,1 +1,31 @@
-<h1>Newsletter</h1>
+<div id="newsletter-subscribe">
+    <h2>Improglycerin Newsletter bestellen und immer gut informiert sein!</h2>
+
+    <p>Ja, ich möchte den Newsletter bestellen und erhalte einmal wöchentlich die Einladung für Mittwochabend und monatlich die
+    Einladung zur Samstagsjam sowie zur Show von Improglycerin. Der Newsletter kann jederzeit wieder abbestellt werden.</p>
+    
+    <form id="newsletter-form">
+        <label for="input-newsletter-email">E-Mail Adresse:</label>
+        <input type="email" id="input-newsletter-email" required><br>
+
+        <label for="input-newsletter-name">Vorname und Nachname:</label>
+        <input type="text" id="input-newsletter-name" required><br>
+
+        <input type="submit" value="Anmelden">
+    </form>
+</div>
+<div id="newsletter-subscribe-success" style="display: none;">
+    <h2>Vielen Dank für Deine Newsletter-Anmeldung</h2>
+
+    <p>Du erhältst gleich eine E-Mail von uns. Bitte bestätige die Anmeldung durch einfaches Klicken des Bestätigungslinks in dieser E-Mail. Erst dann erhältst Du unseren Newsletter an Deine angegebene E-Mail-Adresse: <span id="text-email-address"></span></p>
+</div>
+<div id="newsletter-subscribe-failed" style="display: none;">
+    <h2>Die Newsletter-Anmeldung war nicht erfolgreich</h2>
+
+    <p>Entweder bist du schon angemeldet oder du hast den Link in der Bestätigungsmail noch nicht angeklickt.</p>
+</div>
+<div id="newsletter-subscribe-error" style="display: none;">
+    <h2>Die Newsletter-Anmeldung war nicht erfolgreich</h2>
+
+    <p>Es ist ein unbekannter Fehler aufgetreten.</p>
+</div>
