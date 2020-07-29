@@ -1,5 +1,5 @@
 :root {
-    --nav-background-color: antiquewhite;
+    --nav-background-color: white;
     --nav-active-link-color: red;
     --site-width: 1100px;
 }
@@ -91,6 +91,7 @@ nav #menu #main-menu .active {
     margin: 0 auto;
     font-size: 20px;
     font-weight: 400;
+    line-height: 1.5;
 }
 
 footer {
