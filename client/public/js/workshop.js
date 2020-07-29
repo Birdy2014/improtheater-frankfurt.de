@@ -36,7 +36,6 @@ async function deleteWorkshop(id) {
 }
 
 function toggleEditWorkshopImage(hide) {
-    if (!loggedIn) return;
     let container = document.getElementById(currentRoute);
     let edit_image = container.getElementsByClassName("edit-workshop-image")[0];
     let image = container.getElementsByTagName("img")[0];

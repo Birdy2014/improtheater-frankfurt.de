@@ -37,12 +37,18 @@ exports.delete = async (req, res) => {
     res.json({ status: 200 });
 }
 
-exports.getWorkshops = async () => {
-    return await db.all(`SELECT * FROM workshop ORDER BY begin DESC`) || [];
+exports.getWorkshops = async (loggedIn) => {
+    if (loggedIn)
+        return await db.all(`SELECT * FROM workshop ORDER BY begin DESC`) || [];
+    else
+        return await db.all(`SELECT * FROM workshop WHERE visible = 1 ORDER BY begin DESC`) || [];
 }
 
-exports.getWorkshop = async (id) => {
-    return await db.get(`SELECT * FROM workshop WHERE created = '${id}'`);
+exports.getWorkshop = async (id, loggedIn) => {
+    if (loggedIn)
+        return await db.get(`SELECT * FROM workshop WHERE created = '${id}'`);
+    else
+        return await db.get(`SELECT * FROM workshop WHERE created = '${id}' AND visible = 1`);
 }
 
 exports.createWorkshop = async (begin, end, title, content, img, color, visible) => {

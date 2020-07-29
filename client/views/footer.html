@@ -2,5 +2,5 @@
     <p>Copyright 2020 – IMPROGLYCERIN Improvisationstheater aus Frankfurt am Main e.V.</p>
     <a href="https://improglycerin.de/datenschutz">DATENSCHUTZ</a>
     <a href="https://improglycerin.de/impressum">IMPRESSUM</a>
-    <a href="/api/login" class="forceReload">Anmelden</a>
+    ${loggedIn ? '<a href="javascript:void(0)" onclick="logout()" class="forceReload">LOGOUT</a>' : '<a href="/api/login" class="forceReload">Anmelden</a>'}
 </footer>

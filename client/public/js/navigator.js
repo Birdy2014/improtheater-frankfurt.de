@@ -70,14 +70,6 @@ async function navigate(to, reload, skipPushState, preload) {
     }
     // set variable
     currentRoute = to;
-    // hide / unhide fields where login is required
-    for (let element of document.getElementsByClassName("loginrequired")) {
-        element.style.display = loggedIn ? "" : "none";
-    }
-    // make edit fields editable
-    for (let element of document.getElementsByClassName("edit")) {
-        element.setAttribute("contenteditable", loggedIn ? "true" : "false");
-    }
     // navigate
     for (let container of containers) {
         container.style = "display: none";
@@ -148,8 +140,7 @@ function loadPage(parent, page) {
     }
 }
 
-function logout() {
-    axios.post("/api/logout");
-    loggedIn = false;
-    navigate("start");
+async function logout() {
+    await axios.post("/api/logout");
+    window.location.reload(false); 
 }

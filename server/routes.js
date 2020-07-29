@@ -41,12 +41,12 @@ router.get("/index.html", (req, res) => {
 });
 
 router.get("/workshop/:workshopID", auth.getUser, async (req, res) => {
-    let w = await workshops.getWorkshop(req.params.workshopID);
+    let w = await workshops.getWorkshop(req.params.workshopID, req.user !== undefined);
     if (!w) {
         res.render("404");
     } else {
         if (req.query.partial) {
-            res.render("routes/workshop", { locals: w });
+            res.render("routes/workshop", { locals: { ...w, loggedIn: req.user !== undefined }});
         } else {
             res.render("template", {
                 locals: {
@@ -67,7 +67,7 @@ router.get("/:route", auth.getUser, async (req, res) => {
         res.render("404");
     } else {
         if (req.query.partial) {
-            res.render("routes/" + req.params.route, await getRenderOptions(req.params.route));
+            res.render("routes/" + req.params.route, await getRenderOptions(req.params.route, req.user !== undefined));
         } else {
             res.render("template.html", {
                 locals: {
@@ -85,11 +85,11 @@ router.get("/:route", auth.getUser, async (req, res) => {
 
 module.exports = router;
 
-async function getRenderOptions(route) {
+async function getRenderOptions(route, loggedIn) {
     switch(route) {
         case "workshops":
-            return { locals: { workshops: await workshops.getWorkshops() } }
+            return { locals: { loggedIn, workshops: await workshops.getWorkshops(loggedIn) } }
         default:
-            return {};
+            return { locals: { loggedIn } };
     }
 }

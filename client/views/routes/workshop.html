@@ -1,15 +1,15 @@
 <link rel="stylesheet" href="/public/css/workshop.css">
-<h1><span class="edit edit-title">${title}</span> <a href="javascript:void(0)" onclick="deleteWorkshop()" class="loginrequired">-</a></h1>
+<h1><span class="edit-title" ${loggedIn ? 'contenteditable' : ''}>${title}</span> ${loggedIn ? '<a href="javascript:void(0)" onclick="deleteWorkshop()" class="loginrequired">-</a>' : ''}</h1>
 
-<div class="workshop-image" onclick="toggleEditWorkshopImage()">
+<div class="workshop-image" ${loggedIn ? 'onclick="toggleEditWorkshopImage()"' : ''}>
     <img src="${img}">
-    <div class="edit edit-workshop-image" onclick="event.stopPropagation()" style="display: none;">
+    <div class="edit-workshop-image" onclick="event.stopPropagation()" style="display: none;" ${loggedIn ? 'contenteditable' : ''}>
         ${img}
     </div>
 </div>
 
-<div class="edit edit-content">${content}</div>
+<div class="edit-content" ${loggedIn ? 'contenteditable' : ''}>${content}</div>
 
-<a href="javascript:void(0)" onclick="changeWorkshopValues()" class="loginrequired edit-button edit-save">Speichern</a>
+${loggedIn ? '<a href="javascript:void(0)" onclick="changeWorkshopValues()" class="edit-button edit-save">Speichern</a>' : ''}
 
-<a href="javascript:void(0)" onclick="publishWorkshop()" class="loginrequired edit-button edit-publish">${visible ? "Unsichtbar machen" : "Veröffentlichen"}</a>
+${loggedIn ? `<a href="javascript:void(0)" onclick="publishWorkshop()" class="edit-button edit-publish">${visible ? "Unsichtbar machen" : "Veröffentlichen"}</a>` : ''}

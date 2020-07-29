@@ -1,9 +1,9 @@
 <link rel="stylesheet" href="/public/css/workshops.css">
-<h1>Workshops <a href="javascript:void(0)" onclick="createWorkshop()" class="loginrequired">+</a></h1>
+<h1>Workshops ${loggedIn ? '<a href="javascript:void(0)" onclick="createWorkshop()">+</a>' : ''}</h1>
 
 <div id="workshop-list">
     ${workshops.map(workshop => `
-        <div class="workshop-item ${workshop.visible ? "" : "loginrequired"}">
+        <div class="workshop-item">
             <a href="/workshop/${workshop.created}">
                 <img src="${workshop.img || '/public/img/workshop-default.png'}">
                 <div class="workshop-text">
