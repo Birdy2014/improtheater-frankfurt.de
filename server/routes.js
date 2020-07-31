@@ -50,7 +50,6 @@ router.get("/workshop/:workshopID", auth.getUser, async (req, res) => {
         } else {
             res.render("template", {
                 locals: {
-                    route: "workshop/" + req.params.workshopID,
                     loggedIn: req.user !== undefined
                 },
                 partials: {
@@ -71,7 +70,6 @@ router.get("/:route", auth.getUser, async (req, res) => {
         } else {
             res.render("template.html", {
                 locals: {
-                    route: req.params.route,
                     loggedIn: req.user !== undefined
                 },
                 partials: {

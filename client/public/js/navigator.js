@@ -1,5 +1,7 @@
 window.onload = () => {
     NProgress.configure({ showSpinner: false });
+    let url = new URL(document.location.href);
+    var currentRoute = url.pathname + url.search;
     navigate(currentRoute);
 }
 
