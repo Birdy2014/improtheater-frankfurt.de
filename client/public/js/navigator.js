@@ -35,10 +35,13 @@ window.onpopstate = e => {
  */
 async function navigate(to, reload, skipPushState, preload) {
     if (to.startsWith("/")) to = to.substring(1);
-    let targetContainer = document.getElementById(to);
+    let route = to;
+    if (route.includes("?"))
+        route = route.substring(0, to.indexOf("?"));
+    let targetContainer = document.getElementById(route);
     if (!targetContainer) {
         targetContainer = document.createElement("div");
-        targetContainer.id = to;
+        targetContainer.id = route;
         targetContainer.classList.add("container");
         document.getElementById("wrapper").appendChild(targetContainer);
     }
@@ -59,13 +62,13 @@ async function navigate(to, reload, skipPushState, preload) {
             return;
         }
         targetContainer.innerHTML = website.data;
-        loadPage(targetContainer, to);
+        loadPage(targetContainer, route);
     }
     if (preload) return;
     // set link anctive
     let links = document.getElementsByClassName("navlink");
     for (let link of links) {
-        if (link.href.endsWith(to))
+        if (link.href.endsWith(route))
             link.classList.add("active");
         else
             link.classList.remove("active");
@@ -80,8 +83,9 @@ async function navigate(to, reload, skipPushState, preload) {
     // collapse menu
     toggleMenu(true);
     // Push state
-    if (!skipPushState)
-        history.pushState({}, "", "/" + to);
+    if (!skipPushState) {
+        history.pushState({}, "", "/" + route);
+    }
 }
 
 function toggleMenu(hideMenu) {
