@@ -1,18 +1,11 @@
 const axios = require("axios").default;
 const crypto = require("crypto");
 const config = require("../config.json");
+const utils = require("./utils");
 
 let loggedInRoutes = [ "/admin", "/api/login" ];
 
 exports.users = {};
-
-function generateToken(length) {
-    let chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890";
-    let text = "";
-    for (let i = 0; i < length; i++)
-        text += chars.charAt(Math.floor(Math.random() * chars.length));
-    return text;
-}
 
 exports.authhook = async (req, res) => {
     if (!req.query.state || !req.query.authorization_code) {
@@ -116,8 +109,8 @@ exports.getUser = async (req, res, next) => {
             next();
             return;
         }
-        let state = generateToken(10);
-        let code_verifier = generateToken(10);
+        let state = utils.generateToken(10);
+        let code_verifier = utils.generateToken(10);
         let code_challenge = crypto.createHash("sha256").update(code_verifier).digest("base64").replace(/\+/g, "_");
         exports.users[state] = code_verifier;
         let redirect_base_uri = process.env.TEST ? "http://localhost:" + config.port : "https://improtheater-frankfurt.de"

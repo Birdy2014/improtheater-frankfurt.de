@@ -23,6 +23,9 @@ router.post("/api/workshops", auth.getUser, workshops.post);
 router.put("/api/workshops", auth.getUser, workshops.put);
 router.delete("/api/workshops", auth.getUser, workshops.delete);
 router.post("/api/newsletter/subscribe", newsletter.subscribe);
+router.get("/api/newsletter/confirm", newsletter.confirm);
+router.get("/api/newsletter/unsubscribe", newsletter.unsubscribe);
+router.post("/api/newsletter/send", newsletter.send);
 
 // Libraries
 router.get("/lib/nprogress.js", (req, res) => res.sendFile(path.join(__dirname, "/../node_modules/nprogress/nprogress.js")));
@@ -66,7 +69,7 @@ router.get("/:route", auth.getUser, async (req, res) => {
         res.render("404");
     } else {
         if (req.query.partial) {
-            res.render("routes/" + req.params.route, await getRenderOptions(req.params.route, req.user !== undefined));
+            res.render("routes/" + req.params.route, await getRenderOptions(req.params.route, req.user !== undefined, req.query));
         } else {
             res.render("template.html", {
                 locals: {
@@ -83,10 +86,12 @@ router.get("/:route", auth.getUser, async (req, res) => {
 
 module.exports = router;
 
-async function getRenderOptions(route, loggedIn) {
+async function getRenderOptions(route, loggedIn, query) {
     switch(route) {
         case "workshops":
             return { locals: { loggedIn, workshops: await workshops.getWorkshops(loggedIn) } }
+        case "newsletter":
+            return { locals: { loggedIn, subscriber: await newsletter.getSubscriber(query.token), unsubscribed: query.unsubscribed } };
         default:
             return { locals: { loggedIn } };
     }
