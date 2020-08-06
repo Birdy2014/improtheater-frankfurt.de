@@ -69,7 +69,7 @@ function sendConfirmMail(subscriber) {
 }
 
 exports.getSubscribers = async () => {
-    return await db.all("SELECT name, email FROM newsletter WHERE confirmed = 1");
+    return await db.all("SELECT name, email FROM subscriber WHERE confirmed = 1");
 }
 
 exports.getSubscriber = async (token) => {

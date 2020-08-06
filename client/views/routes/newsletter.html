@@ -25,6 +25,15 @@ ${unsubscribed ?
         Dein Team von Improglycerin
     </p>
     `
+    : loggedIn ?
+    `
+    <h2>Am Newsletter angemeldete Personen</h2>
+    <ol>
+        ${subscribers.map(s => `
+            <li>Name: ${s.name}, Email: ${s.email}</li>
+        `).join("")}
+    </ol>
+    `
     :
     `
     <div id="newsletter-subscribe">

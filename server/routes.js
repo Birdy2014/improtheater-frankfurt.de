@@ -91,7 +91,7 @@ async function getRenderOptions(route, loggedIn, query) {
         case "workshops":
             return { locals: { loggedIn, workshops: await workshops.getWorkshops(loggedIn) } }
         case "newsletter":
-            return { locals: { loggedIn, subscriber: await newsletter.getSubscriber(query.token), unsubscribed: query.unsubscribed } };
+            return { locals: { loggedIn, subscriber: await newsletter.getSubscriber(query.token), subscribers: await newsletter.getSubscribers(), unsubscribed: query.unsubscribed } };
         default:
             return { locals: { loggedIn } };
     }
