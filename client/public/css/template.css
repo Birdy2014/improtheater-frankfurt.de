@@ -67,6 +67,7 @@ nav #menu #main-menu .active {
 
     nav #menu #main-menu a {
         display: block;
+        padding: 10px 7.5px;
     }
 
     nav #menu .icon {

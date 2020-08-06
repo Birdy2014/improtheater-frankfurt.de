@@ -89,7 +89,8 @@ async function navigate(to, reload, skipPushState, preload) {
 }
 
 function toggleMenu(hideMenu) {
-    let menu = document.getElementById("main-menu");
+    let menu = document.getElementById("menu");
+    let main_menu = document.getElementById("main-menu");
     let logo = document.getElementById("logo");
 
     if (hideMenu) {
@@ -98,19 +99,21 @@ function toggleMenu(hideMenu) {
     }
 
     // toggle
-    if (menu.style.display) {
+    if (main_menu.style.display) {
         hide();
     } else {
         show();
     }
 
     function hide() {
-        menu.style.display = "";
-        logo.style.display = ""
+        menu.style.removeProperty("height");
+        main_menu.style.removeProperty("display");
+        logo.style.removeProperty("display");
     }
 
     function show() {
-        menu.style.display = "block";
+        menu.style.height = "auto";
+        main_menu.style.display = "block";
         logo.style.display = "none";
     }
 }
