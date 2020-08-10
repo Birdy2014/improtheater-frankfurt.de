@@ -31,4 +31,16 @@ exports.init = async () => {
             PRIMARY KEY(email)
         )
     `);
+
+    exports.run(`
+        CREATE TABLE IF NOT EXISTS upload (
+            name TEXT NOT NULL,
+            mimetype TEXT NOT NULL,
+            size INTEGER NOT NULL,
+            data BLOB NOT NULL,
+            user_id TEXT NOT NULL,
+            time INTEGER NOT NULL,
+            PRIMARY KEY(name, data)
+        )
+    `);
 }

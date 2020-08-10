@@ -146,6 +146,12 @@ function loadPage(parent, page) {
             parent.appendChild(script);
             break;
         }
+        case "uploads": {
+            let script = document.createElement("script");
+            script.src = "/public/js/uploads.js";
+            parent.appendChild(script);
+            break;
+        }
     }
 }
 

@@ -1,9 +1,11 @@
 const express = require("express");
 const fs = require("fs");
 const path = require("path");
+const fileUpload = require("express-fileupload");
 const auth = require("./auth");
 const workshops = require("./workshops");
 const newsletter = require("./newsletter");
+const upload = require("./upload");
 
 const router = express.Router();
 
@@ -26,6 +28,9 @@ router.post("/api/newsletter/subscribe", newsletter.subscribe);
 router.get("/api/newsletter/confirm", newsletter.confirm);
 router.get("/api/newsletter/unsubscribe", newsletter.unsubscribe);
 router.post("/api/newsletter/send", newsletter.send);
+router.get("/api/upload", upload.get);
+router.post("/api/upload", auth.getUser, fileUpload({ limits: { fileSize: 10 * 1024 * 1024 } }), upload.post);
+router.delete("/api/upload", auth.getUser, upload.delete);
 
 // Libraries
 router.get("/lib/nprogress.js", (req, res) => res.sendFile(path.join(__dirname, "/../node_modules/nprogress/nprogress.js")));
