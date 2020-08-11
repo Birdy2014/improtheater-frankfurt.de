@@ -24,7 +24,13 @@ async function deleteImage(name) {
 }
 
 function selectImage(name) {
-    // TODO set workshop image if currently editing workshop
+    let workshopRoute = window.sessionStorage.getItem("editWorkshop");
+    if (workshopRoute) {
+        window.sessionStorage.removeItem("editWorkshop");
+        let container = document.getElementById(workshopRoute);
+        container.getElementsByClassName("workshop-image")[0].src = `/api/upload?name=${name}`
+        navigate(workshopRoute);
+    }
 }
 
 function addImage(name, prepend) {

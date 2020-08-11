@@ -3,9 +3,8 @@ async function changeWorkshopValues() {
     let container = document.getElementById(currentRoute);
     let title = container.getElementsByClassName("edit-title")[0].innerHTML;
     let content = container.getElementsByClassName("edit-content")[0].innerHTML;
-    let img = container.getElementsByClassName("edit-workshop-image")[0].innerHTML;
+    let img = container.getElementsByClassName("workshop-image")[0].src;
     img = img.replace(/<br>/g, "").replace(/ /g, "");
-    toggleEditWorkshopImage(true);
     await axios.put("/api/workshops", { id, title, content, img });
     await navigate(currentRoute, true);
     await navigate("workshops", true, true, true);
@@ -35,16 +34,7 @@ async function deleteWorkshop(id) {
     await navigate("workshops", true);
 }
 
-function toggleEditWorkshopImage(hide) {
-    let container = document.getElementById(currentRoute);
-    let edit_image = container.getElementsByClassName("edit-workshop-image")[0];
-    let image = container.getElementsByTagName("img")[0];
-    if (!edit_image.style.display || hide) {
-        edit_image.style.display = "none";
-        image.style.filter = "";
-        image.src = edit_image.innerHTML.replace(/<br>/g, "").replace(/ /g, "");
-    } else {
-        edit_image.style.display = "";
-        image.style.filter = "blur(5px)"
-    }
+function editWorkshopImage() {
+    window.sessionStorage.setItem("editWorkshop", currentRoute);
+    navigate("uploads");
 }

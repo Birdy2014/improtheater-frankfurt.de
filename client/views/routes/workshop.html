@@ -1,12 +1,7 @@
 <link rel="stylesheet" href="/public/css/workshop.css">
 <h1><span class="edit-title" ${loggedIn ? 'contenteditable' : ''}>${title}</span> ${loggedIn ? '<a href="javascript:void(0)" onclick="deleteWorkshop()" class="loginrequired">-</a>' : ''}</h1>
 
-<div class="workshop-image" ${loggedIn ? 'onclick="toggleEditWorkshopImage()"' : ''}>
-    <img src="${img}">
-    <div class="edit-workshop-image" onclick="event.stopPropagation()" style="display: none;" ${loggedIn ? 'contenteditable' : ''}>
-        ${img}
-    </div>
-</div>
+<img class="workshop-image" src="${img}" ${loggedIn ? 'onclick="editWorkshopImage()"' : ''}>
 
 <div class="edit-content" ${loggedIn ? 'contenteditable' : ''}>${content}</div>
 
