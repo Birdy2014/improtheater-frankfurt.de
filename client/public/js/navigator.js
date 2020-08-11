@@ -43,6 +43,7 @@ async function navigate(to, reload, skipPushState, preload) {
         targetContainer = document.createElement("div");
         targetContainer.id = route;
         targetContainer.classList.add("container");
+        targetContainer.style.display = "none";
         document.getElementById("wrapper").appendChild(targetContainer);
     }
     let containers = document.getElementsByClassName("container");
