@@ -59,7 +59,7 @@ exports.createWorkshop = async (begin, end, title, content, img, color, visible)
     if (!content) content = "Eine Beschreibung des Workshops";
     if (!color) color = "#FFFFFF";
     if (!visible) visible = 0;
-    await db.exec(`INSERT INTO workshop (created, begin, end, title, content, img, color, visible) VALUES ('${created}', '${begin}', '${end}', '${title}', '${content}', '${img}', '${color}', '${visible}')`);
+    await db.run(`INSERT INTO workshop (created, begin, end, title, content, img, color, visible) VALUES ('${created}', '${begin}', '${end}', '${title}', '${content}', '${img}', '${color}', '${visible}')`);
     return created;
 }
 
@@ -78,9 +78,9 @@ exports.editWorkshop = async (id, begin, end, title, content, img, color, visibl
         return;
     }
     set = set.substring(0, set.length - 2);
-    await db.exec(`UPDATE workshop SET ${set} WHERE created = '${id}'`);
+    await db.run(`UPDATE workshop SET ${set} WHERE created = '${id}'`);
 }
 
 exports.deleteWorkshop = async (id) => {
-    await db.exec(`DELETE FROM workshop WHERE created = '${id}'`);
+    await db.run(`DELETE FROM workshop WHERE created = '${id}'`);
 }
