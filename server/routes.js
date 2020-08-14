@@ -58,11 +58,14 @@ router.get("/workshop/:workshopID", auth.getUser, async (req, res) => {
         } else {
             res.render("template", {
                 locals: {
+                    route: "workshop/" + req.params.workshopID,
+                    ...w,
                     loggedIn: req.user !== undefined
                 },
                 partials: {
                     nav: "nav",
-                    footer: "footer"
+                    footer: "footer",
+                    routeContent: "routes/workshop"
                 }
             });
         }
@@ -78,11 +81,13 @@ router.get("/:route", auth.getUser, async (req, res) => {
         } else {
             res.render("template.html", {
                 locals: {
-                    loggedIn: req.user !== undefined
+                    route: req.params.route,
+                    ...(await getRenderOptions(req.params.route, req.user !== undefined, req.query)).locals
                 },
                 partials: {
                     nav: "nav",
-                    footer: "footer"
+                    footer: "footer",
+                    routeContent: "routes/" + req.params.route
                 }
             });
         }

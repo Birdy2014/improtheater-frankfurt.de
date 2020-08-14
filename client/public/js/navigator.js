@@ -2,7 +2,15 @@ window.onload = () => {
     NProgress.configure({ showSpinner: false });
     let url = new URL(document.location.href);
     var currentRoute = url.pathname + url.search;
-    navigate(currentRoute);
+    // set navlink active
+    if (url.search)
+        navigate(currentRoute, false, false, false);
+    else
+        navigate(currentRoute, false, true, false);
+    // load scripts
+    let route = url.pathname.substring(1);
+    let container = document.getElementById(route);
+    loadPage(container, route);
 }
 
 document.onclick = e => {
