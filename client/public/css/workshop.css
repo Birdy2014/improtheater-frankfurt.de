@@ -11,21 +11,37 @@
 
 .workshop-image {
     position: relative;
-    height: 350px;
-    width: fit-content;
 }
 
-.workshop-image img {
-    z-index: 0;
-    height: 100%;
+.workshop-properties {
+    float: right;
+    list-style: none;
+    background-color: #f6f6f6;
+    padding: 10px;
 }
 
-.workshop-image .edit-workshop-image {
-    --margin: 20px;
-    z-index: 1;
-    position: absolute;
-    top: 0;
-    left: 0;
-    margin: var(--margin);
-    height: calc(100% - calc(var(--margin) * 2));
+.workshop-properties dt {
+    font-weight: bold;
+}
+
+
+@media screen and (min-width: 600px) {
+    .workshop-image {
+        width: calc(100% - 32% - 80px);
+    }
+
+    .workshop-properties {
+        width: 32%;
+    }
+}
+
+
+@media screen and (max-width: 600px) {
+    .workshop-image {
+        width: 100%;
+    }
+
+    .workshop-properties {
+        width: 100%;
+    }
 }

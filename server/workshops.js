@@ -1,6 +1,10 @@
 const db = require("./db");
 const utils = require("./utils");
 
+const timeDateFormat = Intl.DateTimeFormat("de-DE", { weekday: "long", year: "numeric", month: "long", day: "numeric", hour: "numeric", minute: "numeric" });
+const dateFormat = Intl.DateTimeFormat("de-DE", { weekday: "long", year: "numeric", month: "long", day: "numeric" });
+const timeFormat = Intl.DateTimeFormat("de-DE", { hour: "numeric", minute: "numeric" });
+
 exports.post = async (req, res) => {
     if (!req.user) {
         res.status(400);
@@ -38,17 +42,26 @@ exports.delete = async (req, res) => {
 }
 
 exports.getWorkshops = async (loggedIn) => {
+    let workshops;
     if (loggedIn)
-        return await db.all(`SELECT * FROM workshop ORDER BY begin DESC`) || [];
+        workshops = await db.all(`SELECT * FROM workshop ORDER BY begin DESC`) || [];
     else
-        return await db.all(`SELECT * FROM workshop WHERE visible = 1 ORDER BY begin DESC`) || [];
+        workshops = await db.all(`SELECT * FROM workshop WHERE visible = 1 ORDER BY begin DESC`) || [];
+    for (let workshop of workshops) {
+        workshop.timeText = timeDateFormat.formatRange(workshop.begin * 1000, workshop.end * 1000);
+    }
+    return workshops;
 }
 
 exports.getWorkshop = async (id, loggedIn) => {
+    let workshop;
     if (loggedIn)
-        return await db.get(`SELECT * FROM workshop WHERE created = '${id}'`);
+        workshop = await db.get(`SELECT * FROM workshop WHERE created = '${id}'`);
     else
-        return await db.get(`SELECT * FROM workshop WHERE created = '${id}' AND visible = 1`);
+        workshop = await db.get(`SELECT * FROM workshop WHERE created = '${id}' AND visible = 1`);
+    workshop.dateText = dateFormat.formatRange(workshop.begin * 1000, workshop.end * 1000);
+    workshop.timeText = timeFormat.formatRange(workshop.begin * 1000, workshop.end * 1000);
+    return workshop;
 }
 
 exports.createWorkshop = async (begin, end, title, content, img, color, visible) => {
