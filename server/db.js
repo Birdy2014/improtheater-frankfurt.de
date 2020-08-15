@@ -17,6 +17,9 @@ exports.init = async () => {
             img TEXT NOT NULL,
             color TEXT NOT NULL,
             visible INTEGER DEFAULT 0,
+            location TEXT NOT NULL,
+            price TEXT NOT NULL,
+            email TEXT NOT NULL,
             PRIMARY KEY (created)
         )
     `);

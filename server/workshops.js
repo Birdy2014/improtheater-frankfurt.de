@@ -13,7 +13,7 @@ exports.post = async (req, res) => {
         return;
     }
 
-    let id = await exports.createWorkshop(req.body.begin, req.body.end, req.body.title, req.body.content, req.body.img, req.body.color, req.body.visible);
+    let id = await exports.createWorkshop(req.body.begin, req.body.end, req.body.title, req.body.content, req.body.img, req.body.color, req.body.visible, req.body.location, req.body.price, req.body.email);
     res.status(200);
     res.json({ status: 200, data: { id } });
 }
@@ -25,7 +25,7 @@ exports.put = async (req, res) => {
         return;
     }
 
-    await exports.editWorkshop(req.body.id, req.body.begin, req.body.end, req.body.title, req.body.content, req.body.img, req.body.color, req.body.visible);
+    await exports.editWorkshop(req.body.id, req.body.begin, req.body.end, req.body.title, req.body.content, req.body.img, req.body.color, req.body.visible, req.body.location, req.body.price, req.body.email);
     res.status(200);
     res.json({ status: 200 });
 }
@@ -71,7 +71,7 @@ exports.getWorkshop = async (id, loggedIn) => {
     return workshop;
 }
 
-exports.createWorkshop = async (begin, end, title, content, img, color, visible) => {
+exports.createWorkshop = async (begin, end, title, content, img, color, visible, location, price, email) => {
     let created = utils.getCurrentTimestamp();
     if (!begin) begin = created;
     if (!end) end = created + 7200;
@@ -79,11 +79,14 @@ exports.createWorkshop = async (begin, end, title, content, img, color, visible)
     if (!content) content = "Eine Beschreibung des Workshops";
     if (!color) color = "#FFFFFF";
     if (!visible) visible = 0;
-    await db.run(`INSERT INTO workshop (created, begin, end, title, content, img, color, visible) VALUES ('${created}', '${begin}', '${end}', '${title}', '${content}', '${img}', '${color}', '${visible}')`);
+    if (!location) location = "Ort";
+    if (!price) price = "Preis";
+    if (!email) email = "hallo@improglycerin.de";
+    await db.run(`INSERT INTO workshop (created, begin, end, title, content, img, color, visible, location, price, email) VALUES ('${created}', '${begin}', '${end}', '${title}', '${content}', '${img}', '${color}', '${visible}', '${location}', '${price}', '${email}')`);
     return created;
 }
 
-exports.editWorkshop = async (id, begin, end, title, content, img, color, visible) => {
+exports.editWorkshop = async (id, begin, end, title, content, img, color, visible, location, price, email) => {
     let set = "";
     if (begin) set += `begin = '${begin}', `;
     if (end) set += `end = '${end}', `;
@@ -92,6 +95,9 @@ exports.editWorkshop = async (id, begin, end, title, content, img, color, visibl
     if (img) set += `img = '${img}', `;
     if (color) set += `color = '${color}', `;
     if (visible !== undefined) set += `visible = '${visible ? 1 : 0}', `;
+    if (location) set += `location = '${location}', `;
+    if (price) set += `price = '${price}', `;
+    if (email) set += `email = '${email}', `;
     if (set === "") {
         res.status(400);
         res.json({ status: 400 });

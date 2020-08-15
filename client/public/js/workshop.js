@@ -9,7 +9,10 @@ async function changeWorkshopValues() {
     let endTime = container.getElementsByClassName("input-workshop-time-end")[0].value;
     let begin = Date.parse(date + "T" + beginTime) / 1000;
     let end = Date.parse(date + "T" + endTime) / 1000;
-    await axios.put("/api/workshops", { id, title, content, img, begin, end });
+    let location = container.getElementsByClassName("edit-workshop-location")[0].innerHTML;
+    let price = container.getElementsByClassName("edit-workshop-price")[0].innerHTML;
+    let email = container.getElementsByClassName("edit-workshop-email")[0].innerHTML;
+    await axios.put("/api/workshops", { id, title, content, img, begin, end, location, price, email });
     await navigate(currentRoute, true);
     await navigate("workshops", true, true, true);
     alert("Daten gespeichert");
