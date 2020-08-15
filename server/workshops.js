@@ -4,6 +4,7 @@ const utils = require("./utils");
 const timeDateFormat = Intl.DateTimeFormat("de-DE", { weekday: "long", year: "numeric", month: "long", day: "numeric", hour: "numeric", minute: "numeric" });
 const dateFormat = Intl.DateTimeFormat("de-DE", { weekday: "long", year: "numeric", month: "long", day: "numeric" });
 const timeFormat = Intl.DateTimeFormat("de-DE", { hour: "numeric", minute: "numeric" });
+const isoFormat = Intl.DateTimeFormat("sv-SE", { timeZone: "Europe/Berlin", year: "numeric", month: "numeric", day: "numeric", hour: "numeric", minute: "numeric" });
 
 exports.post = async (req, res) => {
     if (!req.user) {
@@ -55,10 +56,16 @@ exports.getWorkshops = async (loggedIn) => {
 
 exports.getWorkshop = async (id, loggedIn) => {
     let workshop;
-    if (loggedIn)
+    if (loggedIn) {
         workshop = await db.get(`SELECT * FROM workshop WHERE created = '${id}'`);
-    else
+        let beginISO = isoFormat.format(workshop.begin * 1000);
+        let endISO = isoFormat.format(workshop.end * 1000);
+        workshop.dateISO = beginISO.substr(0, 10);
+        workshop.beginTimeISO = beginISO.substr(11, 5);
+        workshop.endTimeISO = endISO.substr(11, 5);
+    } else {
         workshop = await db.get(`SELECT * FROM workshop WHERE created = '${id}' AND visible = 1`);
+    }
     workshop.dateText = dateFormat.formatRange(workshop.begin * 1000, workshop.end * 1000);
     workshop.timeText = timeFormat.formatRange(workshop.begin * 1000, workshop.end * 1000);
     return workshop;

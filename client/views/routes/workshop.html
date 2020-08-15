@@ -5,9 +5,9 @@
     <img class="workshop-image" src="${img}" ${loggedIn ? 'onclick="editWorkshopImage()"' : ''}>
     <dl class="workshop-properties">
         <dt>Datum:</dt>
-        <dd>${dateText}</dd>
+        <dd>${loggedIn ? `<input type="date" value="${dateISO}" class="input-workshop-date">` : dateText}</dd>
         <dt>Zeit:</dt>
-        <dd>${timeText}</dd>
+        <dd>${loggedIn ? `<input type="time" value="${beginTimeISO}" class="input-workshop-time-begin"> - <input type="time" value="${endTimeISO}" class="input-workshop-time-end">` : timeText}</dd>
     </dl>
 </div>
 

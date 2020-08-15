@@ -4,8 +4,12 @@ async function changeWorkshopValues() {
     let title = container.getElementsByClassName("edit-title")[0].innerHTML;
     let content = container.getElementsByClassName("edit-content")[0].innerHTML;
     let img = container.getElementsByClassName("workshop-image")[0].src;
-    img = img.replace(/<br>/g, "").replace(/ /g, "");
-    await axios.put("/api/workshops", { id, title, content, img });
+    let date = container.getElementsByClassName("input-workshop-date")[0].value;
+    let beginTime = container.getElementsByClassName("input-workshop-time-begin")[0].value;
+    let endTime = container.getElementsByClassName("input-workshop-time-end")[0].value;
+    let begin = Date.parse(date + "T" + beginTime) / 1000;
+    let end = Date.parse(date + "T" + endTime) / 1000;
+    await axios.put("/api/workshops", { id, title, content, img, begin, end });
     await navigate(currentRoute, true);
     await navigate("workshops", true, true, true);
     alert("Daten gespeichert");
