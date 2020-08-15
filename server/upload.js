@@ -17,7 +17,7 @@ exports.get = async (req, res) => {
 }
 
 exports.post = async (req, res) => {
-    if (!req.files.img || !req.user) {
+    if (!req.files || !req.files.img || !req.user) {
         res.sendStatus(400);
         return;
     }
