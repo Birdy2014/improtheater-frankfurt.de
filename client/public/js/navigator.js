@@ -70,6 +70,10 @@ async function navigate(to, reload, skipPushState, preload) {
             console.error("Cannot navigate to '" + to + "': " + e);
             return;
         }
+        if (!website.headers["content-type"].startsWith("text")) {
+            window.location.href = "/" + to;
+            return;
+        }
         targetContainer.innerHTML = website.data;
         loadPage(targetContainer, route);
     }
