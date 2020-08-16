@@ -7,7 +7,7 @@
             <a href="/workshop/${workshop.created}">
                 <img src="${workshop.img || '/public/img/workshop-default.png'}">
                 <div class="workshop-text">
-                    <h2>${workshop.title}</h2>
+                    <h2>${workshop.title} ${workshop.visible ? '' : '<span>Entwurf</span>'}</h2>
                     <h4>${workshop.timeText}</h4>
                 </div>
             </a>
