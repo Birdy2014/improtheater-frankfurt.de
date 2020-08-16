@@ -40,17 +40,18 @@ router.use("/public", express.static(path.join(__dirname, "/../client/public")))
 
 // Frontend
 router.get("/", (req, res) => {
-    res.render("under-construction");
+    res.redirect("/start")
 });
 
 // Workaround for apache
 router.get("/index.html", (req, res) => {
-    res.render("under-construction");
+    res.redirect("/start");
 });
 
 router.get("/workshop/:workshopID", auth.getUser, async (req, res) => {
     let w = await workshops.getWorkshop(req.params.workshopID, req.user !== undefined);
     if (!w) {
+        res.status(404);
         res.render("404");
     } else {
         if (req.query.partial) {
@@ -74,6 +75,7 @@ router.get("/workshop/:workshopID", auth.getUser, async (req, res) => {
 
 router.get("/:route", auth.getUser, async (req, res) => {
     if (!routes.includes(req.params.route)) {
+        res.status(404);
         res.render("404");
     } else {
         if (req.query.partial) {

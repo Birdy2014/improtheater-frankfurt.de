@@ -58,6 +58,7 @@ exports.getWorkshop = async (id, loggedIn) => {
     let workshop;
     if (loggedIn) {
         workshop = await db.get(`SELECT * FROM workshop WHERE created = '${id}'`);
+        if (!workshop) return undefined;
         let beginISO = isoFormat.format(workshop.begin * 1000);
         let endISO = isoFormat.format(workshop.end * 1000);
         workshop.dateISO = beginISO.substr(0, 10);
@@ -65,6 +66,7 @@ exports.getWorkshop = async (id, loggedIn) => {
         workshop.endTimeISO = endISO.substr(11, 5);
     } else {
         workshop = await db.get(`SELECT * FROM workshop WHERE created = '${id}' AND visible = 1`);
+        if (!workshop) return undefined;
     }
     workshop.dateText = dateFormat.formatRange(workshop.begin * 1000, workshop.end * 1000);
     workshop.timeText = timeFormat.formatRange(workshop.begin * 1000, workshop.end * 1000);
