@@ -3,6 +3,7 @@ const es6Renderer = require('express-es6-template-engine');
 const db = require("./db");
 const utils = require("./utils");
 const config = require("../config.json");
+const workshops = require("./workshops");
 
 exports.transporter = nodemailer.createTransport(config.email);
 
@@ -51,7 +52,33 @@ exports.unsubscribe = async (req, res) => {
 }
 
 exports.send = async (req, res) => {
+    if (!req.user || !req.body.workshop) {
+        res.sendStatus(400);
+        return;
+    }
 
+    let workshop = await workshops.getWorkshop(req.body.workshop, false);
+    if (!workshop) {
+        res.sendStatus(404);
+        return;
+    }
+    let baseUrl = process.env.TEST ? "http://localhost:" + config.port : "https://improtheater-frankfurt.de";
+    let logo = baseUrl + "/public/img/logo.jpg";
+    let subscribers = await exports.getSubscribers();
+    for (let subscriber of subscribers) {
+        let unsubscribe = baseUrl + "/api/newsletter/unsubscribe?token=" + subscriber.token;
+        let subscribername = subscriber.name;
+        es6Renderer(__dirname + "/../client/views/emails/newsletter.html", { locals: { ...workshop, unsubscribe, logo, subscribername } }, (err, content) => {
+            exports.transporter.sendMail({
+                from: config.email.from,
+                to: subscriber.email,
+                subject: workshop.title + ", am " + workshop.dateText,
+                html: content,
+                text: ""
+            });
+        });
+    }
+    res.sendStatus(200);
 }
 
 function sendConfirmMail(subscriber) {

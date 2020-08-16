@@ -45,3 +45,14 @@ function editWorkshopImage() {
     window.sessionStorage.setItem("editWorkshop", currentRoute);
     navigate("uploads");
 }
+
+async function sendNewsletter() {
+    try {
+        let id = currentRoute.substring(currentRoute.indexOf("/") + 1);
+        await axios.post("/api/newsletter/send", { workshop: id });
+        alert("Newsletter gesendet");
+    } catch (e) {
+        console.error(JSON.stringify(e));
+        alert("Fehler");
+    }
+}
