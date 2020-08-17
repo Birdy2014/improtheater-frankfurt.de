@@ -1,5 +1,5 @@
 <link rel="stylesheet" href="/public/css/workshop.css">
-<h1><span class="edit-title" ${loggedIn ? 'contenteditable' : ''}>${title}</span> ${loggedIn ? '<a href="javascript:void(0)" onclick="deleteWorkshop()" class="loginrequired">-</a>' : ''}</h1>
+<h1><span class="edit-title" ${loggedIn ? 'contenteditable' : ''}>${title}</span></h1>
 
 <div>
     <img class="workshop-image" src="${img}" ${loggedIn ? 'onclick="editWorkshopImage()"' : ''}>
@@ -18,8 +18,7 @@
 
 <div class="edit-content" ${loggedIn ? 'contenteditable' : ''}>${content}</div>
 
-${loggedIn ? '<a href="javascript:void(0)" onclick="changeWorkshopValues()" class="edit-button edit-save">Speichern</a>' : ''}
-
-${loggedIn ? `<a href="javascript:void(0)" onclick="publishWorkshop()" class="edit-button edit-publish">${visible ? "Unsichtbar machen" : "Veröffentlichen"}</a>` : ''}
-
-${loggedIn ? `<a href="javascript:void(0)" onclick="sendNewsletter()" class="edit-button edit-newsletter">Newsletter senden</a>` : ''}
+${loggedIn ? '<a href="javascript:void(0)" onclick="changeWorkshopValues()" class="edit-button edit-save">Speichern</a>' : ''} |
+${loggedIn ? `<a href="javascript:void(0)" onclick="publishWorkshop()" class="edit-button edit-publish">${visible ? "Unsichtbar machen" : "Veröffentlichen"}</a>` : ''} |
+${loggedIn ? `<a href="javascript:void(0)" onclick="sendNewsletter()" class="edit-button edit-newsletter">Newsletter senden</a>` : ''} |
+${loggedIn ? '<a href="javascript:void(0)" onclick="deleteWorkshop()" class="edit-button">Löschen</a>' : ''}

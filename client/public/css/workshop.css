@@ -5,7 +5,7 @@
     transition: color .3s ease-out;
 }
 
-.edit-save:hover {
+.edit-button:hover {
     color: red;
 }
 
