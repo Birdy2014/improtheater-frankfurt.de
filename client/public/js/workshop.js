@@ -12,7 +12,8 @@ async function changeWorkshopValues() {
     let location = container.getElementsByClassName("edit-workshop-location")[0].innerHTML;
     let price = container.getElementsByClassName("edit-workshop-price")[0].innerHTML;
     let email = container.getElementsByClassName("edit-workshop-email")[0].innerHTML;
-    await axios.put("/api/workshops", { id, title, content, img, begin, end, location, price, email });
+    let color = container.getElementsByClassName("input-workshop-color")[0].value;
+    await axios.put("/api/workshops", { id, title, content, img, begin, end, location, price, email, color });
     await navigate(currentRoute, true);
     await navigate("workshops", true, true, true);
     alert("Daten gespeichert");

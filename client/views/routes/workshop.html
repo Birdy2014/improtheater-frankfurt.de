@@ -13,6 +13,10 @@
         <dd><span class="edit-workshop-price" ${loggedIn ? 'contenteditable' : ''}>${price}</span></dd>
         <dt>Email?</dt>
         <dd><span class="edit-workshop-email" ${loggedIn ? 'contenteditable' : ''}>${email}</span></dd>
+        ${loggedIn ? `
+            <dt>Farbe?</dt>
+            <dd><input type="color" value="${color}" class="input-workshop-color"> ${color}</dd>
+        ` : ''}
     </dl>
 </div>
 
