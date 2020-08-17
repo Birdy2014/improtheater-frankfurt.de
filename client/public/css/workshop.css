@@ -45,3 +45,8 @@
         width: 100%;
     }
 }
+
+[contenteditable] {
+    border: 1px solid #707070;
+    padding: 5px;
+}
