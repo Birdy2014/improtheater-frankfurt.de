@@ -4,6 +4,11 @@
     --site-width: 1100px;
 }
 
+html {
+    overflow-x: hidden;
+    overflow-y: scroll;
+}
+
 body {
     font-family: Roboto;
 }
