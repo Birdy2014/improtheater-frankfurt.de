@@ -62,6 +62,11 @@ exports.send = async (req, res) => {
         res.sendStatus(404);
         return;
     }
+    if (workshop.newsletterSent) {
+        res.sendStatus(409);
+        return;
+    }
+    await db.run("UPDATE workshop SET newsletterSent = 1 WHERE created = ?", workshop.created);
     let baseUrl = process.env.TEST ? "http://localhost:" + config.port : "https://improtheater-frankfurt.de";
     let logo = baseUrl + "/public/img/logo.jpg";
     let subscribers = await exports.getSubscribers();
@@ -74,7 +79,7 @@ exports.send = async (req, res) => {
                 to: subscriber.email,
                 subject: workshop.title + ", am " + workshop.dateText,
                 html: content,
-                text: ""
+                text: `Improglycerin lädt ein zu ${workshop.title} am ${workshop.dateText}.\n\n${workshop.content}\n\nWann? ${workshop.timeText}\nWo? ${workshop.location}\nBetrag ${workshop.price}\n\nImpressum: https://improglycerin.de/impressum\nDatenschutz: https://improglycerin.de/datenschutz\nKontakt: https://improglycerin.de/kontakt/\nAbmelden: ${unsubscribe}`
             });
         });
     }
@@ -90,7 +95,7 @@ function sendConfirmMail(subscriber) {
             to: subscriber.email,
             subject: "Improtheater Frankfurt Newsletterbestätigung",
             html: content,
-            text: ""
+            text: `Liebe/r ${subscriber.name},\nvielen Dank für die Bestellung unseres Newsletters, in dem Du zukünftig über unsere Workshops, unsere Jams und unsere Shows informiert wirst.\nBitte bestätige durch Klick auf diesen Link, dass Du unseren tollen Newsletter erhalten möchtest: ${link}`
         });
     });
 }

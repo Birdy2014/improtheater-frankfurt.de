@@ -20,6 +20,7 @@ exports.init = async () => {
             location TEXT NOT NULL,
             price TEXT NOT NULL,
             email TEXT NOT NULL,
+            newsletterSent INTEGER DEFAULT 0,
             PRIMARY KEY (created)
         )
     `);
