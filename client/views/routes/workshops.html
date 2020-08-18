@@ -5,7 +5,9 @@
     ${workshops.map(workshop => `
         <div class="workshop-item">
             <a href="/workshop/${workshop.created}">
-                <img src="${workshop.img || '/public/img/workshop-default.png'}">
+                <div class="workshops-image-container">
+                    <img src="${workshop.img || '/public/img/workshop-default.png'}">
+                </div>
                 <div class="workshop-text">
                     <h2>${workshop.title} ${workshop.visible ? '' : '<span>Entwurf</span>'}</h2>
                     <h4>${workshop.timeText}</h4>
