@@ -135,12 +135,6 @@ function toggleMenu(hideMenu) {
 function loadPage(parent, page) {
     if (page.includes("/")) page = page.substring(0, page.indexOf("/"));
     switch(page) {
-        case "admin": {
-            let script = document.createElement("script");
-            script.src = "/public/js/admin.js";
-            parent.appendChild(script);
-            break;
-        }
         case "workshops": {
             let script = document.createElement("script");
             script.src = "/public/js/workshops.js";
