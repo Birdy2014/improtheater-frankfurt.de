@@ -50,6 +50,7 @@ exports.getWorkshops = async (loggedIn) => {
         workshops = await db.all(`SELECT * FROM workshop WHERE visible = 1 ORDER BY begin DESC`) || [];
     for (let workshop of workshops) {
         workshop.timeText = timeDateFormat.formatRange(workshop.begin * 1000, workshop.end * 1000);
+        workshop.outdated = workshop.end < utils.getCurrentTimestamp();
     }
     return workshops;
 }

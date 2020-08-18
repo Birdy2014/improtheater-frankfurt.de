@@ -7,6 +7,7 @@
     background-color: white;
     margin: 10px;
     float: left;
+    border: 1px solid #ebeaea;
 }
 
 @media only screen and (min-width: 1000px) {
@@ -54,21 +55,27 @@
 
 .workshop-text {
     color: var(--nav-active-link-color);
+    padding: 20px;
 }
 
 .workshop-text h2 {
+    margin: 0;
     font-size: 24px;
-    margin-top: 5px;
-    margin-bottom: 10px;
+    font-weight: 400;
 }
 
 .workshop-text h4 {
-    font-size: 14px;
-    margin-top: 10px;
-    margin-bottom: 10px;
+    font-size: 12px;
+    margin: 0;
+    font-weight: 400;
+    color: black;
 }
 
 .workshop-text span {
     float: right;
     color: #808080;
+}
+
+.workshops-outdated img {
+    filter: grayscale(100%);
 }
