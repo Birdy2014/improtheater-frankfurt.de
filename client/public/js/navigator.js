@@ -34,6 +34,18 @@ window.onpopstate = e => {
     navigate(document.location.pathname.substring(1), false, true);
 }
 
+window.onscroll = e => {
+    const navbar = document.getElementsByTagName("nav")[0];
+    const wrapper = document.getElementById("wrapper");
+    if (window.pageYOffset > 0) {
+        navbar.classList.add("nav-sticky");
+        wrapper.style.marginTop = "80px";
+    } else {
+        navbar.classList.remove("nav-sticky");
+        wrapper.style.removeProperty("margin-top");
+    }
+}
+
 /**
  * 
  * @param {string} to - target route
