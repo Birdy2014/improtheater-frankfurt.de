@@ -115,6 +115,9 @@ footer {
     text-align: center;
     position: relative;
     font-size: 14px;
+    margin-top: 20px;
+    border-top: 2px solid var(--nav-active-link-color);
+    margin-bottom: 10px;
 }
 
 footer a {
