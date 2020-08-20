@@ -1,5 +1,5 @@
 <link rel="stylesheet" href="/public/css/workshops.css">
-<h1>Workshops ${loggedIn ? '<a href="javascript:void(0)" onclick="createWorkshop()">+</a>' : ''}</h1>
+<h1>Workshops ${loggedIn ? '<a id="workshops-add" href="javascript:void(0)" onclick="createWorkshop()">HINZUFÜGEN</a>' : ''}</h1>
 
 <div id="workshop-list">
     ${workshops.map(workshop => `
