@@ -1,0 +1,28 @@
+#newsletter-text-container {
+    width: 75%;
+}
+
+#newsletter-form {
+    margin-top: 35px;
+}
+
+.input-newsletter-text {
+    border: none;
+    border-bottom: 2px solid black;
+    width: 30%;
+    font-size: 20px;
+    margin-bottom: 12px;
+    padding-bottom: 3px;
+}
+
+.input-newsletter-text:focus {
+    border-bottom-color: var(--nav-active-link-color);
+    transition: border .4s;
+}
+
+.input-newsletter-button {
+    color: white;
+    background-color: var(--nav-active-link-color);
+    border: none;
+    padding: 13px 29px;
+}
