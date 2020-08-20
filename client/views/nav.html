@@ -7,9 +7,13 @@
             <a href="/start" class="navlink">START</a>
             <a href="/newsletter" class="navlink">NEWSLETTER</a>
             <a href="/workshops" class="navlink">WORKSHOPS</a>
-            <a href="https://improglycerin.de" class="navlink">IMPROGLYCERIN <i class="fa fa-external-link"></i></a>
+            <a href="https://improglycerin.de" class="navlink" target="_blank">IMPROGLYCERIN</a>
             ${loggedIn ? '<a href="/uploads" class="navlink">UPLOADS</a>' : ''}
         </div>
-        <a href="javascript:void(0);" class="icon" onclick="toggleMenu()">&#9776;</a>
+        <a href="javascript:void(0);" class="icon" onclick="toggleMenu()">
+            <div class="icon-nav-bars"></div>
+            <div class="icon-nav-bars"></div>
+            <div class="icon-nav-bars"></div>
+        </a>
     </div>
 </nav>

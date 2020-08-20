@@ -13,6 +13,13 @@ body {
     font-family: Roboto;
 }
 
+.icon-nav-bars {
+    width: 35px;
+    height: 5px;
+    background-color: black;
+    margin: 6px 0;
+}
+
 nav {
     width: 100%;
     height: 80px;
@@ -115,13 +122,17 @@ footer {
     text-align: center;
     position: relative;
     font-size: 14px;
-    margin-top: 20px;
+    margin-top: 60px;
+    padding-top: 30px;
     border-top: 2px solid var(--nav-active-link-color);
     margin-bottom: 10px;
 }
 
+#footer-link-container {
+    font-weight: bold;
+}
+
 footer a {
     text-decoration: none;
-    font-weight: bold;
     color: black;
 }
