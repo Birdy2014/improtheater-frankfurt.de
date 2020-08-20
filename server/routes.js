@@ -6,6 +6,7 @@ const auth = require("./auth");
 const workshops = require("./workshops");
 const newsletter = require("./newsletter");
 const upload = require("./upload");
+const config = require("../config");
 
 const router = express.Router();
 
@@ -70,6 +71,26 @@ router.get("/workshop/:workshopID", auth.getUser, async (req, res) => {
                 }
             });
         }
+    }
+});
+
+router.get("/newsletter-preview/:workshopID", auth.getUser, async (req, res) => {
+    let w = await workshops.getWorkshop(req.params.workshopID, true);
+    if (!req.user || !w) {
+        res.sendStatus(400);
+    } else {
+        let baseUrl = process.env.TEST ? "http://localhost:" + config.port : "https://improtheater-frankfurt.de";
+        let logo = baseUrl + "/public/img/logo.jpg";
+        let unsubscribe = "#";
+        let subscribername = req.user.username;
+        res.render("emails/newsletter", {
+            locals: {
+                ...w,
+                unsubscribe,
+                logo,
+                subscribername
+            }
+        });
     }
 });
 
