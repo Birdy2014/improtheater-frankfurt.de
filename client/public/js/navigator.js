@@ -114,7 +114,7 @@ async function navigate(to, reload, skipPushState, preload) {
 }
 
 function toggleMenu(hideMenu) {
-    let menu = document.getElementById("menu");
+    let nav = document.getElementsByTagName("nav")[0];
     let main_menu = document.getElementById("main-menu");
     let logo = document.getElementById("logo");
 
@@ -131,13 +131,13 @@ function toggleMenu(hideMenu) {
     }
 
     function hide() {
-        menu.style.removeProperty("height");
+        nav.style.removeProperty("height");
         main_menu.style.removeProperty("display");
         logo.style.removeProperty("display");
     }
 
     function show() {
-        menu.style.height = "auto";
+        nav.style.height = "auto";
         main_menu.style.display = "block";
         logo.style.display = "none";
     }
