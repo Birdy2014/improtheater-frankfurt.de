@@ -1,5 +1,7 @@
-#newsletter-text-container {
-    width: 75%;
+@media screen and (min-width: 600px) {
+    #newsletter-text-container {
+        width: 75%;
+    }
 }
 
 #newsletter-form {
