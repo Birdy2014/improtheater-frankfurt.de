@@ -9,7 +9,7 @@ exports.init = async () => {
 
     exports.run(`
         CREATE TABLE IF NOT EXISTS workshop (
-            created INTEGER NOT NULL,
+            id INTEGER NOT NULL,
             begin INTEGER NOT NULL,
             end INTEGER NOT NULL,
             title TEXT NOT NULL,
@@ -21,7 +21,7 @@ exports.init = async () => {
             price TEXT NOT NULL,
             email TEXT NOT NULL,
             newsletterSent INTEGER DEFAULT 0,
-            PRIMARY KEY (created)
+            PRIMARY KEY (id)
         )
     `);
 

@@ -66,7 +66,7 @@ exports.send = async (req, res) => {
         res.sendStatus(409);
         return;
     }
-    await db.run("UPDATE workshop SET newsletterSent = 1 WHERE created = ?", workshop.created);
+    await db.run("UPDATE workshop SET newsletterSent = 1 WHERE id = ?", workshop.id);
     let baseUrl = process.env.TEST ? "http://localhost:" + config.port : "https://improtheater-frankfurt.de";
     let logo = baseUrl + "/public/img/logo.jpg";
     let subscribers = await exports.getSubscribers();
