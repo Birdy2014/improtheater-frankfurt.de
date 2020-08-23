@@ -14,3 +14,7 @@ exports.generateToken = (length) => {
         text += chars.charAt(Math.floor(Math.random() * chars.length));
     return text;
 }
+
+exports.sleep = (ms) => {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}

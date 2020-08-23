@@ -2,6 +2,7 @@ const nodemailer = require("nodemailer");
 const es6Renderer = require('express-es6-template-engine');
 const db = require("./db");
 const utils = require("./utils");
+const logger = require("./logger");
 const config = require("../config.json");
 const workshops = require("./workshops");
 
@@ -67,23 +68,28 @@ exports.send = async (req, res) => {
         return;
     }
     await db.run("UPDATE workshop SET newsletterSent = 1 WHERE id = ?", workshop.id);
+    res.sendStatus(200);
+    // Send newsletter
     let baseUrl = process.env.TEST ? "http://localhost:" + config.port : "https://improtheater-frankfurt.de";
     let logo = baseUrl + "/public/img/logo.jpg";
     let subscribers = await exports.getSubscribers();
     for (let subscriber of subscribers) {
-        let unsubscribe = baseUrl + "/api/newsletter/unsubscribe?token=" + subscriber.token;
-        let subscribername = subscriber.name;
-        es6Renderer(__dirname + "/../client/views/emails/newsletter.html", { locals: { ...workshop, unsubscribe, logo, subscribername } }, (err, content) => {
-            exports.transporter.sendMail({
+        try {
+            let unsubscribe = baseUrl + "/api/newsletter/unsubscribe?token=" + subscriber.token;
+            let subscribername = subscriber.name;
+            let html = await es6Renderer(__dirname + "/../client/views/emails/newsletter.html", { locals: { ...workshop, unsubscribe, logo, subscribername } });
+            await exports.transporter.sendMail({
                 from: config.email.from,
                 to: subscriber.email,
                 subject: workshop.title + ", am " + workshop.dateText,
-                html: content,
+                html: html,
                 text: `Improglycerin lädt ein zu ${workshop.title} am ${workshop.dateText}.\n\n${workshop.content}\n\nWann? ${workshop.timeText}\nWo? ${workshop.location}\nBetrag ${workshop.price}\n\nImpressum: https://improglycerin.de/impressum\nDatenschutz: https://improglycerin.de/datenschutz\nKontakt: https://improglycerin.de/kontakt/\nAbmelden: ${unsubscribe}`
             });
-        });
+            await utils.sleep(1000);
+        } catch (e) {
+            logger.error(`Failed to send Newsletter of workshop ${workshop.id} to ${subscriber.email}:\n ${JSON.stringify(e)}`);
+        }
     }
-    res.sendStatus(200);
 }
 
 function sendConfirmMail(subscriber) {
