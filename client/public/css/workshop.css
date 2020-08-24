@@ -14,10 +14,14 @@
 }
 
 .workshop-properties {
-    float: right;
     list-style: none;
     background-color: #f6f6f6;
     padding: 10px;
+    margin: 0;
+}
+
+.workshop-properties dd {
+    margin: 0;
 }
 
 .workshop-properties dt {
@@ -31,7 +35,12 @@
     }
 
     .workshop-properties {
+        float: right;
         width: 32%;
+    }
+
+    .edit-content {
+        width: calc(100% - 32% - 80px);
     }
 }
 
