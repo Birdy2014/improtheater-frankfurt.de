@@ -19,6 +19,7 @@ for (let route of content) {
 }
 
 // Backend
+router.get("/robots.txt", (req, res) => res.sendFile(path.join(__dirname, "/../client/robots.txt")));
 router.get("/api/authhook", auth.authhook);
 router.get("/api/login", auth.getUser, (req, res) => res.redirect(req.cookies.route || "/"));
 router.post("/api/logout", auth.logout);
