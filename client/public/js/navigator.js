@@ -116,7 +116,6 @@ async function navigate(to, reload, skipPushState, preload) {
 function toggleMenu(hideMenu) {
     let nav = document.getElementsByTagName("nav")[0];
     let main_menu = document.getElementById("main-menu");
-    let logo = document.getElementById("logo");
 
     if (hideMenu) {
         hide();
@@ -133,13 +132,11 @@ function toggleMenu(hideMenu) {
     function hide() {
         nav.style.removeProperty("height");
         main_menu.style.removeProperty("display");
-        logo.style.removeProperty("display");
     }
 
     function show() {
         nav.style.height = "auto";
         main_menu.style.display = "block";
-        logo.style.display = "none";
     }
 }
 

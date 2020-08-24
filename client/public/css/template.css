@@ -79,14 +79,24 @@ nav #menu #main-menu .active {
 }
 
 @media screen and (max-width: 600px) {
-    nav #menu #main-menu {
+    nav #main-menu {
         display: none;
         background-color: var(--nav-background-color);
+        padding-top: 80px;
+    }
+
+    .nav-sticky #main-menu {
+        padding-top: 65px;
+    }
+
+    .nav-sticky #logo {
+        height: 65px;
     }
 
     nav #menu #main-menu a {
         display: block;
         padding: 10px 7.5px;
+        text-align: left;
     }
 
     nav #menu .icon {
