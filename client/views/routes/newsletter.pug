@@ -1,0 +1,63 @@
+extends ../template.pug
+
+block routeContent
+    link(rel="stylesheet" href="/public/css/newsletter.css")
+    img(src="/public/img/banner-newsletter.jpg" class="banner")
+
+    #newsletter-text-container
+        if unsubscribed
+            p Deine E-Mail Adresse #{unsubscribed} wurde erfolgreich vom Mailverteiler abgemeldet
+        else if subscriber.confirmed
+            p.
+                Liebe/r #{subscriber.name},
+            p.
+                herzlich willkommen auf dem Mailverteiler von Improglycerin und Improtheater Frankfurt. Du wirst jetzt einmal
+                wöchentlich zu unserem offenen Workshop eingeladen, der jeden Mittwochabend stattfindet und jedes Mal ein anderes Thema
+                hat, sowie manchmal zu einem Workshop am Wochenende und ca. einmal im Monat zu einer Show von Improglycerin. Die Daten,
+                Ort und Zeit kannst Du der jeweiligen Einladung entnehmen.
+            p.
+                Normalerweise finden die Workshops in Frankfurt, in der Großen Friedberger Straße 42, statt. Es gibt manchmal
+                Verwechslungen mit der Friedberger Landstraße. Die Große Friedberger Straße geht allerdings direkt von der
+                Konstablerwache ab. Da wir die Klingel in unserem Raum nicht hören, bitte pünktlich unten stehen, oder Du lässt Dir die
+                Handynummer des Einladenden geben. Im Sommer sind wir manchmal im Koreanischen Garten (derzeit wegen Bauarbeiten bei der
+                Georgioskirche). Gut, aber nicht zwingend ist, wenn Du Dein Kommen anmeldest.
+            p.
+                Herzliche Grüße
+                Dein Team von Improglycerin
+        else if loggedIn
+            h2 Am Newsletter angemeldete Personen
+            ol
+                each s in subscribers
+                    li Name: #{s.name}, Email: #{s.email}
+                else
+                    li Niemand ist am Newsletter angemeldet
+        else
+            #newsletter-subscribe
+                h2 Improglycerin Newsletter bestellen und immer gut informiert sein!
+
+                p.
+                    Ja, ich möchte den Newsletter bestellen und erhalte einmal wöchentlich die Einladung für Mittwochabend und monatlich die
+                    Einladung zur Samstagsjam sowie zur Show von Improglycerin. Der Newsletter kann jederzeit wieder abbestellt werden.
+                
+                form(id="newsletter-form")
+                    input(type="email" class="input-newsletter-text" id="input-newsletter-email" placeholder="E-Mail-Adresse" required)
+                    br
+                    input(type="text" class="input-newsletter-text" id="input-newsletter-name" placeholder="Vorname und Nachname" required)
+                    br
+
+                    input(type="submit" class="input-newsletter-button" value="ANMELDEN")
+            #newsletter-subscribe-success(style="display: none;")
+                h2 Vielen Dank für Deine Newsletter-Anmeldung
+
+                p.
+                    Du erhältst gleich eine E-Mail von uns. Bitte bestätige die Anmeldung durch einfaches Klicken des Bestätigungslinks in dieser E-Mail. Erst dann erhältst Du unseren Newsletter an Deine angegebene E-Mail-Adresse: #[span(id="text-email-address")]
+            #newsletter-subscribe-failed(style="display: none;")
+                h2 Die Newsletter-Anmeldung war nicht erfolgreich
+
+                p.
+                    Entweder bist du schon angemeldet oder du hast den Link in der Bestätigungsmail noch nicht angeklickt.
+            #newsletter-subscribe-error(style="display: none;")
+                h2 Die Newsletter-Anmeldung war nicht erfolgreich
+
+                p.
+                    Es ist ein unbekannter Fehler aufgetreten.

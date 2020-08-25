@@ -14,10 +14,10 @@
     "axios": "^0.19.2",
     "cookie-parser": "^1.4.5",
     "express": "^4.17.1",
-    "express-es6-template-engine": "^2.2.2",
     "express-fileupload": "^1.1.10",
     "nodemailer": "^6.4.11",
     "nprogress": "^0.2.0",
+    "pug": "^3.0.0",
     "sqlite3": "^4.2.0"
   }
 }

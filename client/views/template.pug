@@ -1,0 +1,50 @@
+if partial
+    block routeContent
+else
+    doctype html
+    html(lang="de")
+        head
+            title Improtheater Frankfurt
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <meta name="description" content="Improtheater Frankfurt, die Improschule von Improglycerin, bietet jeden Mittwoch und einmal monatlich Workshops zu verschienen Themen an. Anfänger oder Fortgeschrittene, alle sind willkommen.">
+            <link rel="icon" sizes="58x58" href="/public/img/favicon.jpg">
+            <link rel="apple-touch-icon" sizes="58x58" href="/public/img/favicon.jpg">
+            <link rel="stylesheet" href="/lib/nprogress.css">
+            <link rel="stylesheet" href="/public/css/template.css">
+            <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Roboto'>
+            <script src="/lib/axios.min.js"></script>
+            <script src="/lib/nprogress.js"></script>
+            <script src="/public/js/navigator.js"></script>
+
+        body
+            nav
+                #menu
+                    a(href="/start" class="navlink")
+                        img(id="logo" src="/public/img/logo.jpg")
+                    #main-menu
+                        a(href="/start" class="navlink") START
+                        a(href="/newsletter" class="navlink") NEWSLETTER
+                        a(href="/workshops" class="navlink") WORKSHOPS
+                        a(href="https://improglycerin.de" class="navlink" target="_blank") IMPROGLYCERIN
+                        if loggedIn
+                            a(href="/uploads" class="navlink") UPLOADS
+                    a(href="javascript:void(0);" class="icon" onclick="toggleMenu()").
+                        .icon-nav-bars
+                        .icon-nav-bars
+                        .icon-nav-bars
+
+            #wrapper
+                .container(id=route)
+                    block routeContent
+
+            footer
+                p Copyright 2020 – IMPROGLYCERIN Improvisationstheater aus Frankfurt am Main e.V.
+                #footer-link-container
+                    a(href="https://improglycerin.de/datenschutz") DATENSCHUTZ
+                    | &nbsp;|&nbsp;
+                    a(href="https://improglycerin.de/impressum") IMPRESSUM
+                    | &nbsp;|&nbsp;
+                    if loggedIn
+                        a(href="javascript:void(0)" onclick="logout()" class="forceReload") LOGOUT
+                    else
+                        a(href="/api/login" class="forceReload") GLYCILOGIN

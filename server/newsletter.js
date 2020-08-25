@@ -1,5 +1,5 @@
 const nodemailer = require("nodemailer");
-const es6Renderer = require('express-es6-template-engine');
+const pug = require("pug");
 const db = require("./db");
 const utils = require("./utils");
 const logger = require("./logger");
@@ -77,7 +77,7 @@ exports.send = async (req, res) => {
         try {
             let unsubscribe = baseUrl + "/api/newsletter/unsubscribe?token=" + subscriber.token;
             let subscribername = subscriber.name;
-            let html = await es6Renderer(__dirname + "/../client/views/emails/newsletter.html", { locals: { ...workshop, unsubscribe, logo, subscribername } });
+            let html = pug.renderFile(__dirname + "/../client/views/emails/newsletter.pug", { ...workshop, unsubscribe, logo, subscribername });
             await exports.transporter.sendMail({
                 from: config.email.from,
                 to: subscriber.email,
@@ -95,14 +95,13 @@ exports.send = async (req, res) => {
 function sendConfirmMail(subscriber) {
     let url = process.env.TEST ? "http://localhost:" + config.port : "https://improtheater-frankfurt.de";
     let link = url + "/api/newsletter/confirm?token=" + subscriber.token;
-    es6Renderer(__dirname + "/../client/views/emails/confirm.html", { locals: { name: subscriber.name, link } }, (err, content) => {
-        exports.transporter.sendMail({
-            from: config.email.from,
-            to: subscriber.email,
-            subject: "Improtheater Frankfurt Newsletterbestätigung",
-            html: content,
-            text: `Liebe/r ${subscriber.name},\nvielen Dank für die Bestellung unseres Newsletters, in dem Du zukünftig über unsere Workshops, unsere Jams und unsere Shows informiert wirst.\nBitte bestätige durch Klick auf diesen Link, dass Du unseren tollen Newsletter erhalten möchtest: ${link}`
-        });
+    let html = pug.renderFile(__dirname + "/../client/views/emails/confirm.pug", { name: subscriber.name, link });
+    exports.transporter.sendMail({
+        from: config.email.from,
+        to: subscriber.email,
+        subject: "Improtheater Frankfurt Newsletterbestätigung",
+        html: html,
+        text: `Liebe/r ${subscriber.name},\nvielen Dank für die Bestellung unseres Newsletters, in dem Du zukünftig über unsere Workshops, unsere Jams und unsere Shows informiert wirst.\nBitte bestätige durch Klick auf diesen Link, dass Du unseren tollen Newsletter erhalten möchtest: ${link}`
     });
 }
 

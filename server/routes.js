@@ -14,7 +14,7 @@ const router = express.Router();
 let routes = [];
 let content = fs.readdirSync(path.join(__dirname, "/../client/views/routes"));
 for (let route of content) {
-    if (route.endsWith(".html"))
+    if (route.endsWith(".pug"))
         routes.push(route.substring(0, route.lastIndexOf(".")));
 }
 
@@ -56,19 +56,12 @@ router.get("/workshop/:workshopID", auth.getUser, async (req, res) => {
         res.render("404");
     } else {
         if (req.query.partial) {
-            res.render("routes/workshop", { locals: { ...w, loggedIn: req.user !== undefined }});
+            res.render("routes/workshop", { ...w, loggedIn: req.user !== undefined, partial: true, doctype: "html" });
         } else {
-            res.render("template", {
-                locals: {
-                    route: "workshop/" + req.params.workshopID,
-                    ...w,
-                    loggedIn: req.user !== undefined
-                },
-                partials: {
-                    nav: "nav",
-                    footer: "footer",
-                    routeContent: "routes/workshop"
-                }
+            res.render("routes/workshop", {
+                route: "workshop/" + req.params.workshopID,
+                ...w,
+                loggedIn: req.user !== undefined
             });
         }
     }
@@ -84,12 +77,10 @@ router.get("/newsletter-preview/:workshopID", auth.getUser, async (req, res) => 
         let unsubscribe = "#";
         let subscribername = req.user.username;
         res.render("emails/newsletter", {
-            locals: {
-                ...w,
-                unsubscribe,
-                logo,
-                subscribername
-            }
+            ...w,
+            unsubscribe,
+            logo,
+            subscribername
         });
     }
 });
@@ -100,18 +91,11 @@ router.get("/:route", auth.getUser, async (req, res) => {
         res.render("404");
     } else {
         if (req.query.partial) {
-            res.render("routes/" + req.params.route, await getRenderOptions(req.params.route, req.user !== undefined, req.query));
+            res.render("routes/" + req.params.route, { partial: true, doctype: "html", ...(await getRenderOptions(req.params.route, req.user !== undefined, req.query)) });
         } else {
-            res.render("template.html", {
-                locals: {
-                    route: req.params.route,
-                    ...(await getRenderOptions(req.params.route, req.user !== undefined, req.query)).locals
-                },
-                partials: {
-                    nav: "nav",
-                    footer: "footer",
-                    routeContent: "routes/" + req.params.route
-                }
+            res.render("routes/" + req.params.route, {
+                route: req.params.route,
+                ...(await getRenderOptions(req.params.route, req.user !== undefined, req.query))
             });
         }
     }
@@ -122,10 +106,10 @@ module.exports = router;
 async function getRenderOptions(route, loggedIn, query) {
     switch(route) {
         case "workshops":
-            return { locals: { loggedIn, workshops: await workshops.getWorkshops(loggedIn) } }
+            return { loggedIn, workshops: await workshops.getWorkshops(loggedIn) }
         case "newsletter":
-            return { locals: { loggedIn, subscriber: await newsletter.getSubscriber(query.token), subscribers: await newsletter.getSubscribers(), unsubscribed: query.unsubscribed } };
+            return { loggedIn, subscriber: await newsletter.getSubscriber(query.token), subscribers: await newsletter.getSubscribers(), unsubscribed: query.unsubscribed };
         default:
-            return { locals: { loggedIn } };
+            return { loggedIn };
     }
 }

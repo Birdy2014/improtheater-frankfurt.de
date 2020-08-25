@@ -1,0 +1,22 @@
+extends ../template.pug
+
+block routeContent
+    link(rel="stylesheet" href="/public/css/workshops.css")
+    h1 Workshops
+        if loggedIn
+            a(id="workshops-add" href="javascript:void(0)" onclick="createWorkshop()") HINZUFÜGEN
+
+    #workshop-list
+        each workshop in workshops
+            +workshop-item(workshop.id, workshop.title, workshop.img, workshop.visible, workshop.timeText, workshop.outdated)
+
+mixin workshop-item(id, title, img, visible, timeText, outdated)
+    .workshop-item(class=outdated ? "workshops-outdated" : "")
+        a(href="/workshop/" + id)
+            .workshops-image-container
+                img(src=img || "/public/img/workshop-default.png")
+            .workshop-text
+                h2 #{title}
+                    unless visible
+                        span Entwurf
+                h4 #{timeText}

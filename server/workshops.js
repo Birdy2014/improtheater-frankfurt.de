@@ -37,8 +37,13 @@ exports.getWorkshops = async (loggedIn) => {
     else
         workshops = await db.all(`SELECT * FROM workshop WHERE visible = 1 ORDER BY begin DESC`) || [];
     for (let workshop of workshops) {
-        workshop.timeText = timeDateFormat.formatRange(workshop.begin * 1000, workshop.end * 1000);
-        workshop.outdated = workshop.end < utils.getCurrentTimestamp();
+        try {
+            workshop.timeText = timeDateFormat.formatRange(workshop.begin * 1000, workshop.end * 1000);
+            workshop.outdated = workshop.end < utils.getCurrentTimestamp();
+        } catch (e) {
+            workshop.timeText = "Error: Invalid Time";
+            workshop.outdated = workshop.end < utils.getCurrentTimestamp();
+        }
     }
     return workshops;
 }
@@ -57,8 +62,13 @@ exports.getWorkshop = async (id, loggedIn) => {
         workshop = await db.get(`SELECT * FROM workshop WHERE id = '${id}' AND visible = 1`);
         if (!workshop) return undefined;
     }
-    workshop.dateText = dateFormat.formatRange(workshop.begin * 1000, workshop.end * 1000);
-    workshop.timeText = timeFormat.formatRange(workshop.begin * 1000, workshop.end * 1000);
+    try {
+        workshop.dateText = dateFormat.formatRange(workshop.begin * 1000, workshop.end * 1000);
+        workshop.timeText = timeFormat.formatRange(workshop.begin * 1000, workshop.end * 1000);
+    } catch (e) {
+        workshop.dateText = "Error: Invalid Time";
+        workshop.timeText = "Error: Invalid Time";
+    }
     return workshop;
 }
 

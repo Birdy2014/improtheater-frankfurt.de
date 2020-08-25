@@ -1,45 +1,38 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>Improtheater Frankfurt Newsletter Bestätigungsmail</title>
-        <style>
-            body {
-                text-align: center;
-            }
+doctype html
+html
+    head
+        title Improtheater Frankfurt Newsletter Bestätigungsmail
+        meta(charset="UTF-8")
 
-            #link-confirm {
-                background-color: red;
-                color: white;
-                padding: 14px 25px;
-                text-decoration: none;
-            }
-        </style>
-    </head>
-    <body>
-        <h2>Liebe/r ${name}</h2>
-        <p>
+    body
+        h2 Liebe/r #{name}
+        p.
             vielen Dank für die Bestellung unseres Newsletters, in dem Du zukünftig über unsere Workshops, unsere Jams und unsere
             Shows informiert wirst.
-        </p>
-        <p>
+        p.
             Bitte bestätige durch Klick auf diesen Link, dass Du unseren tollen Newsletter erhalten möchtest.
-        </p>
-        <a id="link-confirm" href="${link}">Newsletter-Anmeldung bestätigen</a>
-        <p>
+        a(id="link-confirm" href=link) Newsletter-Anmeldung bestätigen
+        p.
             Erst bestätigen, dann erhältst Du ihn auch. Selbstverständlich kann er jederzeit bequem wieder abbestellt werden. Am
             Ende eines jeden Newsletters befindet sich der Abmeldelink.
-        </p>
-        <p>
+        p.
             Um sicher zu stellen, dass Deine E-Mail-Adresse nicht von einem Fremden bei uns eingetragen wurde, haben wir dieses
             doppelte Bestätigungsverfahren (Double-Opt-In) eingerichtet.
-        </p>
-        <p>
+        p.
             Wurde Deine E-Mail-Adresse nicht von Dir eingegeben, ignoriere diese Mail.
-        </p>
-        <p>
+        p.
             So, und jetzt ab die Post!
             Herzliche Grüße
-        </p>
-        <h3>Dein Team von Improglycerin</h3>
-    </body>
-</html>
+        h3 Dein Team von Improglycerin
+
+    style.
+        body {
+            text-align: center;
+        }
+
+        #link-confirm {
+            background-color: red;
+            color: white;
+            padding: 14px 25px;
+            text-decoration: none;
+        }
