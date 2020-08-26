@@ -6,7 +6,7 @@ block routeContent
         if loggedIn
             a(id="workshops-add" href="javascript:void(0)" onclick="createWorkshop()") HINZUFÜGEN
 
-    #workshop-list
+    #workshop-list.clearfix
         each workshop in workshops
             +workshop-item(workshop.id, workshop.title, workshop.img, workshop.visible, workshop.timeText, workshop.outdated)
 
