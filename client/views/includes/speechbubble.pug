@@ -1,0 +1,39 @@
+mixin speechbubble(author, text)
+    .speechbubble
+        .speechbubble-body
+            p.speechbubble-text
+                | #{text}
+            .speechbubble-triangle
+        span.speechbubble-author
+            | #{author}
+
+style.
+    .speechbubble {
+        --speechbubble-bg-color: #fd8686;
+    }
+
+    .speechbubble-body {
+        position: relative;
+        background-color: var(--speechbubble-bg-color);
+    }
+
+    .speechbubble-text {
+        padding: 25px;
+        font-style: italic;
+        font-size: 20px;
+    }
+
+    .speechbubble-triangle {
+        position: absolute;
+        left: 40px;
+        bottom: -8px;
+        width: 16px;
+        height: 16px;
+        background-color: var(--speechbubble-bg-color);
+        transform: rotate(45deg);
+    }
+
+    .speechbubble-author {
+        font-size: 20px;
+        font-weight: bold;
+    }
