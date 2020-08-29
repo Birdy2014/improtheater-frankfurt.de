@@ -143,37 +143,11 @@ function toggleMenu(hideMenu) {
 // Initial page load scripts
 function loadPage(parent, page) {
     if (page.includes("/")) page = page.substring(0, page.indexOf("/"));
-    switch(page) {
-        case "start": {
-            let script = document.createElement("script");
-            script.src = "/public/js/start.js";
-            parent.appendChild(script);
-            break;
-        }
-        case "workshops": {
-            let script = document.createElement("script");
-            script.src = "/public/js/workshops.js";
-            parent.appendChild(script);
-            break;
-        }
-        case "workshop": {
-            let script = document.createElement("script");
-            script.src = "/public/js/workshop.js";
-            parent.appendChild(script);
-            break;
-        }
-        case "newsletter": {
-            let script = document.createElement("script");
-            script.src = "/public/js/newsletter.js";
-            parent.appendChild(script);
-            break;
-        }
-        case "uploads": {
-            let script = document.createElement("script");
-            script.src = "/public/js/uploads.js";
-            parent.appendChild(script);
-            break;
-        }
+    if (!document.getElementById("script-" + page)) {
+        let script = document.createElement("script");
+        script.id = "script-" + page;
+        script.src = "/public/js/" + page + ".js";
+        document.head.append(script);
     }
 }
 
