@@ -73,6 +73,7 @@ exports.send = async (req, res) => {
     let baseUrl = process.env.TEST ? "http://localhost:" + config.port : "https://improtheater-frankfurt.de";
     let logo = baseUrl + "/public/img/logo.jpg";
     let subscribers = await exports.getSubscribers();
+    let reply = /\S+@\S+\.\S+/.test(workshop.email) ? workshop.email : "hallo@improglycerin.de";
     for (let subscriber of subscribers) {
         try {
             let unsubscribe = baseUrl + "/api/newsletter/unsubscribe?token=" + subscriber.token;
@@ -81,6 +82,7 @@ exports.send = async (req, res) => {
             await exports.transporter.sendMail({
                 from: config.email.from,
                 to: subscriber.email,
+                replyTo: reply,
                 subject: workshop.title + ", am " + workshop.dateText,
                 html: html,
                 text: `Improglycerin lädt ein zu ${workshop.title} am ${workshop.dateText}.\n\n${workshop.content}\n\nWann? ${workshop.timeText}\nWo? ${workshop.location}\nBetrag ${workshop.price}\n\nImpressum: https://improglycerin.de/impressum\nDatenschutz: https://improglycerin.de/datenschutz\nKontakt: https://improglycerin.de/kontakt/\nAbmelden: ${unsubscribe}`
