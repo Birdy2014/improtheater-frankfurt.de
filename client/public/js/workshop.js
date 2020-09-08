@@ -25,13 +25,13 @@ async function publishWorkshop() {
     let button = container.getElementsByClassName("edit-publish")[0];
     if (button.innerHTML === "Veröffentlichen") {
         if (typeof editWorkshopItem !== "undefined")
-            editWorkshopItem({ id, visible });
+            editWorkshopItem({ id, visible: true });
         await axios.post("/api/workshops", { id, visible: 1 });
         button.innerHTML = "Unsichtbar machen";
         alert("Der Workshop ist jetzt sichtbar");
     } else {
         if (typeof editWorkshopItem !== "undefined")
-            editWorkshopItem({ id, visible });
+            editWorkshopItem({ id, visible: false });
         await axios.post("/api/workshops", { id, visible: 0 });
         button.innerHTML = "Veröffentlichen";
         alert("Der Workshop ist jetzt nicht mehr sichtbar");

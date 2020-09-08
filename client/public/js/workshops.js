@@ -14,7 +14,7 @@ function editWorkshopItem(workshop) {
     if (!list)
         return;
     const timeDateFormat = Intl.DateTimeFormat("de-DE", { weekday: "long", year: "numeric", month: "long", day: "numeric", hour: "numeric", minute: "numeric" });
-    let timeText = "Keine Zeit angegeben";
+    let timeText;
     if (workshop.begin && workshop.end) {
         if (typeof timeDateFormat.formatRange !== "undefined")
             timeText = timeDateFormat.formatRange(workshop.begin * 1000, workshop.end * 1000);
@@ -26,6 +26,7 @@ function editWorkshopItem(workshop) {
         if (workshop.img) item.querySelector("img").src = workshop.img || "/public/img/workshop-default.png";
         if (workshop.title) item.querySelector("h2").innerHTML = workshop.title + (workshop.visible ? "<span>Entwurf</span>" : "");
         if (timeText) item.querySelector("h4").innerHTML = timeText;
+        if (workshop.visible !== undefined) item.querySelector("span").innerText = workshop.visible ? "" : "Entwurf";
     } else {
         const template = document.getElementById("template-workshop-item");
         const fragment = template.content.cloneNode(true);
@@ -37,7 +38,7 @@ function editWorkshopItem(workshop) {
         item.querySelector("a").href = "/workshop/" + workshop.id;
         item.querySelector("img").src = workshop.img || "/public/img/workshop-default.png";
         item.querySelector("h2").innerHTML = workshop.title + (workshop.visible ? "<span>Entwurf</span>" : "");
-        item.querySelector("h4").innerHTML = timeText;
+        item.querySelector("h4").innerHTML = timeText || "Keine Zeit angegeben";
 
         list.prepend(item);
     }

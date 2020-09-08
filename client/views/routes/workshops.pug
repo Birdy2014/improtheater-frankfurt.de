@@ -20,6 +20,7 @@ mixin workshop-item(id, title, img, visible, timeText, outdated)
                 img(src=img || "/public/img/workshop-default.png")
             .workshop-text
                 h2 #{title}
-                    unless visible
-                        span Entwurf
+                    span
+                        unless visible
+                            | Entwurf
                 h4 #{timeText}
