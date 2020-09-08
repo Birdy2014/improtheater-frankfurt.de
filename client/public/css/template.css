@@ -124,6 +124,11 @@ nav #menu #main-menu .active {
     line-height: 1.5;
 }
 
+h1 {
+    font-size: 24px;
+    color: var(--nav-active-link-color);
+}
+
 .banner {
     width: 100%;
 }

@@ -25,7 +25,7 @@ block routeContent
                 Herzliche Grüße
                 Dein Team von Improglycerin
         else if loggedIn
-            h2 Am Newsletter angemeldete Personen
+            h1 Am Newsletter angemeldete Personen
             ol
                 each s in subscribers
                     li Name: #{s.name}, Email: #{s.email}
@@ -33,11 +33,13 @@ block routeContent
                     li Niemand ist am Newsletter angemeldet
         else
             #newsletter-subscribe
-                h2 Improglycerin Newsletter bestellen und immer gut informiert sein!
+                h1 NEWSLETTER
 
                 p.
-                    Ja, ich möchte den Newsletter bestellen und erhalte einmal wöchentlich die Einladung für Mittwochabend und monatlich die
-                    Einladung zur Samstagsjam sowie zur Show von Improglycerin. Der Newsletter kann jederzeit wieder abbestellt werden.
+                    Improglycerin Newsletter bestellen und immer gut informiert sein! 
+                p.
+                    Ja, ich möchte den Newsletter bestellen und erhalte einmal wöchentlich die Einladung für Mittwochabend und monatlich
+                    die Einladung zur Samstagsjam sowie zur Show von Improglycerin. Der Newsletter kann jederzeit wieder abbestellt werden. 
                 
                 form(id="newsletter-form")
                     input(type="email" class="input-newsletter-text" id="input-newsletter-email" placeholder="E-Mail-Adresse" required)
@@ -47,17 +49,17 @@ block routeContent
 
                     input(type="submit" class="input-newsletter-button" value="ANMELDEN")
             #newsletter-subscribe-success(style="display: none;")
-                h2 Vielen Dank für Deine Newsletter-Anmeldung
+                h1 Vielen Dank für Deine Newsletter-Anmeldung
 
                 p.
                     Du erhältst gleich eine E-Mail von uns. Bitte bestätige die Anmeldung durch einfaches Klicken des Bestätigungslinks in dieser E-Mail. Erst dann erhältst Du unseren Newsletter an Deine angegebene E-Mail-Adresse: #[span(id="text-email-address")]
             #newsletter-subscribe-failed(style="display: none;")
-                h2 Die Newsletter-Anmeldung war nicht erfolgreich
+                h1 Die Newsletter-Anmeldung war nicht erfolgreich
 
                 p.
                     Entweder bist du schon angemeldet oder du hast den Link in der Bestätigungsmail noch nicht angeklickt.
             #newsletter-subscribe-error(style="display: none;")
-                h2 Die Newsletter-Anmeldung war nicht erfolgreich
+                h1 Die Newsletter-Anmeldung war nicht erfolgreich
 
                 p.
                     Es ist ein unbekannter Fehler aufgetreten.

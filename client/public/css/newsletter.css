@@ -27,4 +27,5 @@
     background-color: var(--nav-active-link-color);
     border: none;
     padding: 13px 29px;
+    font-weight: bold;
 }
