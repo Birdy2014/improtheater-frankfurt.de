@@ -10,12 +10,6 @@
     }
 }
 
-@media screen and (max-width: 600px) {
-    #start-reviews {
-        height: 220px; /* Workaround */
-    }
-}
-
 #start-reviews {
     position: relative;
 }
@@ -25,8 +19,10 @@
     top: 0;
     opacity: 0;
     transition: all .5s;
+    display: none;
 }
 
 #start-reviews .start-review-visible {
     opacity: 1;
+    display: block;
 }
