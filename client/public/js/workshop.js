@@ -13,9 +13,9 @@ async function changeWorkshopValues() {
     let price = container.getElementsByClassName("edit-workshop-price")[0].innerHTML;
     let email = container.getElementsByClassName("edit-workshop-email")[0].innerHTML;
     let color = container.getElementsByClassName("input-workshop-color")[0].value;
+    if (typeof editWorkshopItem !== "undefined")
+        editWorkshopItem({ id, title, img, begin, end });
     await axios.post("/api/workshops", { id, title, content, img, begin, end, location, price, email, color });
-    await navigate(currentRoute, true);
-    await navigate("workshops", true, true, true);
     alert("Daten gespeichert");
 }
 
@@ -24,10 +24,14 @@ async function publishWorkshop() {
     let container = document.getElementById(currentRoute);
     let button = container.getElementsByClassName("edit-publish")[0];
     if (button.innerHTML === "Veröffentlichen") {
+        if (typeof editWorkshopItem !== "undefined")
+            editWorkshopItem({ id, visible });
         await axios.post("/api/workshops", { id, visible: 1 });
         button.innerHTML = "Unsichtbar machen";
         alert("Der Workshop ist jetzt sichtbar");
     } else {
+        if (typeof editWorkshopItem !== "undefined")
+            editWorkshopItem({ id, visible });
         await axios.post("/api/workshops", { id, visible: 0 });
         button.innerHTML = "Veröffentlichen";
         alert("Der Workshop ist jetzt nicht mehr sichtbar");

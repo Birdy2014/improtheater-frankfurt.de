@@ -9,9 +9,12 @@ block routeContent
     #workshop-list.clearfix
         each workshop in workshops
             +workshop-item(workshop.id, workshop.title, workshop.img, workshop.visible, workshop.timeText, workshop.outdated)
+        
+    template#template-workshop-item
+        +workshop-item(0, "", "", false, "", false)
 
 mixin workshop-item(id, title, img, visible, timeText, outdated)
-    .workshop-item(class=outdated ? "workshops-outdated" : "")
+    .workshop-item(class=outdated ? "workshops-outdated" : "", id="workshop-item-" + id)
         a(href="/workshop/" + id)
             .workshops-image-container
                 img(src=img || "/public/img/workshop-default.png")
