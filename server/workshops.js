@@ -33,9 +33,9 @@ exports.delete = async (req, res) => {
 exports.getWorkshops = async (loggedIn) => {
     let workshops;
     if (loggedIn)
-        workshops = await db.all(`SELECT * FROM workshop ORDER BY begin DESC`) || [];
+        workshops = await db.all(`SELECT * FROM workshop ORDER BY begin DESC LIMIT 6`) || [];
     else
-        workshops = await db.all(`SELECT * FROM workshop WHERE visible = 1 ORDER BY begin DESC`) || [];
+        workshops = await db.all(`SELECT * FROM workshop WHERE visible = 1 ORDER BY begin DESC LIMIT 6`) || [];
     for (let workshop of workshops) {
         try {
             workshop.timeText = timeDateFormat.formatRange(workshop.begin * 1000, workshop.end * 1000);
