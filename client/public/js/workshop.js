@@ -1,8 +1,10 @@
+let workshop_previewToggled = false;
+
 async function changeWorkshopValues() {
     let id = currentRoute.substring(currentRoute.indexOf("/") + 1);
     let container = document.getElementById(currentRoute);
     let title = container.getElementsByClassName("edit-title")[0].innerHTML;
-    let content = container.getElementsByClassName("edit-content")[0].innerHTML;
+    let content = container.getElementsByClassName("edit-content")[0].value;
     let img = container.getElementsByClassName("workshop-image")[0].src;
     let date = container.getElementsByClassName("input-workshop-date")[0].value;
     let beginTime = container.getElementsByClassName("input-workshop-time-begin")[0].value;
@@ -60,4 +62,25 @@ async function sendNewsletter() {
         console.error(JSON.stringify(e));
         alert("Fehler");
     }
+}
+
+function textareaAutoGrow(field) {
+    if (field.scrollHeight > field.clientHeight)
+        field.style.height = field.scrollHeight + "px";
+}
+
+function toggleWorkshopPreview() {
+    let container = document.getElementById(currentRoute);
+    let textarea = container.querySelector(".edit-content");
+    let preview = container.querySelector(".workshop-content-preview");
+    
+    if (workshop_previewToggled) {
+        textarea.style.display = "block";
+        preview.style.display = "none";
+    } else {
+        preview.innerHTML = marked(textarea.value);
+        textarea.style.display = "none";
+        preview.style.display = "block";
+    }
+    workshop_previewToggled = !workshop_previewToggled;
 }

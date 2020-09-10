@@ -9,6 +9,13 @@
     color: red;
 }
 
+.edit-content {
+    height: 400px;
+    width: 100%;
+    font-family: inherit;
+    font-size: inherit;
+}
+
 .workshop-image {
     position: relative;
 }
@@ -38,7 +45,7 @@
         width: 32%;
     }
 
-    .edit-content {
+    .workshop-content {
         width: calc(100% - 32% - 80px);
     }
 }
@@ -48,9 +55,20 @@
     .workshop-image {
         width: 100%;
     }
+
+    .workshop-content {
+        width: 100%;
+    }
 }
 
 [contenteditable] {
     border: 1px solid #707070;
+    padding: 5px;
+}
+
+textarea {
+    display: block;
+    resize: vertical;
+    border: 1px solid #b2b2b2;
     padding: 5px;
 }

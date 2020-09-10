@@ -36,10 +36,19 @@ block routeContent
                     input(type="color" value=color class="input-workshop-color")
                     | #{color}
 
-    div(class="edit-content" contenteditable=loggedIn) !{content}
+    if loggedIn
+        .workshop-content
+            p Die Bearbeitungsansicht unterstützt #[a(href="https://guides.github.com/features/mastering-markdown/") Markdown]
+            textarea.edit-content(onkeyup="textareaAutoGrow(this);" name="content-" + id) !{content}
+            //- The textarea name is important, because the browser will autocomplete content from other textareas without it
+            .workshop-content-preview
+    else
+        div.workshop-content!= marked(content)
 
     if loggedIn
         a(href="javascript:void(0)" onclick="changeWorkshopValues()" class="edit-button edit-save") Speichern
+        = " | "
+        a(href="javascript:void(0)" onclick="toggleWorkshopPreview()" class="edit-button edit-preview") Vorschau
         = " | "
         a(href="javascript:void(0)" onclick="publishWorkshop()" class="edit-button edit-publish") #{visible ? "Unsichtbar machen" : "Veröffentlichen"}
         = " | "

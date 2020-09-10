@@ -1,5 +1,6 @@
 const nodemailer = require("nodemailer");
 const pug = require("pug");
+const marked = require("marked");
 const db = require("./db");
 const utils = require("./utils");
 const logger = require("./logger");
@@ -78,7 +79,7 @@ exports.send = async (req, res) => {
         try {
             let unsubscribe = baseUrl + "/api/newsletter/unsubscribe?token=" + subscriber.token;
             let subscribername = subscriber.name;
-            let html = pug.renderFile(__dirname + "/../client/views/emails/newsletter.pug", { ...workshop, unsubscribe, logo, subscribername });
+            let html = pug.renderFile(__dirname + "/../client/views/emails/newsletter.pug", { ...workshop, unsubscribe, logo, subscribername, marked });
             await exports.transporter.sendMail({
                 from: config.email.from,
                 to: subscriber.email,

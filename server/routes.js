@@ -2,6 +2,7 @@ const express = require("express");
 const fs = require("fs");
 const path = require("path");
 const fileUpload = require("express-fileupload");
+const marked = require("marked");
 const auth = require("./auth");
 const workshops = require("./workshops");
 const newsletter = require("./newsletter");
@@ -37,6 +38,7 @@ router.delete("/api/upload", auth.getUser, upload.delete);
 router.get("/lib/nprogress.js", (req, res) => res.sendFile(path.join(__dirname, "/../node_modules/nprogress/nprogress.js")));
 router.get("/lib/nprogress.css", (req, res) => res.sendFile(path.join(__dirname, "/../node_modules/nprogress/nprogress.css")));
 router.get("/lib/axios.min.js", (req, res) => res.sendFile(path.join(__dirname, "/../node_modules/axios/dist/axios.min.js")));
+router.get("/lib/marked.min.js", (req, res) => res.sendFile(path.join(__dirname, "/../node_modules/marked/marked.min.js")));
 router.use("/public", express.static(path.join(__dirname, "/../client/public")));
 
 // Frontend
@@ -56,12 +58,13 @@ router.get("/workshop/:workshopID", auth.getUser, async (req, res) => {
         res.render("404");
     } else {
         if (req.query.partial) {
-            res.render("routes/workshop", { ...w, loggedIn: req.user !== undefined, partial: true, doctype: "html" });
+            res.render("routes/workshop", { ...w, loggedIn: req.user !== undefined, partial: true, marked, doctype: "html" });
         } else {
             res.render("routes/workshop", {
                 route: "workshop/" + req.params.workshopID,
                 ...w,
-                loggedIn: req.user !== undefined
+                loggedIn: req.user !== undefined,
+                marked
             });
         }
     }
@@ -80,7 +83,8 @@ router.get("/newsletter-preview/:workshopID", auth.getUser, async (req, res) => 
             ...w,
             unsubscribe,
             logo,
-            subscribername
+            subscribername,
+            marked
         });
     }
 });

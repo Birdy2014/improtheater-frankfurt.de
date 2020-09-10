@@ -65,7 +65,7 @@ html
                 img(src=img)
             #description-container
                 h4 #{title}
-                | !{content}
+                != marked(content)
             #properties-container
                 .property
                     h4 Wann?
