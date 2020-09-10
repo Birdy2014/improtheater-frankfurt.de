@@ -4,82 +4,88 @@ html
         title #{title}
         meta(charset="UTF-8")
         link(rel='stylesheet' href='https://fonts.googleapis.com/css?family=Roboto')
+        style.
+            #message-container {
+                text-align: center;
+                font-family: Roboto;
+                background-color: #{color};
+            }
+
+            #message-container div {
+                padding: 10px;
+            }
+
+            #header {
+                background-color: white;
+            }
+
+            #title-container {
+                color: white;
+            }
+
+            #title-container img {
+                max-width: 668px;
+            }
+
+            #description-container {
+                background-color: white;
+            }
+
+            #properties-container {
+                background-color: white;
+                margin-top: 10px;
+            }
+
+            #footer, #footer * {
+                color: white;
+            }
+
+            .property {
+                display: inline-block;
+                text-align: left;
+                vertical-align: top;
+            }
+
+            .property h4 {
+                display: inline;
+            }
+
+            @media screen and (max-width: 600px) {
+                .property {
+                    display: block;
+                }
+            }
 
     body
-        #header
-            img(src=logo)
-        #title-container
-            h1 #{title}
-            img(src=img)
-        #description-container
-            h4 #{title}
-            | !{content}
-        #properties-container
-            .property
-                h4 Wann?
-                br
-                | #{dateText}
-                br
-                | #{timeText}
-            .property
-                h4 Wo?
-                br
-                | #{location}
-            .property
-                h4 Beitrag
-                br
-                | #{price}
-        #footer
-            a(href="https://improglycerin.de/impressum") Impressum
-            = " | "
-            a(href="https://improglycerin.de/datenschutz") Datenschutz
-            = " | "
-            a(href="https://improglycerin.de/kontakt/") Kontakt
-            = " | "
-            a(href=unsubscribe) Abmelden
-
-    style.
-        body {
-            text-align: center;
-            font-family: Roboto;
-            background-color: #{color};
-        }
-
-        div {
-            padding: 10px;
-        }
-
-        #header {
-            background-color: white;
-        }
-
-        #title-container {
-            color: white;
-        }
-
-        #title-container img {
-            max-width: 668px;
-        }
-
-        #description-container {
-            background-color: white;
-        }
-
-        #properties-container {
-            background-color: white;
-            margin-top: 10px;
-        }
-
-        #footer, #footer * {
-            color: white;
-        }
-
-        .property {
-            display: inline-block;
-            text-align: left;
-            vertical-align: top;
-        }
-
-        .property h4 {
-            display: inline;
-        }
+        #message-container
+            #header
+                img(src=logo)
+            #title-container
+                h1 #{title}
+                img(src=img)
+            #description-container
+                h4 #{title}
+                | !{content}
+            #properties-container
+                .property
+                    h4 Wann?
+                    br
+                    | #{dateText}
+                    br
+                    | #{timeText}
+                .property
+                    h4 Wo?
+                    br
+                    | #{location}
+                .property
+                    h4 Beitrag
+                    br
+                    | #{price}
+            #footer
+                a(href="https://improglycerin.de/impressum") Impressum
+                = " | "
+                a(href="https://improglycerin.de/datenschutz") Datenschutz
+                = " | "
+                a(href="https://improglycerin.de/kontakt/") Kontakt
+                = " | "
+                a(href=unsubscribe) Abmelden
