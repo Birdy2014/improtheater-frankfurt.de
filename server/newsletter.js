@@ -71,7 +71,7 @@ exports.send = async (req, res) => {
     res.sendStatus(200);
     // Send newsletter
     let baseUrl = process.env.TEST ? "http://localhost:" + config.port : "https://improtheater-frankfurt.de";
-    let logo = baseUrl + "/public/img/logo.jpg";
+    let logo = baseUrl + "/public/img/Improtheater-Frankfurt-Logo.jpg";
     let subscribers = await exports.getSubscribers();
     let reply = /\S+@\S+\.\S+/.test(workshop.email) ? workshop.email : "hallo@improglycerin.de";
     for (let subscriber of subscribers) {
