@@ -83,7 +83,9 @@ function workshop_init() {
     const id = currentRoute.substring(currentRoute.indexOf("/") + 1);
     const container = document.getElementById("workshop/" + id);
     workshops[id] = {
-        texts: {},
+        texts: {
+            id
+        },
         buttons: {
             published: container.querySelector(".edit-publish").innerHTML !== "Veröffentlichen",
             previewToggled: false,
