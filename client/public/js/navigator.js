@@ -87,7 +87,7 @@ async function navigate(to, reload, skipPushState, preload) {
             return;
         }
         targetContainer.innerHTML = website.data;
-        loadPage(targetContainer, route);
+        setTimeout(() => loadPage(targetContainer, route), 100);
     }
     if (preload) return;
     // set link anctive
@@ -147,7 +147,17 @@ function loadPage(parent, page) {
         let script = document.createElement("script");
         script.id = "script-" + page;
         script.src = "/public/js/" + page + ".js";
+        script.onload = () => initRoute(page);
         document.head.append(script);
+    } else {
+        initRoute(page);
+    }
+}
+
+function initRoute(route) {
+    let initFunc = window[route + "_init"];
+    if (initFunc !== undefined) {
+        initFunc();
     }
 }
 

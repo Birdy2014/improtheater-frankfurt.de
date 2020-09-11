@@ -1,23 +1,11 @@
-let workshop_previewToggled = false;
+const workshops = {};
 
 async function changeWorkshopValues() {
     let id = currentRoute.substring(currentRoute.indexOf("/") + 1);
-    let container = document.getElementById(currentRoute);
-    let title = container.getElementsByClassName("edit-title")[0].innerHTML;
-    let content = container.getElementsByClassName("edit-content")[0].value;
-    let img = container.getElementsByClassName("workshop-image")[0].src;
-    let date = container.getElementsByClassName("input-workshop-date")[0].value;
-    let beginTime = container.getElementsByClassName("input-workshop-time-begin")[0].value;
-    let endTime = container.getElementsByClassName("input-workshop-time-end")[0].value;
-    let begin = Date.parse(date + "T" + beginTime) / 1000;
-    let end = Date.parse(date + "T" + endTime) / 1000;
-    let location = container.getElementsByClassName("edit-workshop-location")[0].innerHTML;
-    let price = container.getElementsByClassName("edit-workshop-price")[0].innerHTML;
-    let email = container.getElementsByClassName("edit-workshop-email")[0].innerHTML;
-    let color = container.getElementsByClassName("input-workshop-color")[0].value;
+    workshop_updateValues(id);
     if (typeof editWorkshopItem !== "undefined")
-        editWorkshopItem({ id, title, img, begin, end });
-    await axios.post("/api/workshops", { id, title, content, img, begin, end, location, price, email, color });
+        editWorkshopItem(workshops[id].texts);
+    await axios.post("/api/workshops", workshops[id].texts);
     alert("Daten gespeichert");
 }
 
@@ -25,16 +13,14 @@ async function publishWorkshop() {
     let id = currentRoute.substring(currentRoute.indexOf("/") + 1);
     let container = document.getElementById(currentRoute);
     let button = container.getElementsByClassName("edit-publish")[0];
-    if (button.innerHTML === "Veröffentlichen") {
-        if (typeof editWorkshopItem !== "undefined")
-            editWorkshopItem({ id, visible: true });
-        await axios.post("/api/workshops", { id, visible: 1 });
+    workshops[id].buttons.published = !workshops[id].buttons.published;
+    if (typeof editWorkshopItem !== "undefined")
+        editWorkshopItem({ id, visible: workshops[id].buttons.published });
+    await axios.post("/api/workshops", { id, visible: workshops[id].buttons.published ? 1 : 0 });
+    if (workshops[id].buttons.published) {
         button.innerHTML = "Unsichtbar machen";
         alert("Der Workshop ist jetzt sichtbar");
     } else {
-        if (typeof editWorkshopItem !== "undefined")
-            editWorkshopItem({ id, visible: false });
-        await axios.post("/api/workshops", { id, visible: 0 });
         button.innerHTML = "Veröffentlichen";
         alert("Der Workshop ist jetzt nicht mehr sichtbar");
     }
@@ -56,7 +42,14 @@ function editWorkshopImage() {
 async function sendNewsletter() {
     try {
         let id = currentRoute.substring(currentRoute.indexOf("/") + 1);
+        let container = document.getElementById("workshop/" + id);
+        if (workshop_changed(id)) {
+            alert("Es gibt ungespeicherte Änderungen. Der Newsletter wurde nicht versendet.");
+            return;
+        }
         await axios.post("/api/newsletter/send", { workshop: id });
+        workshops[id].buttons.newsletterSent = true;
+        container.querySelectorAll(".edit-newsletter").forEach(value => value.style.display = "none");
         alert("Newsletter gesendet");
     } catch (e) {
         console.error(JSON.stringify(e));
@@ -70,11 +63,12 @@ function textareaAutoGrow(field) {
 }
 
 function toggleWorkshopPreview() {
+    let id = currentRoute.substring(currentRoute.indexOf("/") + 1);
     let container = document.getElementById(currentRoute);
     let textarea = container.querySelector(".edit-content");
     let preview = container.querySelector(".workshop-content-preview");
     
-    if (workshop_previewToggled) {
+    if (workshops[id].buttons.previewToggled) {
         textarea.style.display = "block";
         preview.style.display = "none";
     } else {
@@ -82,5 +76,59 @@ function toggleWorkshopPreview() {
         textarea.style.display = "none";
         preview.style.display = "block";
     }
-    workshop_previewToggled = !workshop_previewToggled;
+    workshops[id].buttons.previewToggled = !workshops[id].buttons.previewToggled;
+}
+
+function workshop_init() {
+    const id = currentRoute.substring(currentRoute.indexOf("/") + 1);
+    const container = document.getElementById("workshop/" + id);
+    workshops[id] = {
+        texts: {},
+        buttons: {
+            published: container.querySelector(".edit-publish").innerHTML !== "Veröffentlichen",
+            previewToggled: false,
+            newsletterSent: container.querySelector(".edit-newsletter") === undefined
+        }
+    }
+    workshop_updateValues(id);
+    const edit_content = container.querySelector(".edit-content");
+    edit_content.addEventListener("keyup", (event) => {
+        textareaAutoGrow(event.target);
+    });
+}
+
+function workshop_updateValues(id) {
+    if (!id) id = currentRoute.substring(currentRoute.indexOf("/") + 1);
+    const container = document.getElementById("workshop/" + id);
+    workshops[id].texts.title = container.querySelector(".edit-title").innerHTML;
+    workshops[id].texts.content = container.querySelector(".edit-content").value;
+    workshops[id].texts.img = container.querySelector(".workshop-image").src;
+    let date = container.querySelector(".input-workshop-date").value;
+    let beginTime = container.querySelector(".input-workshop-time-begin").value;
+    let endTime = container.querySelector(".input-workshop-time-end").value;
+    workshops[id].texts.begin = Date.parse(date + "T" + beginTime) / 1000;
+    workshops[id].texts.end = Date.parse(date + "T" + endTime) / 1000;
+    workshops[id].texts.location = container.querySelector(".edit-workshop-location").innerHTML;
+    workshops[id].texts.price = container.querySelector(".edit-workshop-price").innerHTML;
+    workshops[id].texts.email = container.querySelector(".edit-workshop-email").innerHTML;
+    workshops[id].texts.color = container.querySelector(".input-workshop-color").value;
+}
+
+function workshop_changed(id) {
+    if (!id) id = currentRoute.substring(currentRoute.indexOf("/") + 1);
+    const container = document.getElementById("workshop/" + id);
+    let date = container.querySelector(".input-workshop-date").value;
+    let beginTime = container.querySelector(".input-workshop-time-begin").value;
+    let endTime = container.querySelector(".input-workshop-time-end").value;
+    return (
+        workshops[id].texts.title !== container.querySelector(".edit-title").innerHTML ||
+        workshops[id].texts.content !== container.querySelector(".edit-content").value ||
+        workshops[id].texts.img !== container.querySelector(".workshop-image").src ||
+        workshops[id].texts.begin !== Date.parse(date + "T" + beginTime) / 1000 ||
+        workshops[id].texts.end !== Date.parse(date + "T" + endTime) / 1000 ||
+        workshops[id].texts.location !== container.querySelector(".edit-workshop-location").innerHTML ||
+        workshops[id].texts.price !== container.querySelector(".edit-workshop-price").innerHTML ||
+        workshops[id].texts.email !== container.querySelector(".edit-workshop-email").innerHTML ||
+        workshops[id].texts.color !== container.querySelector(".input-workshop-color").value
+    )
 }
