@@ -79,7 +79,7 @@ exports.send = async (req, res) => {
         try {
             let unsubscribe = baseUrl + "/api/newsletter/unsubscribe?token=" + subscriber.token;
             let subscribername = subscriber.name;
-            let textColor = parseInt(w.color.substr(1, 2), 16) + parseInt(w.color.substr(3, 2), 16) + parseInt(w.color.substr(5, 2), 16) > 382 ? "#000000" : "#ffffff";
+            let textColor = parseInt(workshop.color.substr(1, 2), 16) + parseInt(workshop.color.substr(3, 2), 16) + parseInt(workshop.color.substr(5, 2), 16) > 382 ? "#000000" : "#ffffff";
             let html = pug.renderFile(__dirname + "/../client/views/emails/newsletter.pug", { ...workshop, unsubscribe, logo, subscribername, marked, textColor });
             await exports.transporter.sendMail({
                 from: config.email.from,
