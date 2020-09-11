@@ -79,12 +79,14 @@ router.get("/newsletter-preview/:workshopID", auth.getUser, async (req, res) => 
         let logo = baseUrl + "/public/img/Improtheater-Frankfurt-Logo.jpg";
         let unsubscribe = "#";
         let subscribername = req.user.username;
+        let textColor = parseInt(w.color.substr(1, 2), 16) + parseInt(w.color.substr(3, 2), 16) + parseInt(w.color.substr(5, 2), 16) > 382 ? "#000000" : "#ffffff";
         res.render("emails/newsletter", {
             ...w,
             unsubscribe,
             logo,
             subscribername,
-            marked
+            marked,
+            textColor
         });
     }
 });
