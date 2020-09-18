@@ -129,6 +129,17 @@ h1 {
     color: var(--nav-active-link-color);
 }
 
+h2 {
+    font-size: 22px;
+    color: black;
+    font-weight: bold;
+}
+
+a {
+    color: var(--nav-active-link-color);
+    text-decoration: none;
+}
+
 .banner {
     width: 100%;
 }
@@ -156,4 +167,8 @@ footer a {
   content: "";
   clear: both;
   display: table;
+}
+
+.linebreak {
+    white-space: pre-wrap;
 }
