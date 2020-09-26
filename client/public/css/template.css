@@ -14,10 +14,12 @@ body {
 }
 
 .icon-nav-bars {
-    width: 35px;
-    height: 5px;
-    background-color: black;
-    margin: 6px 0;
+    width: 25px;
+    height: 2px;
+    background-color: #54393b;
+    margin: 4px 0;
+    border: 1px solid #54393b;
+    border-radius: 5px;
 }
 
 nav {
