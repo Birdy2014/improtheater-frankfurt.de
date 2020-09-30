@@ -1,7 +1,11 @@
 const db = require("./db");
 
 exports.getEditableWebsite = async name => {
-    return (await db.get("SELECT content FROM editableWebsite WHERE name = ?", name)).content || "";
+    try {
+        return (await db.get("SELECT content FROM editableWebsite WHERE name = ?", name)).content;
+    } catch(e) {
+        return "";
+    }
 }
 
 exports.setEditableWebsite = async (name, content) => {
