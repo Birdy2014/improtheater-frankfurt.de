@@ -44,7 +44,15 @@ exports.init = async () => {
             data BLOB NOT NULL,
             user_id TEXT NOT NULL,
             time INTEGER NOT NULL,
-            PRIMARY KEY(name, data)
+            PRIMARY KEY(name)
+        )
+    `);
+
+    exports.run(`
+        CREATE TABLE IF NOT EXISTS editableWebsite (
+            name TEXT NOT NULL,
+            content TEXT,
+            PRIMARY KEY(name)
         )
     `);
 }

@@ -1,0 +1,7 @@
+#hygienekonzept-src textarea {
+    width: 100%;
+    display: block;
+    resize: vertical;
+    border: 1px solid #b2b2b2;
+    padding: 5px;
+}

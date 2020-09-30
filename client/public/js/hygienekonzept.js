@@ -1,0 +1,37 @@
+let hygienekonzept_previewToggled = false;
+
+async function hygienekonzept_save() {
+    try {
+        let textarea = window["hygienekonzept-src"].querySelector("textarea");
+        await axios.post("/api/hygienekonzept", { content: textarea.value });
+        alert("Hygienekonzept gespeichert");
+    } catch(e) {
+        console.log(JSON.stringify(e));
+        alert("Fehler");
+    }
+}
+
+function hygienekonzept_togglePreview() {
+    if (hygienekonzept_previewToggled) {
+        window["hygienekonzept-src"].style.display = "block";
+        window["hygienekonzept-preview"].style.display = "none";
+    } else {
+        window["hygienekonzept-preview"].innerHTML = marked(window["hygienekonzept-src"].querySelector("textarea").value);
+        window["hygienekonzept-src"].style.display = "none";
+        window["hygienekonzept-preview"].style.display = "block";
+    }
+    hygienekonzept_previewToggled = !hygienekonzept_previewToggled;
+}
+
+function textareaAutoGrow(field) {
+    if (field.scrollHeight > field.clientHeight)
+        field.style.height = field.scrollHeight + "px";
+}
+
+function hygienekonzept_init() {
+    let textarea = window["hygienekonzept-src"].querySelector("textarea");
+    textareaAutoGrow(textarea);
+    textarea.addEventListener("keyup", (event) => {
+        textareaAutoGrow(event.target);
+    });
+}

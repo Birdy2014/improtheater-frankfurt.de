@@ -7,6 +7,7 @@ const auth = require("./auth");
 const workshops = require("./workshops");
 const newsletter = require("./newsletter");
 const upload = require("./upload");
+const editableWebsite = require("./editableWebsite");
 const config = require("../config");
 
 const router = express.Router();
@@ -33,6 +34,7 @@ router.post("/api/newsletter/send", auth.getUser, newsletter.send);
 router.get("/api/upload", upload.get);
 router.post("/api/upload", auth.getUser, fileUpload({ limits: { fileSize: 10 * 1024 * 1024 } }), upload.post);
 router.delete("/api/upload", auth.getUser, upload.delete);
+router.post("/api/hygienekonzept", auth.getUser, editableWebsite.setEditableWebsiteMiddleware("hygienekonzept"));
 
 // Libraries
 router.get("/lib/nprogress.js", (req, res) => res.sendFile(path.join(__dirname, "/../node_modules/nprogress/nprogress.js")));
@@ -115,6 +117,8 @@ async function getRenderOptions(route, loggedIn, query) {
             return { loggedIn, workshops: await workshops.getWorkshops(loggedIn) }
         case "newsletter":
             return { loggedIn, subscriber: await newsletter.getSubscriber(query.token), subscribers: await newsletter.getSubscribers(), unsubscribed: query.unsubscribed };
+        case "hygienekonzept":
+            return { loggedIn, marked, content: await editableWebsite.getEditableWebsite("hygienekonzept") };
         default:
             return { loggedIn };
     }

@@ -1,0 +1,15 @@
+extends ../template.pug
+
+block routeContent
+    h1 HYGIENEKONZEPT
+
+    if loggedIn
+        link(rel="stylesheet" href="/public/css/hygienekonzept.css")
+        #hygienekonzept-src
+            textarea(name="hygienekonzept") !{content}
+        #hygienekonzept-preview
+        a(href="javascript:void(0)" onclick="hygienekonzept_save()") Speichern
+        = " | "
+        a(href="javascript:void(0)" onclick="hygienekonzept_togglePreview()") Vorschau
+    else
+        != marked(content)
