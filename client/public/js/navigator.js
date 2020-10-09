@@ -10,7 +10,7 @@ window.onload = () => {
     // load scripts
     let route = url.pathname.substring(1);
     let container = document.getElementById(route);
-    loadPage(container, route);
+    loadPage(container, route, url.search);
 }
 
 document.onclick = e => {
@@ -87,7 +87,7 @@ async function navigate(to, reload, skipPushState, preload) {
             return;
         }
         targetContainer.innerHTML = website.data;
-        setTimeout(() => loadPage(targetContainer, route), 100);
+        setTimeout(() => loadPage(targetContainer, route, to.includes("?") ? to.substring(to.indexOf("?")) : ""), 100);
     }
     if (preload) return;
     // set link anctive
@@ -107,6 +107,8 @@ async function navigate(to, reload, skipPushState, preload) {
     targetContainer.style = "display: block";
     // collapse menu
     toggleMenu(true);
+    // Scroll to top
+    window.scrollTo(0, 0);
     // Push state
     if (!skipPushState) {
         history.pushState({}, "", "/" + route);
@@ -141,24 +143,21 @@ function toggleMenu(hideMenu) {
 }
 
 // Initial page load scripts
-function loadPage(parent, page) {
+function loadPage(parent, page, query) {
     if (page.includes("/")) page = page.substring(0, page.indexOf("/"));
     if (!document.getElementById("script-" + page)) {
         let script = document.createElement("script");
         script.id = "script-" + page;
         script.src = "/public/js/" + page + ".js";
-        script.onload = () => initRoute(page);
+        script.onload = () => initRoute(page, query);
         document.head.append(script);
     } else {
-        initRoute(page);
+        initRoute(page, query);
     }
 }
 
-function initRoute(route) {
-    let initFunc = window[route + "_init"];
-    if (initFunc !== undefined) {
-        initFunc();
-    }
+function initRoute(route, query) {
+    window[route + "_init"]?.(query);
 }
 
 async function logout() {

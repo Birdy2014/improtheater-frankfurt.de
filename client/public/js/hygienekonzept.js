@@ -28,10 +28,17 @@ function textareaAutoGrow(field) {
         field.style.height = field.scrollHeight + "px";
 }
 
-function hygienekonzept_init() {
-    let textarea = window["hygienekonzept-src"].querySelector("textarea");
-    textareaAutoGrow(textarea);
-    textarea.addEventListener("keyup", (event) => {
-        textareaAutoGrow(event.target);
-    });
+function hygienekonzept_init(query) {
+    let textarea = window["hygienekonzept-src"]?.querySelector("textarea");
+    if (textarea) {
+        textareaAutoGrow(textarea);
+        textarea.addEventListener("keyup", (event) => {
+            textareaAutoGrow(event.target);
+        });
+    } else {
+        let searchParams = new URLSearchParams(query);
+        if (searchParams.has("scroll") && document.querySelector("#" + searchParams.get("scroll"))) {
+            window.scrollTo(0, document.querySelector("#" + searchParams.get("scroll")).offsetTop);
+        }
+    }
 }
