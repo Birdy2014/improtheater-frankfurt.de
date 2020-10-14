@@ -102,7 +102,7 @@ function workshop_init() {
 function workshop_updateValues(id) {
     if (!id) id = currentRoute.substring(currentRoute.indexOf("/") + 1);
     const container = document.getElementById("workshop/" + id);
-    workshops[id].texts.title = container.querySelector(".edit-title").innerHTML;
+    workshops[id].texts.title = container.querySelector(".edit-title").value;
     workshops[id].texts.content = container.querySelector(".edit-content").value;
     workshops[id].texts.img = container.querySelector(".workshop-image").src;
     let date = container.querySelector(".input-workshop-date").value;
@@ -110,9 +110,9 @@ function workshop_updateValues(id) {
     let endTime = container.querySelector(".input-workshop-time-end").value;
     workshops[id].texts.begin = Date.parse(date + "T" + beginTime) / 1000;
     workshops[id].texts.end = Date.parse(date + "T" + endTime) / 1000;
-    workshops[id].texts.location = container.querySelector(".edit-workshop-location").innerHTML;
-    workshops[id].texts.price = container.querySelector(".edit-workshop-price").innerHTML;
-    workshops[id].texts.email = container.querySelector(".edit-workshop-email").innerHTML;
+    workshops[id].texts.location = container.querySelector(".edit-workshop-location").value;
+    workshops[id].texts.price = container.querySelector(".edit-workshop-price").value;
+    workshops[id].texts.email = container.querySelector(".edit-workshop-email").value;
     workshops[id].texts.color = container.querySelector(".input-workshop-color").value;
 }
 

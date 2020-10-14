@@ -3,7 +3,10 @@ extends ../template.pug
 block routeContent
     link(rel="stylesheet" href="/public/css/workshop.css")
     h1
-        span(class="edit-title" contenteditable=loggedIn) #{title}
+        if loggedIn
+            input.workshop-input.edit-title(type="text" autocomplete="off" value=title)
+        else
+            span!= marked(title)
 
     div
         img(class="workshop-image" src=img onclick=loggedIn ? "editWorkshopImage()" : "")
@@ -23,13 +26,22 @@ block routeContent
                     | #{timeText}
             dt Wo?
             dd
-                span(class="edit-workshop-location" contenteditable=loggedIn) #{location}
+                if loggedIn
+                    input.workshop-input.edit-workshop-location(type="text" autocomplete="off" value=location)
+                else
+                    span!= marked.parseInline(location)
             dt Kosten?
             dd
-                span(class="edit-workshop-price" contenteditable=loggedIn) #{price}
+                if loggedIn
+                    input.workshop-input.edit-workshop-price(type="text" autocomplete="off" value=price)
+                else
+                    span!= marked.parseInline(price)
             dt Anmelden?
             dd
-                span(class="edit-workshop-email" contenteditable=loggedIn) #{email}
+                if loggedIn
+                    input.workshop-input.edit-workshop-email(type="text" autocomplete="off" value=email)
+                else
+                    span!= marked.parseInline(email)
             if loggedIn
                 dt Farbe?
                 dd

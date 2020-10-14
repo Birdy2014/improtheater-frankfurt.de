@@ -9,6 +9,13 @@
     color: red;
 }
 
+.edit-title {
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: inherit;
+    color: inherit;
+}
+
 .edit-content {
     height: 400px;
     width: 100%;
@@ -61,8 +68,9 @@
     }
 }
 
-[contenteditable] {
-    border: 1px solid #707070;
+.workshop-input {
+    width: calc(100% - 10px);
+    border: 1px solid #b2b2b2;
     padding: 5px;
 }
 
