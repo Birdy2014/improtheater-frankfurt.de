@@ -75,12 +75,13 @@ exports.send = async (req, res) => {
     let logo = baseUrl + "/public/img/Improtheater-Frankfurt-Logo.jpg";
     let subscribers = await exports.getSubscribers();
     let reply = /\S+@\S+\.\S+/.test(workshop.email) ? workshop.email : "hallo@improglycerin.de";
+    let website = baseUrl + "/workshop/" + workshop.id;
     for (let subscriber of subscribers) {
         try {
             let unsubscribe = baseUrl + "/api/newsletter/unsubscribe?token=" + subscriber.token;
             let subscribername = subscriber.name;
             let textColor = parseInt(workshop.color.substr(1, 2), 16) + parseInt(workshop.color.substr(3, 2), 16) + parseInt(workshop.color.substr(5, 2), 16) > 382 ? "#000000" : "#ffffff";
-            let html = pug.renderFile(__dirname + "/../client/views/emails/newsletter.pug", { ...workshop, unsubscribe, logo, subscribername, marked, textColor });
+            let html = pug.renderFile(__dirname + "/../client/views/emails/newsletter.pug", { ...workshop, unsubscribe, logo, subscribername, marked, textColor, website });
             await exports.transporter.sendMail({
                 from: config.email.from,
                 to: subscriber.email,

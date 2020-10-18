@@ -47,6 +47,10 @@ async function sendNewsletter() {
             alert("Es gibt ungespeicherte Änderungen. Der Newsletter wurde nicht versendet.");
             return;
         }
+        if (workshops[id].texts.color === "#ffffff") {
+            alert("Nein Hauke, weiß ist verboten. Der Newsletter wurde nicht versendet. Schöne Grüße Elisa");
+            return;
+        }
         await axios.post("/api/newsletter/send", { workshop: id });
         workshops[id].buttons.newsletterSent = true;
         container.querySelectorAll(".edit-newsletter").forEach(value => value.style.display = "none");

@@ -80,7 +80,7 @@ exports.editWorkshop = async (workshop) => {
         end: timestamp,
         title: "Name des Workshops",
         content: "Eine Beschreibung des Workshops",
-        color: "#ffffff",
+        color: "#e65656",
         visible: 0,
         location: "Ort",
         price: "Preis",

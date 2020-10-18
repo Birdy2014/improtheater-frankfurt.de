@@ -3,45 +3,73 @@ html
     head
         title #{title}
         meta(charset="UTF-8")
-        link(rel='stylesheet' href='https://fonts.googleapis.com/css?family=Roboto')
+        meta(name="viewport" content="width=device-width, initial-scale=1.0")
+        link(href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet")
         style.
+            .centered-container {
+                max-width: 1100px;
+                width: 100%;
+                display: inline-block;
+                box-sizing: border-box;
+            }
+
             #message-container {
                 text-align: center;
                 font-family: Roboto;
-                background-color: #{color};
+                background-color: white;
+            }
+
+            #message-container h1 {
+                margin-top: 0;
             }
 
             #message-container div {
                 padding: 10px;
             }
 
+            #message-container a {
+                text-decoration: none;
+                color: inherit;
+            }
+
             #header {
                 background-color: white;
             }
 
+            #header img {
+                display: block;
+            }
+
             #title-container {
                 color: #{textColor};
+                background-color: #{color};
             }
 
             #title-container img {
-                max-width: 668px;
+                width: 100%;
             }
 
             #description-container {
-                background-color: white;
+                text-align: left;
             }
 
             #properties-container {
-                background-color: white;
+                width: 100%;
+                background-color: #{color};
+                color: #{textColor};
                 margin-top: 10px;
+                text-align: left;
+                box-sizing: border-box;
             }
 
-            #footer, #footer * {
-                color: #{textColor};
+            #properties-container > h4 {
+                margin: 10px;
             }
 
             .property {
-                display: inline-block;
+                float: left;
+                display: block;
+                width: calc(100% / 4 - 20px);
                 text-align: left;
                 vertical-align: top;
             }
@@ -52,37 +80,56 @@ html
 
             @media screen and (max-width: 600px) {
                 .property {
-                    display: block;
+                    float: none;
+                    width: 100%;
                 }
+            }
+
+            #footer, #footer * {
+                color: black;
+            }
+
+            .clearfix::after {
+                content: "";
+                clear: both;
+                display: table;
             }
 
     body
         #message-container
-            #header
+            #header.centered-container
                 img(src=logo)
             #title-container
-                h1 #{title}
-                img(src=img)
-            #description-container
-                h4 #{title}
-                != marked(content)
-            #properties-container
-                .property
-                    h4 Wann?
-                    br
-                    | #{dateText}
-                    br
-                    | #{timeText}
-                .property
-                    h4 Wo?
-                    br
-                    | #{location}
-                .property
-                    h4 Beitrag
-                    br
-                    | #{price}
+                .centered-container
+                    h1
+                        a(href=website)!= marked.parseInline(title)
+                    img(src=img)
+            .centered-container
+                #description-container
+                    != marked(content)
+                #properties-container.clearfix
+                    h4
+                        a(href=website)!= marked.parseInline(title)
+                    .property
+                        h4 Wann?
+                        br
+                        | #{dateText}
+                        br
+                        | #{timeText}
+                    .property
+                        h4 Wo?
+                        br
+                        != marked.parseInline(location)
+                    .property
+                        h4 Beitrag
+                        br
+                        != marked.parseInline(price)
+                    .property
+                        h4 Anmelden
+                        br
+                        != marked.parseInline(email)
             #footer
-                a(href="https://improglycerin.de/impressum") Impressum
+                a(href="https://improtheater-frankfurt.de/impressum") Impressum
                 = " | "
                 a(href="https://improglycerin.de/datenschutz") Datenschutz
                 = " | "
