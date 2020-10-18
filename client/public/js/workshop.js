@@ -123,14 +123,14 @@ function workshop_changed(id) {
     let beginTime = container.querySelector(".input-workshop-time-begin").value;
     let endTime = container.querySelector(".input-workshop-time-end").value;
     return (
-        workshops[id].texts.title !== container.querySelector(".edit-title").innerHTML ||
+        workshops[id].texts.title !== container.querySelector(".edit-title").value ||
         workshops[id].texts.content !== container.querySelector(".edit-content").value ||
         workshops[id].texts.img !== container.querySelector(".workshop-image").src ||
         workshops[id].texts.begin !== Date.parse(date + "T" + beginTime) / 1000 ||
         workshops[id].texts.end !== Date.parse(date + "T" + endTime) / 1000 ||
-        workshops[id].texts.location !== container.querySelector(".edit-workshop-location").innerHTML ||
-        workshops[id].texts.price !== container.querySelector(".edit-workshop-price").innerHTML ||
-        workshops[id].texts.email !== container.querySelector(".edit-workshop-email").innerHTML ||
+        workshops[id].texts.location !== container.querySelector(".edit-workshop-location").value ||
+        workshops[id].texts.price !== container.querySelector(".edit-workshop-price").value ||
+        workshops[id].texts.email !== container.querySelector(".edit-workshop-email").value ||
         workshops[id].texts.color !== container.querySelector(".input-workshop-color").value
     )
 }
