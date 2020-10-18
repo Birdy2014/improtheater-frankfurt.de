@@ -26,7 +26,7 @@ function editWorkshopItem(workshop) {
         if (workshop.img) item.querySelector("img").src = workshop.img || "/public/img/workshop-default.png";
         if (workshop.title) item.querySelector("h2").innerHTML = workshop.title + (workshop.visible ? "<span>Entwurf</span>" : "");
         if (timeText) item.querySelector("h4").innerHTML = timeText;
-        if (workshop.visible !== undefined) item.querySelector("span").innerText = workshop.visible ? "" : "Entwurf";
+        if (workshop.visible !== undefined) item.querySelector(".workshops-draft-text").innerText = workshop.visible ? "" : "Entwurf";
     } else {
         const template = document.getElementById("template-workshop-item");
         const fragment = template.content.cloneNode(true);
@@ -37,7 +37,8 @@ function editWorkshopItem(workshop) {
         item.id = "workshop-item-" + workshop.id;
         item.querySelector("a").href = "/workshop/" + workshop.id;
         item.querySelector("img").src = workshop.img || "/public/img/workshop-default.png";
-        item.querySelector("h2").innerHTML = workshop.title + (workshop.visible ? "<span>Entwurf</span>" : "");
+        item.querySelector("h2").innerHTML = workshop.title;
+        item.querySelector(".workshops-draft-text").innerText = workshop.visible ? "Entwurf" : "";
         item.querySelector("h4").innerHTML = timeText || "Keine Zeit angegeben";
 
         list.prepend(item);

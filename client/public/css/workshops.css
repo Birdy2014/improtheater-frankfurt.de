@@ -78,9 +78,19 @@
     color: black;
 }
 
-.workshop-text span {
-    float: right;
-    color: #808080;
+.workshops-draft-text {
+    position: absolute;
+    top: 15%;
+    left: 5%;
+    font-size: 24vw;
+    color: #00000070;
+    background: #00000000;
+}
+
+@media only screen and (min-width: 1000px) {
+    .workshops-draft-text {
+        font-size: 130px;
+    }
 }
 
 .workshops-outdated img {

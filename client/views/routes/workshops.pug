@@ -18,9 +18,9 @@ mixin workshop-item(id, title, img, visible, timeText, outdated)
         a(href="/workshop/" + id)
             .workshops-image-container
                 img(src=img || "/public/img/workshop-default.png")
+                .workshops-draft-text
+                    unless visible
+                        | Entwurf
             .workshop-text
                 h2 #{title}
-                    span
-                        unless visible
-                            | Entwurf
                 h4 #{timeText}
