@@ -11,7 +11,8 @@
 .input-newsletter-text {
     border: none;
     border-bottom: 2px solid black;
-    width: 30%;
+    max-width: 350px;
+    width: 100%;
     font-size: 20px;
     margin-bottom: 12px;
     padding-bottom: 3px;
@@ -27,5 +28,6 @@
     background-color: var(--nav-active-link-color);
     border: none;
     padding: 13px 29px;
+    margin-top: 12px;
     font-weight: bold;
 }
