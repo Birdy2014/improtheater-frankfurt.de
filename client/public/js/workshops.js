@@ -5,7 +5,7 @@ async function createWorkshop() {
         await navigate("workshops", true, true, true);
         await navigate(`workshop/${id}`, true);
     } catch(e) {
-        alert("Fehler: " + e);
+        showError(e);
     }
 }
 

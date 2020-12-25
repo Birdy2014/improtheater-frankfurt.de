@@ -6,7 +6,7 @@ async function changeWorkshopValues() {
     if (typeof editWorkshopItem !== "undefined")
         editWorkshopItem(workshops[id].texts);
     await axios.post("/api/workshops", workshops[id].texts);
-    alert("Daten gespeichert");
+    alert(ALERT_SUCCESS, "Daten gespeichert");
 }
 
 async function publishWorkshop() {
@@ -19,10 +19,10 @@ async function publishWorkshop() {
     await axios.post("/api/workshops", { id, visible: workshops[id].buttons.published ? 1 : 0 });
     if (workshops[id].buttons.published) {
         button.innerHTML = "Unsichtbar machen";
-        alert("Der Workshop ist jetzt sichtbar");
+        alert(ALERT_SUCCESS, "Der Workshop ist jetzt sichtbar");
     } else {
         button.innerHTML = "Veröffentlichen";
-        alert("Der Workshop ist jetzt nicht mehr sichtbar");
+        alert(ALERT_SUCCESS, "Der Workshop ist jetzt nicht mehr sichtbar");
     }
 }
 
@@ -44,20 +44,19 @@ async function sendNewsletter() {
         let id = currentRoute.substring(currentRoute.indexOf("/") + 1);
         let container = document.getElementById("workshop/" + id);
         if (workshop_changed(id)) {
-            alert("Es gibt ungespeicherte Änderungen. Der Newsletter wurde nicht versendet.");
+            alert(ALERT_ERROR, "Es gibt ungespeicherte Änderungen. Der Newsletter wurde nicht versendet.");
             return;
         }
         if (workshops[id].texts.color === "#ffffff") {
-            alert("Nein Hauke, weiß ist verboten. Der Newsletter wurde nicht versendet. Schöne Grüße Elisa");
+            alert(ALERT_ERROR, "Nein Hauke, weiß ist verboten. Der Newsletter wurde nicht versendet. Schöne Grüße Elisa");
             return;
         }
         await axios.post("/api/newsletter/send", { workshop: id });
         workshops[id].buttons.newsletterSent = true;
         container.querySelectorAll(".edit-newsletter").forEach(value => value.style.display = "none");
-        alert("Newsletter gesendet");
+        alert(ALERT_SUCCESS, "Newsletter gesendet");
     } catch (e) {
-        console.error(JSON.stringify(e));
-        alert("Fehler");
+        showError(e);
     }
 }
 

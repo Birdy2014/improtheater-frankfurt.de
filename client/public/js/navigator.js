@@ -164,3 +164,60 @@ async function logout() {
     await axios.post("/api/logout");
     window.location.reload(false); 
 }
+
+// Alerts
+const ALERT_LOADING = "#alert-loading";
+const ALERT_SUCCESS = "#alert-success";
+const ALERT_ERROR = "#alert-error";
+let alert_timeout;
+
+function alert(type, message, autohide) {
+    let element = document.querySelector(type);
+    if (!element)
+        throw new Error("Invalid alert type");
+    alertClose();
+    element.querySelector(".alert-text").innerHTML = message;
+    element.style.top = "10px";
+    if (autohide || (autohide === undefined && type !== ALERT_LOADING))
+        alert_timeout = setTimeout(alertClose, 3000);
+}
+
+function alertGetOpen() {
+    for (let type of [ALERT_LOADING, ALERT_SUCCESS, ALERT_ERROR]) {
+        let element = document.querySelector(type);
+        if (element.style.top)
+            return element;
+    }
+}
+
+function alertClose() {
+    clearTimeout(alert_timeout);
+    let element = alertGetOpen();
+    if (!element)
+        return;
+    element.style.removeProperty("top");
+    let textElement = element.querySelector(".alert-text");
+    textElement.innerHTML = "";
+    textElement.style.removeProperty("white-space");
+}
+
+function alertToggleFull() {
+    let element = alertGetOpen();
+    let textElement = element.querySelector(".alert-text");
+    if (textElement.style["white-space"])
+        textElement.style.removeProperty("white-space");
+    else
+        textElement.style["white-space"] = "normal";
+}
+
+function showError(error) {
+    let errorText = "Ein Fehler ist aufgetreten: ";
+    if (error.response) {
+        errorText += "Status: " + JSON.stringify(error.response.status, null, 4) + "; ";
+        errorText += "Data: " + JSON.stringify(error.response.data, null, 4) + "; ";
+        errorText += "Response Headers: " + JSON.stringify(error.response.headers, null, 4);
+    } else {
+        errorText += error.message;
+    }
+    alert(ALERT_ERROR, errorText, false);
+}

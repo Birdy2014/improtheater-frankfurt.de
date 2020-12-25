@@ -6,7 +6,7 @@ block routeContent
         if loggedIn
             input.workshop-input.edit-title(type="text" autocomplete="off" value=title)
         else
-            span!= marked(title)
+            span!= marked.parseInline(title)
 
     div
         img(class="workshop-image" src=img onclick=loggedIn ? "editWorkshopImage()" : "")
