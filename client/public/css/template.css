@@ -48,6 +48,7 @@ nav #menu {
 nav #logo {
     float: left;
     height: 100%;
+    max-height: 80px;
 }
 
 nav #menu #main-menu a {
