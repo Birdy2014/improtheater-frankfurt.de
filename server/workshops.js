@@ -1,5 +1,6 @@
 const db = require("./db");
 const utils = require("./utils");
+const logger = require("./logger");
 
 const timeDateFormat = Intl.DateTimeFormat("de-DE", { weekday: "long", year: "numeric", month: "long", day: "numeric", hour: "numeric", minute: "numeric" });
 const dateFormat = Intl.DateTimeFormat("de-DE", { weekday: "long", year: "numeric", month: "long", day: "numeric" });
@@ -53,11 +54,17 @@ exports.getWorkshop = async (id, loggedIn) => {
     if (loggedIn) {
         workshop = await db.get(`SELECT * FROM workshop WHERE id = '${id}'`);
         if (!workshop) return undefined;
-        let beginISO = isoFormat.format(workshop.begin * 1000);
-        let endISO = isoFormat.format(workshop.end * 1000);
-        workshop.dateISO = beginISO.substr(0, 10);
-        workshop.beginTimeISO = beginISO.substr(11, 5);
-        workshop.endTimeISO = endISO.substr(11, 5);
+        try {
+            let beginISO = isoFormat.format(workshop.begin * 1000);
+            let endISO = isoFormat.format(workshop.end * 1000);
+            workshop.dateISO = beginISO.substr(0, 10);
+            workshop.beginTimeISO = beginISO.substr(11, 5);
+            workshop.endTimeISO = endISO.substr(11, 5);
+        } catch (e) {
+            logger.warn(JSON.stringify(e));
+            workshop.beginTimeISO = "";
+            workshop.endTimeISO = "";
+        }
     } else {
         workshop = await db.get(`SELECT * FROM workshop WHERE id = '${id}' AND visible = 1`);
         if (!workshop) return undefined;
