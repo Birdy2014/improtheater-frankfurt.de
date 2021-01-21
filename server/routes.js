@@ -128,7 +128,13 @@ async function getRenderOptions(route, loggedIn, query) {
         case "workshops":
             return { loggedIn, workshops: await workshops.getWorkshops(loggedIn) }
         case "newsletter":
-            return { loggedIn, subscriber: await newsletter.getSubscriber(query.token), subscribers: await newsletter.getSubscribers(), unsubscribed: query.unsubscribed };
+            let subscribers = [];
+            if (loggedIn) {
+                subscribers = await newsletter.getSubscribers();
+                for (let subscriber of subscribers)
+                    subscriber.last_viewed_newsletter_name = (await workshops.getWorkshop(subscriber.last_viewed_newsletter, true))?.title;
+            }
+            return { loggedIn, subscriber: await newsletter.getSubscriber(query.token), subscribers, unsubscribed: query.unsubscribed };
         case "hygienekonzept":
             return { loggedIn, marked, content: await editableWebsite.getEditableWebsite("hygienekonzept") };
         default:

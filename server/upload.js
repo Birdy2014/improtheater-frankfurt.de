@@ -9,7 +9,18 @@ exports.get = async (req, res) => {
         return;
     }
 
+    if (req.query.token) {
+        db.get("SELECT id FROM workshop WHERE img LIKE ? ORDER BY begin DESC", "%" + req.query.name).then(workshop => {
+            console.log(workshop);
+            if (workshop.id)
+                db.run("UPDATE subscriber SET last_viewed_newsletter = ? WHERE token = ? AND last_viewed_newsletter < ?", workshop.id, req.query.token, workshop.id);
+        });
+    }
+
     let file = await db.get("SELECT data, mimetype FROM upload WHERE name = ?", req.query.name);
+
+    if (!file)
+        return res.sendStatus(404);
 
     res.status(200);
     res.header(`Content-Type: ${file.mimetype}`);

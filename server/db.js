@@ -21,6 +21,7 @@ exports.init = async () => {
             price TEXT NOT NULL,
             email TEXT NOT NULL,
             newsletterSent INTEGER DEFAULT 0,
+            facebookEventCreated INTEGER DEFAULT 0,
             PRIMARY KEY (id)
         )
     `);
@@ -32,6 +33,7 @@ exports.init = async () => {
             token TEXT,
             timestamp INTEGER NOT NULL,
             confirmed INTEGER DEFAULT 0,
+            last_viewed_newsletter INTEGER DEFAULT 0,
             PRIMARY KEY(email)
         )
     `);

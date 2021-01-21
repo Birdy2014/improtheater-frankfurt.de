@@ -10,6 +10,7 @@ const workshops = require("./workshops");
 exports.transporter = nodemailer.createTransport(config.email);
 
 exports.subscribe = async (req, res) => {
+    // TODO: check email address, length limit name, sanitize name and email
     try {
         if (!req.body.name || !req.body.email) {
             res.status(400);
@@ -81,7 +82,24 @@ exports.send = async (req, res) => {
             let unsubscribe = baseUrl + "/api/newsletter/unsubscribe?token=" + subscriber.token;
             let subscribername = subscriber.name;
             let textColor = parseInt(workshop.color.substr(1, 2), 16) + parseInt(workshop.color.substr(3, 2), 16) + parseInt(workshop.color.substr(5, 2), 16) > 382 ? "#000000" : "#ffffff";
-            let html = pug.renderFile(__dirname + "/../client/views/emails/newsletter.pug", { ...workshop, unsubscribe, logo, subscribername, marked, textColor, website });
+            let html = pug.renderFile(__dirname + "/../client/views/emails/newsletter.pug", {
+                title: workshop.title,
+                img: workshop.img + "&token=" + subscriber.token,
+                dateText: workshop.dateText,
+                timeText: workshop.timeText,
+                location: workshop.location,
+                price: workshop.price,
+                email: workshop.email,
+                content: workshop.content,
+                color: workshop.color,
+                textColor: workshop.textColor,
+                unsubscribe,
+                logo,
+                subscribername,
+                marked,
+                textColor,
+                website: website + "?token=" + subscriber.token,
+            });
             await exports.transporter.sendMail({
                 from: config.email.from,
                 to: subscriber.email,
@@ -92,6 +110,7 @@ exports.send = async (req, res) => {
             });
             await utils.sleep(1000);
         } catch (e) {
+            console.log(e);
             logger.error(`Failed to send Newsletter of workshop ${workshop.id} to ${subscriber.email}:\n ${JSON.stringify(e)}`);
         }
     }
