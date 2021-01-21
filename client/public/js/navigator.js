@@ -37,12 +37,15 @@ window.onpopstate = e => {
 window.onscroll = e => {
     const navbar = document.getElementsByTagName("nav")[0];
     const wrapper = document.getElementById("wrapper");
+    const footer = document.querySelector("footer");
     if (window.pageYOffset > 0) {
         navbar.classList.add("nav-sticky");
         wrapper.style.marginTop = "80px";
+        footer.style.marginBottom = "25px";
     } else {
         navbar.classList.remove("nav-sticky");
         wrapper.style.removeProperty("margin-top");
+        footer.style.removeProperty("margin-bottom");
     }
 }
 
@@ -162,7 +165,7 @@ function initRoute(route, query) {
 
 async function logout() {
     await axios.post("/api/logout");
-    window.location.reload(false); 
+    window.location.reload(); 
 }
 
 // Alerts
