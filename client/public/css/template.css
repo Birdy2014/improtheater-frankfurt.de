@@ -1,6 +1,6 @@
 :root {
-    --nav-background-color: white;
-    --nav-active-link-color: #cf0d2b;
+    --color-bg: white;
+    --color-fg: #cf0d2b;
     --site-width: 1100px;
 }
 
@@ -42,7 +42,7 @@ nav #menu {
     margin: 0 auto;
     height: 100%;
     max-width: var(--site-width);
-    background-color: var(--nav-background-color);
+    background-color: var(--color-bg);
 }
 
 nav #logo {
@@ -51,10 +51,9 @@ nav #logo {
     max-height: 80px;
 }
 
-nav #menu #main-menu a {
+nav #main-menu a {
     display: inline-block;
     text-align: center;
-    padding: 20px 7.5px;
     color: black;
     text-decoration: none;
     font-weight: 700;
@@ -62,12 +61,44 @@ nav #menu #main-menu a {
     transition: color .3s ease-out;
 }
 
-nav #menu #main-menu a:hover {
-    color: var(--nav-active-link-color);
+nav #main-menu > a, nav #main-menu > div a {
+    padding: 20px 7.5px;
 }
 
-nav #menu #main-menu .active {
-    color: var(--nav-active-link-color);
+nav #main-menu a:hover {
+    color: var(--color-fg);
+}
+
+nav #main-menu .active {
+    color: var(--color-fg);
+}
+
+.dropdown {
+    display: inline-block;
+    position: relative;
+}
+
+.dropdown > div {
+    display: none;
+    position: absolute;
+    right: 0;
+    z-index: 1;
+    background-color: var(--color-bg);
+    box-shadow: 0px 8px 16px 0px #00000020;
+    text-align: right;
+}
+
+.dropdown > div > a {
+    padding: 10px 7.5px;
+}
+
+.arrow-down {
+    border: solid black;
+    border-width: 0 3px 3px 0;
+    display: inline-block;
+    padding: 3px;
+    margin: 0px 0px 3px 5px;
+    transform: rotate(45deg);
 }
 
 @media screen and (min-width: 600px) {
@@ -84,7 +115,7 @@ nav #menu #main-menu .active {
 @media screen and (max-width: 600px) {
     nav #main-menu {
         display: none;
-        background-color: var(--nav-background-color);
+        background-color: var(--color-bg);
         padding-top: 80px;
     }
 
@@ -112,6 +143,15 @@ nav #menu #main-menu .active {
         color: black;
         font-weight: bold;
     }
+
+    .dropdown {
+        display: block;
+    }
+
+    .dropdown div {
+        position: relative;
+        width: 100%;
+    }
 }
 
 #wrapper {
@@ -129,7 +169,7 @@ nav #menu #main-menu .active {
 
 h1 {
     font-size: 24px;
-    color: var(--nav-active-link-color);
+    color: var(--color-fg);
 }
 
 h2 {
@@ -139,7 +179,7 @@ h2 {
 }
 
 a {
-    color: var(--nav-active-link-color);
+    color: var(--color-fg);
     text-decoration: none;
 }
 
@@ -153,7 +193,7 @@ footer {
     font-size: 14px;
     margin-top: 60px;
     padding-top: 30px;
-    border-top: 2px solid var(--nav-active-link-color);
+    border-top: 2px solid var(--color-fg);
     margin-bottom: 10px;
 }
 

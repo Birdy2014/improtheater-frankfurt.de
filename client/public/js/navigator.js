@@ -16,17 +16,33 @@ window.onload = () => {
 document.onclick = e => {
     e = e || window.event;
     let element = e.target || e.srcElement;
-
     if (element.tagName !== "A") element = element.closest("a");
+
+    let dropdownContent;
+    if (element && element.parentElement.classList.contains("dropdown"))
+        dropdownContent = element.parentElement.querySelector("div");
+    for (let dropdown of document.querySelectorAll(".dropdown")) {
+        let content = dropdown.querySelector("div");
+        if (content !== dropdownContent)
+            content.style.removeProperty("display");
+    }
+    if (dropdownContent) {
+        if (dropdownContent.style.display === "block")
+            dropdownContent.style.removeProperty("display");
+        else
+            dropdownContent.style.display = "block";
+        return false;
+    }
+
     if (element) {
         let host = window.location.href.substring(0, window.location.href.indexOf("/", window.location.protocol.length + 2));
-        if (!element.href || !element.href.startsWith(host) || element.classList.contains("forceReload")) {
-            if (element.href.endsWith("/api/login")) document.cookie='route=' + window.location.pathname;
-            return true;
+        if (element.href && element.href.startsWith(host) && !element.classList.contains("forceReload")) {
+            navigate(element.href.substring(host.length));
+            return false;
         }
 
-        navigate(element.href.substring(host.length));
-        return false;
+        if (element.href.endsWith("/api/login")) document.cookie='route=' + window.location.pathname;
+        return true;
     }
 }
 

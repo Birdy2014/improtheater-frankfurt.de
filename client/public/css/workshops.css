@@ -54,7 +54,7 @@
 }
 
 .workshop-text {
-    color: var(--nav-active-link-color);
+    color: var(--color-fg);
     padding: 20px;
 }
 

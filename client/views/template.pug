@@ -25,12 +25,17 @@ else
                     a(href="/start" class="navlink")
                         img(id="logo" src="/public/img/Improtheater-Frankfurt-Logo.png")
                     #main-menu
-                        a(href="/start" class="navlink") START
-                        a(href="/newsletter" class="navlink") NEWSLETTER
-                        a(href="/workshops" class="navlink") WORKSHOPS
-                        a(href="https://improglycerin.de" class="navlink" target="_blank") IMPROGLYCERIN
+                        a.navlink(href="/start") START
+                        a.navlink(href="/newsletter") NEWSLETTER
+                        a.navlink(href="/workshops") WORKSHOPS
+                        a.navlink(href="https://improglycerin.de" target="_blank") IMPROGLYCERIN
                         if loggedIn
-                            a(href="/uploads" class="navlink") UPLOADS
+                            .dropdown
+                                a(href="javascript:void(0)")
+                                    | ADMIN
+                                    i.arrow-down
+                                div
+                                    a.navlink(href="/uploads") UPLOADS
                     a(href="javascript:void(0);" class="icon" onclick="toggleMenu()")
                         .icon-nav-bars
                         .icon-nav-bars

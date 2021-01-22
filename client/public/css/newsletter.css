@@ -19,13 +19,13 @@
 }
 
 .input-newsletter-text:focus {
-    border-bottom-color: var(--nav-active-link-color);
+    border-bottom-color: var(--color-fg);
     transition: border .4s;
 }
 
 .input-newsletter-button {
     color: white;
-    background-color: var(--nav-active-link-color);
+    background-color: var(--color-fg);
     border: none;
     padding: 13px 29px;
     margin-top: 12px;
