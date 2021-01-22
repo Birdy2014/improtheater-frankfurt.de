@@ -24,19 +24,6 @@ block routeContent
             p.
                 Herzliche Grüße
                 Dein Team von Improglycerin
-        else if loggedIn
-            h1 Am Newsletter angemeldete Personen
-            ol
-                each s in subscribers
-                    li
-                        | Name: #{s.name}, Email: #{s.email}, Zuletzt geöffnet:
-                        |
-                        if (s.last_viewed_newsletter_name)
-                            a(href='/workshop/' + s.last_viewed_newsletter)= s.last_viewed_newsletter_name
-                        else
-                            | Kein newsletter
-                else
-                    li Niemand ist am Newsletter angemeldet
         else
             #newsletter-subscribe
                 h1 NEWSLETTER

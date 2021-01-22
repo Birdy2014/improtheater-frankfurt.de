@@ -3,7 +3,7 @@ const crypto = require("crypto");
 const config = require("../config.json");
 const utils = require("./utils");
 
-let loggedInRoutes = [ "/api/login", "/uploads" ];
+let loggedInRoutes = [ "/api/login", "/uploads", "/subscribers" ];
 
 exports.users = {};
 
