@@ -27,10 +27,20 @@
     position: relative;
 }
 
+.workshop-image {
+    width: calc(100% - 32% - 80px);
+}
+
+.workshop-content {
+    width: calc(100% - 32% - 80px);
+}
+
 .workshop-properties {
     background-color: #f6f6f6;
     padding: 10px;
     margin: 0;
+    float: right;
+    width: 32%;
 }
 
 .workshop-properties dd {
@@ -41,24 +51,7 @@
     font-weight: bold;
 }
 
-
-@media screen and (min-width: 600px) {
-    .workshop-image {
-        width: calc(100% - 32% - 80px);
-    }
-
-    .workshop-properties {
-        float: right;
-        width: 32%;
-    }
-
-    .workshop-content {
-        width: calc(100% - 32% - 80px);
-    }
-}
-
-
-@media screen and (max-width: 600px) {
+@media screen and (max-width: 750px) {
     .workshop-image {
         width: 100%;
     }

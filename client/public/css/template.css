@@ -51,6 +51,15 @@ nav #logo {
     max-height: 80px;
 }
 
+nav #main-menu {
+    float: right;
+    display: block;
+}
+
+nav #menu .icon {
+    display: none;
+}
+
 nav #main-menu a {
     display: inline-block;
     text-align: center;
@@ -101,19 +110,9 @@ nav #main-menu .active {
     transform: rotate(45deg);
 }
 
-@media screen and (min-width: 600px) {
-    nav #menu #main-menu {
-        float: right;
-        display: block;
-    }
-
-    nav #menu .icon {
-        display: none;
-    }
-}
-
-@media screen and (max-width: 600px) {
+@media screen and (max-width: 750px) {
     nav #main-menu {
+        float: none;
         display: none;
         background-color: var(--color-bg);
         padding-top: 80px;

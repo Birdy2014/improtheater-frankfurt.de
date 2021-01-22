@@ -12,18 +12,7 @@
     margin: 10px;
     float: left;
     border: 1px solid #ebeaea;
-}
-
-@media only screen and (min-width: 1000px) {
-    .workshop-item {
-        width: 47%;
-    }
-}
-
-@media only screen and (max-width: 1000px) {
-    .workshop-item {
-        width: calc(100% - 20px);
-    }
+    width: 47%;
 }
 
 .workshop-item a {
@@ -78,17 +67,21 @@
     position: absolute;
     top: 15%;
     left: 5%;
-    font-size: 24vw;
+    font-size: 130px;
     color: #00000070;
     background: #00000000;
 }
 
-@media only screen and (min-width: 1000px) {
-    .workshops-draft-text {
-        font-size: 130px;
-    }
-}
-
 .workshops-outdated img {
     filter: grayscale(100%);
+}
+
+@media only screen and (max-width: 1000px) {
+    .workshop-item {
+        width: calc(100% - 20px);
+    }
+
+    .workshops-draft-text {
+        font-size: 24vw;
+    }
 }
