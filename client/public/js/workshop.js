@@ -68,16 +68,37 @@ function textareaAutoGrow(field) {
 function toggleWorkshopPreview() {
     let id = currentRoute.substring(currentRoute.indexOf("/") + 1);
     let container = document.getElementById(currentRoute);
-    let textarea = container.querySelector(".edit-content");
-    let preview = container.querySelector(".workshop-content-preview");
+    let content_textarea = container.querySelector(".edit-content");
+    let content_preview = container.querySelector(".workshop-content-preview");
+    let location_input = container.querySelector(".edit-workshop-location");
+    let location_preview = container.querySelector(".workshop-location-preview");
+    let price_input = container.querySelector(".edit-workshop-price");
+    let price_preview = container.querySelector(".workshop-price-preview");
+    let email_input = container.querySelector(".edit-workshop-email");
+    let email_preview = container.querySelector(".workshop-email-preview");
     
     if (workshops[id].buttons.previewToggled) {
-        textarea.style.display = "block";
-        preview.style.display = "none";
+        content_textarea.style.display = "block";
+        content_preview.style.display = "none";
+        location_input.style.display = "block";
+        location_preview.style.display = "none";
+        price_input.style.display = "block";
+        price_preview.style.display = "none";
+        email_input.style.display = "block";
+        email_preview.style.display = "none";
     } else {
-        preview.innerHTML = marked(textarea.value);
-        textarea.style.display = "none";
-        preview.style.display = "block";
+        content_preview.innerHTML = marked(content_textarea.value);
+        content_textarea.style.display = "none";
+        content_preview.style.display = "block";
+        location_preview.innerHTML = marked.parseInline(location_input.value);
+        location_input.style.display = "none";
+        location_preview.style.display = "block";
+        price_preview.innerHTML = marked.parseInline(price_input.value);
+        price_input.style.display = "none";
+        price_preview.style.display = "block";
+        email_preview.innerHTML = marked.parseInline(email_input.value);
+        email_input.style.display = "none";
+        email_preview.style.display = "block";
     }
     workshops[id].buttons.previewToggled = !workshops[id].buttons.previewToggled;
 }
@@ -100,6 +121,7 @@ function workshop_init() {
     edit_content.addEventListener("keyup", (event) => {
         textareaAutoGrow(event.target);
     });
+    textareaAutoGrow(edit_content);
 }
 
 function workshop_updateValues(id) {

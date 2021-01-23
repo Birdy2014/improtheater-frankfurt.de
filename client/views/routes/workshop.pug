@@ -28,18 +28,21 @@ block routeContent
             dd
                 if loggedIn
                     input.workshop-input.edit-workshop-location(type="text" autocomplete="off" value=location)
+                    .workshop-location-preview
                 else
                     span!= marked.parseInline(location)
             dt Kosten?
             dd
                 if loggedIn
                     input.workshop-input.edit-workshop-price(type="text" autocomplete="off" value=price)
+                    .workshop-price-preview
                 else
                     span!= marked.parseInline(price)
             dt Anmelden?
             dd
                 if loggedIn
                     input.workshop-input.edit-workshop-email(type="text" autocomplete="off" value=email)
+                    .workshop-email-preview
                 else
                     span!= marked.parseInline(email)
             if loggedIn
