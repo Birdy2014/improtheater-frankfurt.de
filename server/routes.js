@@ -82,6 +82,24 @@ router.get("/workshop/:workshopID", auth.getUser, async (req, res) => {
     }
 });
 
+router.get("/workshops/:page", auth.getUser, async (req, res) => {
+    let page = parseInt(req.params.page);
+    let w = await workshops.getWorkshops(req.user !== undefined, page);
+    if (!w || w.length === 0) {
+        res.status(404);
+        res.render("404");
+    } else {
+        res.render("routes/workshops", {
+            route: req.params.route,
+            doctype: "html",
+            partial: req.query.partial,
+            workshops: w,
+            loggedIn: req.user !== undefined,
+            page
+        });
+    }
+});
+
 router.get("/newsletter-preview/:workshopID", auth.getUser, async (req, res) => {
     let w = await workshops.getWorkshop(req.params.workshopID, true);
     if (!req.user || !w) {
@@ -126,7 +144,7 @@ module.exports = router;
 async function getRenderOptions(route, loggedIn, query) {
     switch(route) {
         case "workshops":
-            return { loggedIn, workshops: await workshops.getWorkshops(loggedIn) }
+            return { loggedIn, workshops: await workshops.getWorkshops(loggedIn), page: 0 };
         case "newsletter":
             return { loggedIn, subscriber: await newsletter.getSubscriber(query.token), unsubscribed: query.unsubscribed };
         case "subscribers":

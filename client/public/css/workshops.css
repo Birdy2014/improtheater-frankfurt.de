@@ -85,3 +85,14 @@
         font-size: 24vw;
     }
 }
+
+.workshops-navigation {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    float: right;
+}
+
+.workshops-navigation > * {
+    margin-left: 10px;
+}

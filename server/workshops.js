@@ -31,12 +31,16 @@ exports.delete = async (req, res) => {
     res.json({ status: 200 });
 }
 
-exports.getWorkshops = async (loggedIn) => {
+exports.getWorkshops = async (loggedIn, page) => {
+    const perPage = 6;
+    page = parseInt(page);
+    if (!page)
+        page = 0;
     let workshops;
     if (loggedIn)
-        workshops = await db.all(`SELECT * FROM workshop ORDER BY begin DESC LIMIT 6`) || [];
+        workshops = await db.all(`SELECT * FROM workshop ORDER BY begin DESC LIMIT ?, ?`, perPage * page, perPage) || [];
     else
-        workshops = await db.all(`SELECT * FROM workshop WHERE visible = 1 ORDER BY begin DESC LIMIT 6`) || [];
+        workshops = await db.all(`SELECT * FROM workshop WHERE visible = 1 ORDER BY begin DESC LIMIT ?, ?`, perPage * page, perPage) || [];
     for (let workshop of workshops) {
         try {
             workshop.timeText = timeDateFormat.formatRange(workshop.begin * 1000, workshop.end * 1000);

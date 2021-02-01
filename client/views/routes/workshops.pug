@@ -5,6 +5,10 @@ block routeContent
     h1 WORKSHOPS
         if loggedIn
             a(id="workshops-add" href="javascript:void(0)" onclick="createWorkshop()") HINZUFÜGEN
+            .workshops-navigation
+                if page > 0
+                    a(href="/workshops/" + (page - 1)) Vorwärts
+                a(href="/workshops/" + (page + 1)) Zurück
 
     #workshop-list.clearfix
         each workshop in workshops
