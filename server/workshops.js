@@ -95,7 +95,7 @@ exports.editWorkshop = async (workshop) => {
         visible: 0,
         location: "Ort",
         price: "Preis",
-        email: "hallo@improglycerin.de",
+        email: "[YesTicket](https://www.yesticket.org/events/de/improglycerin/)",
         img: "/public/img/workshop-default.png"
     };
     const id = workshop.id || defaultWorkshop.id;
