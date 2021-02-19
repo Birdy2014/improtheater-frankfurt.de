@@ -41,6 +41,7 @@ router.post("/api/newsletter/subscribe", newsletter.subscribe);
 router.get("/api/newsletter/confirm", newsletter.confirm);
 router.get("/api/newsletter/unsubscribe", newsletter.unsubscribe);
 router.post("/api/newsletter/send", auth.getUser, newsletter.send);
+router.get("/api/newsletter/export", auth.getUser, newsletter.exportSubscribers);
 router.get("/api/upload", upload.get);
 router.post("/api/upload", auth.getUser, fileUpload({ limits: { fileSize: 10 * 1024 * 1024 } }), upload.post);
 router.delete("/api/upload", auth.getUser, upload.delete);

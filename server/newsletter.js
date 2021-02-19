@@ -116,6 +116,19 @@ exports.send = async (req, res) => {
     }
 }
 
+exports.exportSubscribers = async (req, res) => {
+    if (!req.user)
+        return res.sendStatus(403);
+
+    let subscribers = await exports.getSubscribers();
+    let csv = "email,name,subscribedate\r\n";
+    for (let subscriber of subscribers) {
+        csv += `${subscriber.email},${subscriber.name},${new Date(subscriber.timestamp).toISOString()}\r\n`;
+    }
+    res.status(200);
+    res.send(csv);
+}
+
 function sendConfirmMail(subscriber) {
     let url = process.env.TEST ? "http://localhost:" + config.port : "https://improtheater-frankfurt.de";
     let link = url + "/api/newsletter/confirm?token=" + subscriber.token;
