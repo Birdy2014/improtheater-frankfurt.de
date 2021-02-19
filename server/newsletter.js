@@ -121,9 +121,14 @@ exports.exportSubscribers = async (req, res) => {
         return res.sendStatus(403);
 
     let subscribers = await exports.getSubscribers();
-    let csv = "email,name,subscribedate\r\n";
+    let csv = "email,name,firstname,lastname,subscribedate\r\n";
     for (let subscriber of subscribers) {
-        csv += `${subscriber.email},${subscriber.name},${new Date(subscriber.timestamp).toISOString()}\r\n`;
+        let nameparts = subscriber.name.split(" ");
+        let lastname = nameparts.pop();
+        let firstname = nameparts.join(" ");
+        let time = new Date(subscriber.timestamp).toISOString();
+        time = time.substring(0, time.lastIndexOf(":"));
+        csv += `${subscriber.email},${subscriber.name},${firstname},${lastname},${time}\r\n`;
     }
     res.status(200);
     res.send(csv);
