@@ -10,9 +10,8 @@ exports.get = async (req, res) => {
     }
 
     if (req.query.token) {
-        db.get("SELECT id FROM workshop WHERE img LIKE ? ORDER BY begin DESC", "%" + req.query.name).then(workshop => {
-            console.log(workshop);
-            if (workshop.id)
+        db.get("SELECT id FROM workshop WHERE img = ? ORDER BY begin DESC", req.query.name).then(workshop => {
+            if (workshop)
                 db.run("UPDATE subscriber SET last_viewed_newsletter = ? WHERE token = ? AND last_viewed_newsletter < ?", workshop.id, req.query.token, workshop.id);
         });
     }

@@ -49,6 +49,8 @@ exports.getWorkshops = async (loggedIn, page) => {
             workshop.timeText = "Error: Invalid Time";
             workshop.outdated = workshop.end < utils.getCurrentTimestamp();
         }
+        if (!workshop.img.includes("/"))
+            workshop.img = utils.base_url + "/api/upload?name=" + workshop.img;
     }
     return workshops;
 }
@@ -80,6 +82,8 @@ exports.getWorkshop = async (id, loggedIn) => {
         workshop.dateText = "Error: Invalid Time";
         workshop.timeText = "Error: Invalid Time";
     }
+    if (!workshop.img.includes("/"))
+        workshop.img = utils.base_url + "/api/upload?name=" + workshop.img;
     return workshop;
 }
 

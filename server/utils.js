@@ -1,10 +1,12 @@
+const config = require("../config");
+
 exports.getCurrentTimestamp = () => {
     return Math.floor(Date.now() / 1000);
 }
 
 /**
  * Generates random string
- * @param {number} length 
+ * @param {number} length
  * @returns {string}
  */
 exports.generateToken = (length) => {
@@ -18,3 +20,5 @@ exports.generateToken = (length) => {
 exports.sleep = (ms) => {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
+
+exports.base_url = process.env.TEST ? "http://localhost:" + config.port : "https://improtheater-frankfurt.de";

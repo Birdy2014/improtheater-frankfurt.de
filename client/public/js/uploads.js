@@ -26,6 +26,8 @@ function selectImage(name) {
     let workshopRoute = window.sessionStorage.getItem("editWorkshop");
     if (workshopRoute) {
         window.sessionStorage.removeItem("editWorkshop");
+        let id = workshopRoute.substring(workshopRoute.indexOf("/") + 1);
+        workshops[id].current.img = name;
         let container = document.getElementById(workshopRoute);
         container.getElementsByClassName("workshop-image")[0].src = `/api/upload?name=${name}`
         navigate(workshopRoute);

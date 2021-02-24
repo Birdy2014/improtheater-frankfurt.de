@@ -76,7 +76,7 @@ function toggleWorkshopPreview() {
     let price_preview = container.querySelector(".workshop-price-preview");
     let email_input = container.querySelector(".edit-workshop-email");
     let email_preview = container.querySelector(".workshop-email-preview");
-    
+
     if (workshops[id].buttons.previewToggled) {
         content_textarea.style.display = "block";
         content_preview.style.display = "none";
@@ -106,6 +106,7 @@ function toggleWorkshopPreview() {
 function workshop_init() {
     const id = currentRoute.substring(currentRoute.indexOf("/") + 1);
     const container = document.getElementById("workshop/" + id);
+    const imgsrc = container.querySelector(".workshop-image").src;
     workshops[id] = {
         texts: {
             id
@@ -114,6 +115,9 @@ function workshop_init() {
             published: container.querySelector(".edit-publish").innerHTML !== "Veröffentlichen",
             previewToggled: false,
             newsletterSent: container.querySelector(".edit-newsletter") === undefined
+        },
+        current: {
+            img: imgsrc.substring(imgsrc.lastIndexOf("name=") + 5)
         }
     }
     workshop_updateValues(id);
@@ -129,7 +133,7 @@ function workshop_updateValues(id) {
     const container = document.getElementById("workshop/" + id);
     workshops[id].texts.title = container.querySelector(".edit-title").value;
     workshops[id].texts.content = container.querySelector(".edit-content").value;
-    workshops[id].texts.img = container.querySelector(".workshop-image").src;
+    workshops[id].texts.img = workshops[id].current.img;
     let date = container.querySelector(".input-workshop-date").value;
     let beginTime = container.querySelector(".input-workshop-time-begin").value;
     let endTime = container.querySelector(".input-workshop-time-end").value;
@@ -150,7 +154,7 @@ function workshop_changed(id) {
     return (
         workshops[id].texts.title !== container.querySelector(".edit-title").value ||
         workshops[id].texts.content !== container.querySelector(".edit-content").value ||
-        workshops[id].texts.img !== container.querySelector(".workshop-image").src ||
+        workshops[id].texts.img !== workshops[id].current.img ||
         workshops[id].texts.begin !== Date.parse(date + "T" + beginTime) / 1000 ||
         workshops[id].texts.end !== Date.parse(date + "T" + endTime) / 1000 ||
         workshops[id].texts.location !== container.querySelector(".edit-workshop-location").value ||
