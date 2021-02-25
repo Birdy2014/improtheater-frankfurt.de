@@ -71,13 +71,21 @@ router.get("/workshop/:workshopID", auth.getUser, async (req, res) => {
         res.render("404");
     } else {
         if (req.query.partial) {
-            res.render("routes/workshop", { ...w, loggedIn: req.user !== undefined, partial: true, marked, doctype: "html" });
+            res.render("routes/workshop", {
+                partial: true,
+                doctype: "html",
+                ...w,
+                loggedIn: req.user !== undefined,
+                marked,
+                permissions: req.user.permissions || []
+            });
         } else {
             res.render("routes/workshop", {
                 route: "workshop/" + req.params.workshopID,
                 ...w,
                 loggedIn: req.user !== undefined,
-                marked
+                marked,
+                permissions: req.user.permissions || []
             });
         }
     }

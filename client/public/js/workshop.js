@@ -47,10 +47,6 @@ async function sendNewsletter() {
             alert(ALERT_ERROR, "Es gibt ungespeicherte Änderungen. Der Newsletter wurde nicht versendet.");
             return;
         }
-        if (workshops[id].texts.color === "#ffffff") {
-            alert(ALERT_ERROR, "Nein Hauke, weiß ist verboten. Der Newsletter wurde nicht versendet. Schöne Grüße Elisa");
-            return;
-        }
         await axios.post("/api/newsletter/send", { workshop: id });
         workshops[id].buttons.newsletterSent = true;
         container.querySelectorAll(".edit-newsletter").forEach(value => value.style.display = "none");
@@ -126,6 +122,13 @@ function workshop_init() {
         textareaAutoGrow(event.target);
     });
     textareaAutoGrow(edit_content);
+
+    let color = container.querySelector(".input-workshop-color");
+    if (color.tagName === "SELECT") {
+        let colorchange = () => color.style.backgroundColor = color.value;
+        color.addEventListener("change", colorchange);
+        colorchange();
+    }
 }
 
 function workshop_updateValues(id) {
