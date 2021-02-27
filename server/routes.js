@@ -77,7 +77,7 @@ router.get("/workshop/:workshopID", auth.getUser, async (req, res) => {
                 ...w,
                 loggedIn: req.user !== undefined,
                 marked,
-                permissions: req.user.permissions || []
+                permissions: req.user?.permissions || []
             });
         } else {
             res.render("routes/workshop", {
@@ -85,7 +85,7 @@ router.get("/workshop/:workshopID", auth.getUser, async (req, res) => {
                 ...w,
                 loggedIn: req.user !== undefined,
                 marked,
-                permissions: req.user.permissions || []
+                permissions: req.user?.permissions || []
             });
         }
     }
