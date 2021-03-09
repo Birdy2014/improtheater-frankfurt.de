@@ -59,6 +59,12 @@
     .workshop-content {
         width: 100%;
     }
+
+    .workshop-properties {
+        float: none;
+        box-sizing: border-box;
+        width: 100%;
+    }
 }
 
 .workshop-input {
