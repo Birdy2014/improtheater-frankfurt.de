@@ -12,12 +12,12 @@ block routeContent
 
     #workshop-list.clearfix
         each workshop in workshops
-            +workshop-item(workshop.id, workshop.title, workshop.img, workshop.visible, workshop.timeText, workshop.outdated)
-        
-    template#template-workshop-item
-        +workshop-item(0, "", "", false, "", false)
+            +workshop-item(workshop.id, workshop.title, workshop.img, workshop.visible, workshop.timeText, workshop.outdated, workshop.propertiesHidden)
 
-mixin workshop-item(id, title, img, visible, timeText, outdated)
+    template#template-workshop-item
+        +workshop-item(0, "", "", false, "", false, false)
+
+mixin workshop-item(id, title, img, visible, timeText, outdated, propertiesHidden)
     .workshop-item(class=outdated ? "workshops-outdated" : "", id="workshop-item-" + id)
         a(href="/workshop/" + id)
             .workshops-image-container
@@ -27,4 +27,6 @@ mixin workshop-item(id, title, img, visible, timeText, outdated)
                         | Entwurf
             .workshop-text
                 h2 #{title}
-                h4 #{timeText}
+                h4
+                    unless propertiesHidden
+                        | #{timeText}

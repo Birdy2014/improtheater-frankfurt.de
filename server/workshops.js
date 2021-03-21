@@ -84,6 +84,7 @@ exports.getWorkshop = async (id, loggedIn) => {
     }
     if (!workshop.img.includes("/"))
         workshop.img = utils.base_url + "/api/upload?name=" + workshop.img;
+    workshop.propertiesHidden = workshop.propertiesHidden === 1;
     return workshop;
 }
 
@@ -100,15 +101,18 @@ exports.editWorkshop = async (workshop) => {
         location: "Ort",
         price: "Preis",
         email: "[YesTicket](https://www.yesticket.org/events/de/improglycerin/)",
-        img: "/public/img/workshop-default.png"
+        img: "/public/img/workshop-default.png",
+        propertiesHidden: 0
     };
     const id = workshop.id || defaultWorkshop.id;
 
     // Create update string
     let update = "";
     for (let key in defaultWorkshop) {
-        if (workshop[key] !== undefined)
+        if (workshop[key] !== undefined) {
+            if (typeof workshop[key] === "boolean") workshop[key] = workshop[key] ? 1 : 0;
             update += `${key} = '${workshop[key]}', `
+        }
     }
     update = update.substring(0, update.length - 2);
 

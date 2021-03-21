@@ -45,6 +45,7 @@
 .workshop-text {
     color: var(--color-fg);
     padding: 20px;
+    height: 54px;
 }
 
 .workshop-text h2 {

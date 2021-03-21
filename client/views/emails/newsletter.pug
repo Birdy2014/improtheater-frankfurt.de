@@ -108,27 +108,28 @@ html
             .centered-container
                 #description-container
                     != marked(content)
-                #properties-container.clearfix
-                    h4
-                        a(href=website)!= marked.parseInline(title)
-                    .property
-                        h4 Wann?
-                        br
-                        | #{dateText}
-                        br
-                        | #{timeText}
-                    .property
-                        h4 Wo?
-                        br
-                        != marked.parseInline(location)
-                    .property
-                        h4 Beitrag?
-                        br
-                        != marked.parseInline(price)
-                    .property
-                        h4 Anmelden?
-                        br
-                        != marked.parseInline(email)
+                unless propertiesHidden
+                    #properties-container.clearfix
+                        h4
+                            a(href=website)!= marked.parseInline(title)
+                        .property
+                            h4 Wann?
+                            br
+                            | #{dateText}
+                            br
+                            | #{timeText}
+                        .property
+                            h4 Wo?
+                            br
+                            != marked.parseInline(location)
+                        .property
+                            h4 Beitrag?
+                            br
+                            != marked.parseInline(price)
+                        .property
+                            h4 Anmelden?
+                            br
+                            != marked.parseInline(email)
             #footer
                 a(href="https://improtheater-frankfurt.de/impressum") Impressum
                 = " | "

@@ -72,6 +72,7 @@ function toggleWorkshopPreview() {
     let price_preview = container.querySelector(".workshop-price-preview");
     let email_input = container.querySelector(".edit-workshop-email");
     let email_preview = container.querySelector(".workshop-email-preview");
+    let properties = container.querySelector(".workshop-properties");
 
     if (workshops[id].buttons.previewToggled) {
         content_textarea.style.display = "block";
@@ -82,6 +83,7 @@ function toggleWorkshopPreview() {
         price_preview.style.display = "none";
         email_input.style.display = "block";
         email_preview.style.display = "none";
+        properties.style.display = null;
     } else {
         content_preview.innerHTML = marked(content_textarea.value);
         content_textarea.style.display = "none";
@@ -95,6 +97,7 @@ function toggleWorkshopPreview() {
         email_preview.innerHTML = marked.parseInline(email_input.value);
         email_input.style.display = "none";
         email_preview.style.display = "block";
+        properties.style.display = workshops[id].texts.propertiesHidden ? "none" : null;
     }
     workshops[id].buttons.previewToggled = !workshops[id].buttons.previewToggled;
 }
@@ -146,6 +149,7 @@ function workshop_updateValues(id) {
     workshops[id].texts.price = container.querySelector(".edit-workshop-price").value;
     workshops[id].texts.email = container.querySelector(".edit-workshop-email").value;
     workshops[id].texts.color = container.querySelector(".input-workshop-color").value;
+    workshops[id].texts.propertiesHidden = container.querySelector(".workshop-input-propertieshidden")?.checked;
 }
 
 function workshop_changed(id) {
@@ -163,6 +167,7 @@ function workshop_changed(id) {
         workshops[id].texts.location !== container.querySelector(".edit-workshop-location").value ||
         workshops[id].texts.price !== container.querySelector(".edit-workshop-price").value ||
         workshops[id].texts.email !== container.querySelector(".edit-workshop-email").value ||
-        workshops[id].texts.color !== container.querySelector(".input-workshop-color").value
+        workshops[id].texts.color !== container.querySelector(".input-workshop-color").value ||
+        (container.querySelector(".workshop-input-propertieshidden") && workshops[id].texts.propertiesHidden !== container.querySelector(".workshop-input-propertieshidden").checked)
     )
 }

@@ -14,8 +14,8 @@ function editWorkshopItem(workshop) {
     if (!list)
         return;
     const timeDateFormat = Intl.DateTimeFormat("de-DE", { weekday: "long", year: "numeric", month: "long", day: "numeric", hour: "numeric", minute: "numeric" });
-    let timeText;
-    if (workshop.begin && workshop.end) {
+    let timeText = "";
+    if (!workshop.propertiesHidden && workshop.begin && workshop.end) {
         if (typeof timeDateFormat.formatRange !== "undefined")
             timeText = timeDateFormat.formatRange(workshop.begin * 1000, workshop.end * 1000);
         else // Workaround for everything except Chrome
@@ -23,9 +23,9 @@ function editWorkshopItem(workshop) {
     }
     let item = list.querySelector("#workshop-item-" + workshop.id);
     if (item) {
-        if (workshop.img) item.querySelector("img").src = workshop.img || "/public/img/workshop-default.png";
+        if (workshop.img) item.querySelector("img").src = "/api/upload?name=" + workshop.img || "/public/img/workshop-default.png";
         if (workshop.title) item.querySelector("h2").innerHTML = workshop.title + (workshop.visible ? "<span>Entwurf</span>" : "");
-        if (timeText) item.querySelector("h4").innerHTML = timeText;
+        if (timeText || workshop.propertiesHidden) item.querySelector("h4").innerHTML = timeText;
         if (workshop.visible !== undefined) item.querySelector(".workshops-draft-text").innerText = workshop.visible ? "" : "Entwurf";
     } else {
         const template = document.getElementById("template-workshop-item");
@@ -39,7 +39,10 @@ function editWorkshopItem(workshop) {
         item.querySelector("img").src = workshop.img || "/public/img/workshop-default.png";
         item.querySelector("h2").innerHTML = workshop.title;
         item.querySelector(".workshops-draft-text").innerText = workshop.visible ? "Entwurf" : "";
-        item.querySelector("h4").innerHTML = timeText || "Keine Zeit angegeben";
+        if (workshop.propertiesHidden)
+            item.querySelector("h4").innerHTML = "";
+        else
+            item.querySelector("h4").innerHTML = timeText || "Keine Zeit angegeben";
 
         list.prepend(item);
     }

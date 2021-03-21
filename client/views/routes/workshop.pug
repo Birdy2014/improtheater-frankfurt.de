@@ -9,55 +9,60 @@ block routeContent
             span!= marked.parseInline(title)
 
     div
-        img(class="workshop-image" src=img onclick=loggedIn ? "editWorkshopImage()" : "")
-        dl(class="workshop-properties")
-            dt Wann?
-            dd
+        img.workshop-image(src=img onclick=loggedIn ? "editWorkshopImage()" : "")
+        if loggedIn || !propertiesHidden
+            dl.workshop-right.workshop-properties
                 if loggedIn
-                    input(type="date" value=dateISO class="input-workshop-date")
-                else
-                    | #{dateText}
-            dd
-                if loggedIn
-                    input(type="time" value=beginTimeISO class="input-workshop-time-begin")
-                    | - 
-                    input(type="time" value=endTimeISO class="input-workshop-time-end")
-                else
-                    | #{timeText}
-            dt Wo?
-            dd
-                if loggedIn
-                    input.workshop-input.edit-workshop-location(type="text" autocomplete="off" value=location)
-                    .workshop-location-preview
-                else
-                    span!= marked.parseInline(location)
-            dt Kosten?
-            dd
-                if loggedIn
-                    input.workshop-input.edit-workshop-price(type="text" autocomplete="off" value=price)
-                    .workshop-price-preview
-                else
-                    span!= marked.parseInline(price)
-            dt Anmelden?
-            dd
-                if loggedIn
-                    input.workshop-input.edit-workshop-email(type="text" autocomplete="off" value=email)
-                    .workshop-email-preview
-                else
-                    span!= marked.parseInline(email)
-            if loggedIn
-                dt Farbe?
+                    span(style=`display: ${permissions.includes("hideproperties") ? "inline" : "none"}`)
+                        input.workshop-input-propertieshidden(type="checkbox" name=propertieshidden checked=propertiesHidden)
+                        label(for=propertieshidden) Infobox verstecken
+                dt Wann?
                 dd
-                    if permissions.includes("restricted")
-                        select.input-workshop-color
-                            option(value="#e65656") Rot
-                            option(value="#5663E6") Blau
-                            option(value="#328026") Grün
-                            option(value="#7C8026") Khaki
-                            option(value="#ECD426") Gelb
+                    if loggedIn
+                        input(type="date" value=dateISO class="input-workshop-date")
                     else
-                        input(type="color" value=color class="input-workshop-color")
-                        | #{color}
+                        | #{dateText}
+                dd
+                    if loggedIn
+                        input(type="time" value=beginTimeISO class="input-workshop-time-begin")
+                        | -
+                        input(type="time" value=endTimeISO class="input-workshop-time-end")
+                    else
+                        | #{timeText}
+                dt Wo?
+                dd
+                    if loggedIn
+                        input.workshop-input.edit-workshop-location(type="text" autocomplete="off" value=location)
+                        .workshop-location-preview
+                    else
+                        span!= marked.parseInline(location)
+                dt Kosten?
+                dd
+                    if loggedIn
+                        input.workshop-input.edit-workshop-price(type="text" autocomplete="off" value=price)
+                        .workshop-price-preview
+                    else
+                        span!= marked.parseInline(price)
+                dt Anmelden?
+                dd
+                    if loggedIn
+                        input.workshop-input.edit-workshop-email(type="text" autocomplete="off" value=email)
+                        .workshop-email-preview
+                    else
+                        span!= marked.parseInline(email)
+                if loggedIn
+                    dt Farbe?
+                    dd
+                        if permissions.includes("restricted")
+                            select.input-workshop-color
+                                option(value="#e65656") Rot
+                                option(value="#5663E6") Blau
+                                option(value="#328026") Grün
+                                option(value="#7C8026") Khaki
+                                option(value="#ECD426") Gelb
+                        else
+                            input(type="color" value=color class="input-workshop-color")
+                            | #{color}
 
     if loggedIn
         .workshop-content

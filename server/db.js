@@ -20,6 +20,7 @@ exports.init = async () => {
             location TEXT NOT NULL,
             price TEXT NOT NULL,
             email TEXT NOT NULL,
+            propertiesHidden INTEGER DEFAULT 0,
             newsletterSent INTEGER DEFAULT 0,
             facebookEventCreated INTEGER DEFAULT 0,
             PRIMARY KEY (id)
