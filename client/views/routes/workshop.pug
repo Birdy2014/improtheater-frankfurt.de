@@ -64,6 +64,19 @@ block routeContent
                             input(type="color" value=color class="input-workshop-color")
                             | #{color}
 
+        if loggedIn
+            .clearfix
+            .workshop-right(style="margin-top: 10px;")
+                h3(style="margin: 5px 0") Markdown
+                b Überschrift
+                code # Überschrift
+                b Link
+                code [Text](https://example.com)
+                b Zeilenumbruch
+                code Zeile/
+                b Fett
+                code **Text**
+
     if loggedIn
         .workshop-content
             p Die Bearbeitungsansicht unterstützt #[a(href="https://guides.github.com/features/mastering-markdown/") Markdown]

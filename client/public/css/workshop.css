@@ -35,7 +35,7 @@
     width: calc(100% - 32% - 80px);
 }
 
-.workshop-properties {
+.workshop-right {
     background-color: #f6f6f6;
     padding: 10px;
     margin: 0;
@@ -60,7 +60,7 @@
         width: 100%;
     }
 
-    .workshop-properties {
+    .workshop-right {
         float: none;
         box-sizing: border-box;
         width: 100%;
@@ -75,8 +75,14 @@
 
 textarea {
     display: block;
+    box-sizing: border-box;
     resize: vertical;
     border: 1px solid #b2b2b2;
     padding: 5px;
     overflow: hidden;
+}
+
+code {
+    display: block;
+    background-color: #c7c7c7;
 }
