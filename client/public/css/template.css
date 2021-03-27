@@ -28,6 +28,7 @@ nav {
     z-index: 10;
     transition: height .3s ease-out;
     margin-bottom: 5px;
+    background-color: var(--color-bg);
 }
 
 .nav-sticky {
@@ -35,6 +36,7 @@ nav {
     top: 0;
     left: 0px;
     height: 65px;
+    padding-top: 8px;
     box-shadow: #00000020 0 1px 3px;
 }
 
@@ -42,18 +44,19 @@ nav #menu {
     margin: 0 auto;
     height: 100%;
     max-width: var(--site-width);
-    background-color: var(--color-bg);
 }
 
 nav #logo {
     float: left;
     height: 100%;
     max-height: 80px;
+    transform: translateZ(0);
 }
 
 nav #main-menu {
     float: right;
     display: block;
+    text-align: right;
 }
 
 nav #menu .icon {
@@ -68,9 +71,15 @@ nav #main-menu a {
     font-weight: 700;
     font-size: 14px;
     transition: color .3s ease-out;
+    transition: padding .3s ease-out;
 }
 
-nav #main-menu > a, nav #main-menu > div a {
+/* bad solution for vertically centering the links. Maybe flexbox is better */
+nav #main-menu > a {
+    padding: 31px 7.5px;
+}
+
+.nav-sticky #main-menu > a, nav #main-menu > div a {
     padding: 20px 7.5px;
 }
 

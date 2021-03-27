@@ -56,7 +56,7 @@ window.onscroll = e => {
     const footer = document.querySelector("footer");
     if (window.pageYOffset > 0) {
         navbar.classList.add("nav-sticky");
-        wrapper.style.marginTop = "80px";
+        wrapper.style.marginTop = "88px";
         footer.style.marginBottom = "25px";
     } else {
         navbar.classList.remove("nav-sticky");
@@ -66,7 +66,7 @@ window.onscroll = e => {
 }
 
 /**
- * 
+ *
  * @param {string} to - target route
  * @param {boolean} reload - download page again
  * @param {boolean} skipPushState - don't push route to browser history
@@ -181,7 +181,7 @@ function initRoute(route, query) {
 
 async function logout() {
     await axios.post("/api/logout");
-    window.location.reload(); 
+    window.location.reload();
 }
 
 // Alerts
