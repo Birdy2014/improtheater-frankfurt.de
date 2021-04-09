@@ -1,5 +1,11 @@
 const workshops = {};
 
+marked.setOptions({
+    gfm: true,
+    breaks: true,
+    smartypants: true
+});
+
 async function changeWorkshopValues() {
     let id = currentRoute.substring(currentRoute.indexOf("/") + 1);
     workshop_updateValues(id);

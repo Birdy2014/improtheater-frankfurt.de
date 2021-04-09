@@ -1,5 +1,6 @@
 const express = require("express");
 const cookieParser = require("cookie-parser");
+const marked = require("marked");
 const router = require("./server/routes");
 const db = require("./server/db");
 const config = require("./config");
@@ -7,6 +8,12 @@ const logger = require("./server/logger");
 
 logger.init(config.logpath || __dirname + "/logs");
 db.init();
+
+marked.setOptions({
+    gfm: true,
+    breaks: true,
+    smartypants: true,
+});
 
 const app = express();
 
