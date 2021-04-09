@@ -166,6 +166,8 @@ async function getRenderOptions(route, loggedIn, query) {
             return { subscribers };
         case "hygienekonzept":
             return { loggedIn, marked, content: await editableWebsite.getEditableWebsite("hygienekonzept") };
+        case "uploads":
+            return { loggedIn, uploads: await upload.getAll() };
         default:
             return { loggedIn };
     }

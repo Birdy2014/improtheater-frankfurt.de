@@ -58,3 +58,7 @@ exports.delete = async (req, res) => {
     await db.run("DELETE FROM upload WHERE name = ?", req.query.name);
     res.sendStatus(200);
 }
+
+exports.getAll = async () => {
+    return await db.all("SELECT name FROM upload ORDER BY time DESC");
+}

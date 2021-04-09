@@ -1,9 +1,3 @@
-getImages().then(images => {
-    for (let image of images) {
-        addImage(image.name, false);
-    }
-});
-
 async function upload() {
     let file = document.getElementById("input-uploads-image").files[0];
     let formData = new FormData();
@@ -58,9 +52,4 @@ function addImage(name, prepend) {
         imagesList.prepend(imageContainer);
     else
         imagesList.appendChild(imageContainer);
-}
-
-async function getImages() {
-    let response = await axios.get("/api/upload");
-    return response.data;
 }
