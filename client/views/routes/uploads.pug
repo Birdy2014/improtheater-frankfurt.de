@@ -9,7 +9,7 @@ block routeContent
 
     #uploads-images-list
         for upload in uploads
-            div(id="uploads-image-" + upload.name onclick="selectImage(" + upload.name + ")")
+            div(id="uploads-image-" + upload.name onclick="selectImage('" + upload.name + "')")
                 img(src="/api/upload?name=" + upload.name loading="lazy")
-                a(href="javascript:void(0)" onclick="deleteImage(" + upload.name + ")") LÖSCHEN
+                a(href="javascript:void(0)" onclick="deleteImage('" + upload.name + "')") LÖSCHEN
                 p #{upload.name}
