@@ -7,6 +7,9 @@ const dateFormat = Intl.DateTimeFormat("de-DE", { weekday: "long", year: "numeri
 const timeFormat = Intl.DateTimeFormat("de-DE", { hour: "numeric", minute: "numeric" });
 const isoFormat = Intl.DateTimeFormat("sv-SE", { timeZone: "Europe/Berlin", year: "numeric", month: "numeric", day: "numeric", hour: "numeric", minute: "numeric" });
 
+exports.defaultTitle = "Name des Workshops";
+exports.defaultContent = "Eine Beschreibung des Workshops";
+
 exports.post = async (req, res) => {
     if (!req.user) {
         res.status(400);
@@ -94,8 +97,8 @@ exports.editWorkshop = async (workshop) => {
         id: timestamp,
         begin: timestamp,
         end: timestamp,
-        title: "Name des Workshops",
-        content: "Eine Beschreibung des Workshops",
+        title: exports.defaultTitle,
+        content: exports.defaultContent,
         color: "#e65656",
         visible: 0,
         location: "Ort",

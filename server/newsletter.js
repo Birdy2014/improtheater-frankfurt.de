@@ -69,6 +69,10 @@ exports.send = async (req, res) => {
         res.sendStatus(409);
         return;
     }
+    if (workshop.title === workshops.defaultTitle || workshop.content === workshops.defaultContent) {
+        res.status(400).send("Der Workshop enthält Standartwerte");
+        return;
+    }
     await db.run("UPDATE workshop SET newsletterSent = 1 WHERE id = ?", workshop.id);
     res.sendStatus(200);
     // Send newsletter
