@@ -55,6 +55,8 @@ async function sendNewsletter() {
             alert(ALERT_ERROR, "Es gibt ungespeicherte Änderungen. Der Newsletter wurde nicht versendet.");
             return;
         }
+        if (!await confirm("Soll der Newsletter wirklich so versendet werden?"))
+            return;
         await axios.post("/api/newsletter/send", { workshop: id });
         workshops[id].buttons.newsletterSent = true;
         container.querySelectorAll(".edit-newsletter").forEach(value => value.style.display = "none");

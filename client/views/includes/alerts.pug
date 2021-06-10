@@ -10,12 +10,18 @@
     span.alert-text(onclick="alertToggleFull()")
     span.alert-close(onclick="alertClose()") &times
 
+#alert-confirm.alert
+    span.alert-text(onclick="alertToggleFull()")
+    span.alert-close(onclick="alertClose()") &times
+    button.alert-confirm-yes Ja
+    button.alert-confirm-no Nein
+
 style.
     .alert {
         position: fixed;
         width: calc(100% - 30px);
         max-width: calc(var(--site-width) - 20px);
-        top: -40px;
+        top: -80px;
         left: 0;
         right: 0;
         z-index: 20;
@@ -45,6 +51,10 @@ style.
         color: black;
     }
 
+    .alert > button {
+        cursor: pointer;
+    }
+
     #alert-loading {
         background-color: gray;
     }
@@ -55,4 +65,8 @@ style.
 
     #alert-error {
         background-color: var(--color-fg);
+    }
+
+    #alert-confirm {
+        background-color: gray;
     }

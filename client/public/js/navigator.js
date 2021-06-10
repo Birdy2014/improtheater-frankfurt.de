@@ -203,8 +203,8 @@ function alert(type, message, autohide) {
 }
 
 function alertGetOpen() {
-    for (let type of [ALERT_LOADING, ALERT_SUCCESS, ALERT_ERROR]) {
-        let element = document.querySelector(type);
+    let elements = document.querySelectorAll(".alert");
+    for (const element of elements) {
         if (element.style.top)
             return element;
     }
@@ -240,4 +240,21 @@ function showError(error) {
         errorText += error.message;
     }
     alert(ALERT_ERROR, errorText, false);
+}
+
+function confirm(text) {
+    return new Promise((resolve, reject) => {
+        alert("#alert-confirm", text, false);
+        const alert_confirm = document.querySelector("#alert-confirm");
+        const yes = alert_confirm.querySelector(".alert-confirm-yes");
+        const no = alert_confirm.querySelector(".alert-confirm-no");
+        yes.addEventListener('click', () => {
+            alertClose();
+            resolve(true);
+        });
+        no.addEventListener('click', () => {
+            alertClose();
+            resolve(false);
+        });
+    });
 }
