@@ -1,10 +1,12 @@
 const workshops = {};
 
-marked.setOptions({
-    gfm: true,
-    breaks: true,
-    smartypants: true
-});
+if (window.marked) {
+    marked.setOptions({
+        gfm: true,
+        breaks: true,
+        smartypants: true
+    });
+}
 
 async function changeWorkshopValues() {
     let id = currentRoute.substring(currentRoute.indexOf("/") + 1);
@@ -109,6 +111,9 @@ function toggleWorkshopPreview() {
 }
 
 function workshop_init(container) {
+    if (!container.querySelector(".edit-publish"))
+        return;
+
     const route = container.id;
     const id = route.substring(route.indexOf("/") + 1);
     const imgsrc = container.querySelector(".workshop-image").src;
