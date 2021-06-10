@@ -163,7 +163,7 @@ async function getRenderOptions(route, loggedIn, query) {
                 for (let subscriber of subscribers)
                     subscriber.last_viewed_newsletter_name = (await workshops.getWorkshop(subscriber.last_viewed_newsletter, true))?.title;
             }
-            return { subscribers };
+            return { loggedIn, subscribers };
         case "hygienekonzept":
             return { loggedIn, marked, content: await editableWebsite.getEditableWebsite("hygienekonzept") };
         case "uploads":
