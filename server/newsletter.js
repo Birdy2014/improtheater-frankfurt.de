@@ -138,6 +138,28 @@ exports.exportSubscribers = async (req, res) => {
     res.send(csv);
 }
 
+exports.addSubscriber = async (req, res) => {
+    if (!req.user)
+        return res.sendStatus(403);
+
+    if (!req.body.name || !req.body.email)
+        return res.sendStatus(400);
+
+    try {
+        await removeExpiredSubscribers();
+        let token = utils.generateToken(20);
+        let timestamp = utils.getCurrentTimestamp();
+        await db.run("INSERT INTO subscriber (name, email, token, timestamp, confirmed) VALUES (?, ?, ?, ?, 1)", req.body.name, req.body.email, token, timestamp);
+        res.sendStatus(200);
+    } catch(e) {
+        if (e.errno === 19) {
+            res.sendStatus(409);
+        } else {
+            res.sendStatus(500);
+        }
+    }
+}
+
 function sendConfirmMail(subscriber) {
     let url = process.env.TEST ? "http://localhost:" + config.port : "https://improtheater-frankfurt.de";
     let link = url + "/api/newsletter/confirm?token=" + subscriber.token;

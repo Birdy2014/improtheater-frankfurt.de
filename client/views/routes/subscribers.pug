@@ -14,4 +14,11 @@ block routeContent
         else
             li Niemand ist am Newsletter angemeldet
 
+        form#subscribers-add
+            label(for="name") Name
+            input#subscribers-add-name(type="text" name="name" placeholder="Name")
+            label(for="email") Email-Adresse
+            input#subscribers-add-email(type="email" name="email" placeholder="Email-Adresse")
+            input(type="submit" value="Hinzufügen")
+
         a.forceReload(href="/api/newsletter/export" style="display: block; margin-top: 20px;" download="ITF_export.csv") Liste exportieren
