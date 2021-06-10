@@ -168,15 +168,16 @@ function loadPage(parent, page, query) {
         let script = document.createElement("script");
         script.id = "script-" + page;
         script.src = "/public/js/" + page + ".js";
-        script.onload = () => initRoute(page, query);
+        script.onload = () => initRoute(page, parent, query);
         document.head.append(script);
     } else {
-        initRoute(page, query);
+        initRoute(page, parent, query);
     }
 }
 
-function initRoute(route, query) {
-    window[route + "_init"]?.(query);
+function initRoute(route, container, query) {
+    if (window[route + "_init"])
+        window[route + "_init"](container, query);
 }
 
 async function logout() {

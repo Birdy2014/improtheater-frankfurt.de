@@ -27,7 +27,7 @@ function textareaAutoGrow(field) {
         field.style.height = field.scrollHeight + "px";
 }
 
-function hygienekonzept_init(query) {
+function hygienekonzept_init(container, query) {
     let textarea = window["hygienekonzept-src"]?.querySelector("textarea");
     if (textarea) {
         textareaAutoGrow(textarea);

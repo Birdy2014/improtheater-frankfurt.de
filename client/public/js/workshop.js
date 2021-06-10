@@ -108,9 +108,9 @@ function toggleWorkshopPreview() {
     workshops[id].buttons.previewToggled = !workshops[id].buttons.previewToggled;
 }
 
-function workshop_init() {
-    const id = currentRoute.substring(currentRoute.indexOf("/") + 1);
-    const container = document.getElementById("workshop/" + id);
+function workshop_init(container) {
+    const route = container.id;
+    const id = route.substring(route.indexOf("/") + 1);
     const imgsrc = container.querySelector(".workshop-image").src;
     workshops[id] = {
         texts: {
