@@ -5,34 +5,36 @@ block routeContent
 
     h1 Am Newsletter angemeldete Personen
     table
-        tr
-            th Nr
-            th Name
-            th Email
-            th Letzter Newsletter
-        - let i = 0
-        each s in subscribers
+        thead
             tr
-                td #{i}
-                td #{s.name}
-                td #{s.email}
-                if (s.last_viewed_newsletter_name)
-                    td
-                        a(href='/workshop/' + s.last_viewed_newsletter)= s.last_viewed_newsletter_name
-                else
-                    td Kein newsletter
-            - i++
-        else
-            li Niemand ist am Newsletter angemeldet
+                th Nr
+                th Name
+                th Email
+                th Letzter Newsletter
+        tbody
+            - let i = 0
+            each s in subscribers
+                tr
+                    td #{i}
+                    td #{s.name}
+                    td #{s.email}
+                    if (s.last_viewed_newsletter_name)
+                        td
+                            a(href='/workshop/' + s.last_viewed_newsletter)= s.last_viewed_newsletter_name
+                    else
+                        td Kein newsletter
+                - i++
+            else
+                li Niemand ist am Newsletter angemeldet
 
-        tr
-            form#subscribers-add
-                td
-                td
-                    input#subscribers-add-name(type="text" name="name" placeholder="Name")
-                td
-                    input#subscribers-add-email(type="email" name="email" placeholder="Email-Adresse")
-                td
-                    input(type="submit" value="Hinzufügen")
+            tr
+                form#subscribers-add
+                    td
+                    td
+                        input#subscribers-add-name(type="text" name="name" placeholder="Name")
+                    td
+                        input#subscribers-add-email(type="email" name="email" placeholder="Email-Adresse")
+                    td
+                        input(type="submit" value="Hinzufügen")
 
     a.forceReload(href="/api/newsletter/export" style="display: block; margin-top: 20px;" download="ITF_export.csv") Liste exportieren
