@@ -1,24 +1,37 @@
 extends ../template.pug
 
 block routeContent
+    link(rel="stylesheet" href="/public/css/subscribers.css")
+
     h1 Am Newsletter angemeldete Personen
-    ol
+    table
+        tr
+            th Nr
+            th Name
+            th Email
+            th Letzter Newsletter
+        - let i = 0
         each s in subscribers
-            li
-                | Name: #{s.name}, Email: #{s.email}, Zuletzt geöffnet:
-                |
+            tr
+                td #{i}
+                td #{s.name}
+                td #{s.email}
                 if (s.last_viewed_newsletter_name)
-                    a(href='/workshop/' + s.last_viewed_newsletter)= s.last_viewed_newsletter_name
+                    td a(href='/workshop/' + s.last_viewed_newsletter)= s.last_viewed_newsletter_name
                 else
-                    | Kein newsletter
+                    td Kein newsletter
+            - i++
         else
             li Niemand ist am Newsletter angemeldet
 
-        form#subscribers-add
-            label(for="name") Name
-            input#subscribers-add-name(type="text" name="name" placeholder="Name")
-            label(for="email") Email-Adresse
-            input#subscribers-add-email(type="email" name="email" placeholder="Email-Adresse")
-            input(type="submit" value="Hinzufügen")
+        tr
+            form#subscribers-add
+                td
+                td
+                    input#subscribers-add-name(type="text" name="name" placeholder="Name")
+                td
+                    input#subscribers-add-email(type="email" name="email" placeholder="Email-Adresse")
+                td
+                    input(type="submit" value="Hinzufügen")
 
-        a.forceReload(href="/api/newsletter/export" style="display: block; margin-top: 20px;" download="ITF_export.csv") Liste exportieren
+    a.forceReload(href="/api/newsletter/export" style="display: block; margin-top: 20px;" download="ITF_export.csv") Liste exportieren

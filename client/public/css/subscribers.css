@@ -1,0 +1,8 @@
+#subscribers table {
+    border: none;
+}
+
+#subscribers th, #subscribers td {
+    text-align: left;
+    border: none;
+}
