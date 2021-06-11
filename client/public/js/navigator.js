@@ -219,6 +219,10 @@ function alertClose() {
     let textElement = element.querySelector(".alert-text");
     textElement.innerHTML = "";
     textElement.style.removeProperty("white-space");
+    if (window.rejectConfirmDialog) {
+        window.rejectConfirmDialog();
+        window.rejectConfirmDialog = undefined;
+    }
 }
 
 function alertToggleFull() {
@@ -244,15 +248,18 @@ function showError(error) {
 
 function confirm(text) {
     return new Promise((resolve, reject) => {
+        window.rejectConfirmDialog = reject;
         alert("#alert-confirm", text, false);
         const alert_confirm = document.querySelector("#alert-confirm");
         const yes = alert_confirm.querySelector(".alert-confirm-yes");
         const no = alert_confirm.querySelector(".alert-confirm-no");
         yes.addEventListener('click', () => {
+            window.rejectConfirmDialog = undefined;
             alertClose();
             resolve(true);
         });
         no.addEventListener('click', () => {
+            window.rejectConfirmDialog = undefined;
             alertClose();
             resolve(false);
         });
