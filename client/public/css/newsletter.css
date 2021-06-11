@@ -8,7 +8,7 @@
     margin-top: 35px;
 }
 
-.input-newsletter-text {
+#newsletter-form > .input-newsletter-text {
     border: none;
     border-bottom: 2px solid black;
     max-width: 350px;
@@ -16,18 +16,27 @@
     font-size: 20px;
     margin-bottom: 12px;
     padding-bottom: 3px;
+    background-color: white;
 }
 
-.input-newsletter-text:focus {
+#newsletter-form > .input-newsletter-text:focus {
     border-bottom-color: var(--color-fg);
     transition: border .4s;
 }
 
-.input-newsletter-button {
+#newsletter-form > .input-newsletter-text::placeholder {
+    color: #101010;
+}
+
+#newsletter-form > .input-newsletter-button {
     color: white;
     background-color: var(--color-fg);
     border: none;
     padding: 13px 29px;
     margin-top: 12px;
     font-weight: bold;
+}
+
+#newsletter-form > .input-newsletter-button:hover {
+    background-color: #552726;
 }

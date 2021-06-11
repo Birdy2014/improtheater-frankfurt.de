@@ -223,3 +223,23 @@ footer a {
 .linebreak {
     white-space: pre-wrap;
 }
+
+input, button {
+    background-color: white;
+    color: black;
+    border: 1px solid #8f8f9d;
+    border-radius: 2px;
+}
+
+input[type="text"]::placeholder, input[type="email"]::placeholder {
+    color: #101010;
+}
+
+input[type="submit"], button {
+    background-color: #f0f0f0;
+    cursor: pointer;
+}
+
+input[type="submit"]:hover, button:hover {
+    background-color: #e9e9ed;
+}
