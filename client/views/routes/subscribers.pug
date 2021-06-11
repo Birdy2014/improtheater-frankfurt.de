@@ -17,7 +17,8 @@ block routeContent
                 td #{s.name}
                 td #{s.email}
                 if (s.last_viewed_newsletter_name)
-                    td a(href='/workshop/' + s.last_viewed_newsletter)= s.last_viewed_newsletter_name
+                    td
+                        a(href='/workshop/' + s.last_viewed_newsletter)= s.last_viewed_newsletter_name
                 else
                     td Kein newsletter
             - i++
