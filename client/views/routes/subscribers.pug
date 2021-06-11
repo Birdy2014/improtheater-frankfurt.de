@@ -4,13 +4,14 @@ block routeContent
     link(rel="stylesheet" href="/public/css/subscribers.css")
 
     h1 Am Newsletter angemeldete Personen
-    table
-        thead
-            tr
-                th Nr
-                th Name
-                th Email
-                th Letzter Newsletter
+    form#subscribers-add
+        table
+            thead
+                tr
+                    th Nr
+                    th Name
+                    th Email
+                    th Letzter Newsletter
         tbody
             - let i = 0
             each s in subscribers
@@ -27,8 +28,7 @@ block routeContent
             else
                 li Niemand ist am Newsletter angemeldet
 
-            tr
-                form#subscribers-add
+                tr
                     td
                     td
                         input#subscribers-add-name(type="text" name="name" placeholder="Name")
