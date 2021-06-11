@@ -13,6 +13,17 @@ async function subscribers_add(event) {
     }
 }
 
+async function subscribers_remove(token, name) {
+    try {
+        if (!await confirm(`Soll ${name} wirklich vom Newsletter abgemeldet werden?`))
+            return;
+        await axios.get(`/api/newsletter/unsubscribe?token=${token}`);
+        navigate(currentRoute, true, false)
+    } catch(err) {
+        showError(err);
+    }
+}
+
 function subscribers_init(container) {
     subscribers_form = container.querySelector("#subscribers-add");
     subscribers_form.addEventListener("submit", subscribers_add);

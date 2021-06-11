@@ -12,21 +12,24 @@ block routeContent
                     th Name
                     th Email
                     th Letzter Newsletter
-        tbody
-            - let i = 0
-            each s in subscribers
-                tr
-                    td #{i}
-                    td #{s.name}
-                    td #{s.email}
-                    if (s.last_viewed_newsletter_name)
-                        td
-                            a(href='/workshop/' + s.last_viewed_newsletter)= s.last_viewed_newsletter_name
-                    else
-                        td Kein newsletter
-                - i++
-            else
-                li Niemand ist am Newsletter angemeldet
+                    th Entfernen
+            tbody
+                - let i = 0
+                each s in subscribers
+                    tr
+                        td #{i}
+                        td #{s.name}
+                        td #{s.email}
+                        if (s.last_viewed_newsletter_name)
+                            td
+                                a(href='/workshop/' + s.last_viewed_newsletter)= s.last_viewed_newsletter_name
+                        else
+                            td Kein newsletter
+                        td.subscribers-delete
+                            a.icon-delete(onclick=`subscribers_remove('${s.token}', '${s.name}')`)
+                    - i++
+                else
+                    span Niemand ist am Newsletter angemeldet
 
                 tr
                     td

@@ -32,3 +32,18 @@
         display: none;
     }
 }
+
+@media screen and (min-width: 750px) {
+    #subscribers .subscribers-delete {
+        text-align: center;
+    }
+}
+
+.icon-delete {
+    cursor: pointer;
+}
+
+.icon-delete::after {
+    display: inline-block;
+    content: "\00d7";
+}
