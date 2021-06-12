@@ -248,8 +248,8 @@ function showError(error) {
 
 function confirm(text) {
     return new Promise((resolve, reject) => {
-        window.rejectConfirmDialog = reject;
         alert("#alert-confirm", text, false);
+        window.rejectConfirmDialog = reject;
         const alert_confirm = document.querySelector("#alert-confirm");
         const yes = alert_confirm.querySelector(".alert-confirm-yes");
         const no = alert_confirm.querySelector(".alert-confirm-no");
