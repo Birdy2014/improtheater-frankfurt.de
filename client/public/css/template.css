@@ -224,7 +224,7 @@ footer a {
     white-space: pre-wrap;
 }
 
-input, button {
+input, button, select {
     background-color: white;
     color: black;
     border: 1px solid #8f8f9d;
@@ -242,4 +242,9 @@ input[type="submit"], button {
 
 input[type="submit"]:hover, button:hover {
     background-color: #e9e9ed;
+}
+
+select {
+    display: block;
+    background-color: #f0f0f0;
 }

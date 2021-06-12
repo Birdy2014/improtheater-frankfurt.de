@@ -7,12 +7,14 @@ const logger = require("./logger");
 const config = require("../config.json");
 const workshops = require("./workshops");
 
-exports.transporter = nodemailer.createTransport(config.email);
+exports.transporter = [];
+for (const email of config.email)
+    exports.transporter.push(nodemailer.createTransport(email));
 
 exports.subscribe = async (req, res) => {
     // TODO: check email address, length limit name, sanitize name and email
     try {
-        if (!req.body.name || !req.body.email) {
+        if (!req.body.name || !req.body.email || !req.body.subscribedTo || !checkNewsletterType(req.body.subscribedTo)) {
             res.status(400);
             res.send();
             return;
@@ -20,8 +22,8 @@ exports.subscribe = async (req, res) => {
         await removeExpiredSubscribers();
         let token = utils.generateToken(20);
         let timestamp = utils.getCurrentTimestamp();
-        await db.run("INSERT INTO subscriber (name, email, token, timestamp) VALUES (?, ?, ?, ?)", req.body.name, req.body.email, token, timestamp);
-        sendConfirmMail({ name: req.body.name, email: req.body.email, token });
+        await db.run("INSERT INTO subscriber (name, email, token, timestamp, subscribedTo) VALUES (?, ?, ?, ?, ?)", req.body.name, req.body.email, token, timestamp, req.body.subscribedTo);
+        sendConfirmMail({ name: req.body.name, email: req.body.email, token, subscribedTo: req.body.subscribedTo });
         res.status(200);
         res.send();
     } catch(e) {
@@ -31,6 +33,7 @@ exports.subscribe = async (req, res) => {
         } else {
             res.status(500);
             res.send();
+            console.log(e+ "\n");
         }
     }
 }
@@ -82,6 +85,8 @@ exports.send = async (req, res) => {
     let reply = /\S+@\S+\.\S+/.test(workshop.email) ? workshop.email : "hallo@improglycerin.de";
     let website = baseUrl + "/workshop/" + workshop.id;
     for (let subscriber of subscribers) {
+        if (!(subscriber.subscribedTo & workshop.type))
+            continue;
         try {
             let unsubscribe = baseUrl + "/api/newsletter/unsubscribe?token=" + subscriber.token;
             let subscribername = subscriber.name;
@@ -104,8 +109,7 @@ exports.send = async (req, res) => {
                 textColor,
                 website: website + "?token=" + subscriber.token,
             });
-            await exports.transporter.sendMail({
-                from: config.email.from,
+            await sendMail(workshop.type, {
                 to: subscriber.email,
                 replyTo: reply,
                 subject: workshop.title + ", am " + workshop.dateText,
@@ -142,14 +146,14 @@ exports.addSubscriber = async (req, res) => {
     if (!req.user)
         return res.sendStatus(403);
 
-    if (!req.body.name || !req.body.email)
+    if (!req.body.name || !req.body.email || !req.body.subscribedTo || !checkNewsletterType(req.body.subscribedTo))
         return res.sendStatus(400);
 
     try {
         await removeExpiredSubscribers();
         let token = utils.generateToken(20);
         let timestamp = utils.getCurrentTimestamp();
-        await db.run("INSERT INTO subscriber (name, email, token, timestamp, confirmed) VALUES (?, ?, ?, ?, 1)", req.body.name, req.body.email, token, timestamp);
+        await db.run("INSERT INTO subscriber (name, email, token, timestamp, confirmed, subscribedTo) VALUES (?, ?, ?, ?, 1, ?)", req.body.name, req.body.email, token, timestamp, req.body.subscribedTo);
         res.sendStatus(200);
     } catch(e) {
         if (e.errno === 19) {
@@ -164,8 +168,7 @@ function sendConfirmMail(subscriber) {
     let url = process.env.TEST ? "http://localhost:" + config.port : "https://improtheater-frankfurt.de";
     let link = url + "/api/newsletter/confirm?token=" + subscriber.token;
     let html = pug.renderFile(__dirname + "/../client/views/emails/confirm.pug", { name: subscriber.name, link });
-    exports.transporter.sendMail({
-        from: config.email.from,
+    sendMail(subscriber.subscribedTo, {
         to: subscriber.email,
         subject: "Improtheater Frankfurt Newsletterbestätigung",
         html: html,
@@ -184,4 +187,22 @@ exports.getSubscriber = async (token) => {
 async function removeExpiredSubscribers() {
     let expired = utils.getCurrentTimestamp() - 86400;
     await db.run("DELETE FROM subscriber WHERE confirmed = 0 AND timestamp < ?", expired);
+}
+
+function checkNewsletterType(subscribedTo) {
+    for (let i = 0; i < config.email.length; i++) {
+        if (subscribedTo & (1 << i))
+            return true;
+    }
+    return false;
+}
+
+async function sendMail(type, options) {
+    let i;
+    for (i = 0; !(type & (1 << i)); i++);
+    if (i >= exports.transporter.length)
+        return false;
+    const newOptions = Object.assign({ from: config.email[i].from }, options);
+    await exports.transporter[i].sendMail(newOptions);
+    return true;
 }

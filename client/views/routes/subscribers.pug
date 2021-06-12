@@ -1,5 +1,7 @@
 extends ../template.pug
 
+include ../includes/utils.pug
+
 block routeContent
     link(rel="stylesheet" href="/public/css/subscribers.css")
 
@@ -11,6 +13,7 @@ block routeContent
                     th Nr
                     th Name
                     th Email
+                    th Newsletter
                     th Letzter Newsletter
                     th Entfernen
             tbody
@@ -20,11 +23,13 @@ block routeContent
                         td #{i}
                         td #{s.name}
                         td #{s.email}
-                        if (s.last_viewed_newsletter_name)
-                            td
+                        td
+                            +newsletterName(s.subscribedTo)
+                        td
+                            if (s.last_viewed_newsletter_name)
                                 a(href='/workshop/' + s.last_viewed_newsletter)= s.last_viewed_newsletter_name
-                        else
-                            td Kein newsletter
+                            else
+                                | Kein newsletter
                         td.subscribers-delete
                             a.icon-delete(onclick=`subscribers_remove('${s.token}', '${s.name}')`)
                     - i++
@@ -37,6 +42,11 @@ block routeContent
                         input#subscribers-add-name(type="text" name="name" placeholder="Name")
                     td
                         input#subscribers-add-email(type="email" name="email" placeholder="Email-Adresse")
+                    td
+                        select#subscribers-add-type
+                            each i in [1, 2, 3]
+                                option(value=i)
+                                    +newsletterName(i)
                     td
                         input(type="submit" value="Hinzufügen")
 

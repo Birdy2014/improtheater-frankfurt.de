@@ -29,15 +29,21 @@ block routeContent
                 h1 NEWSLETTER
 
                 p.
-                    Improglycerin Newsletter bestellen und immer gut informiert sein! 
+                    Improglycerin Newsletter bestellen und immer gut informiert sein!
                 p.
                     Ja, ich möchte den Newsletter bestellen und erhalte einmal wöchentlich die Einladung für Mittwochabend und monatlich
-                    die Einladung zur Samstagsjam sowie zur Show von Improglycerin. Der Newsletter kann jederzeit wieder abbestellt werden. 
-                
+                    die Einladung zur Samstagsjam sowie zur Show von Improglycerin. Der Newsletter kann jederzeit wieder abbestellt werden.
+
                 form(id="newsletter-form")
                     input(type="email" class="input-newsletter-text" id="input-newsletter-email" placeholder="E-Mail-Adresse" required)
                     br
                     input(type="text" class="input-newsletter-text" id="input-newsletter-name" placeholder="Vorname und Nachname" required)
+                    br
+                    input(type="checkbox" name="subscribe-itf" id="input-newsletter-0")
+                    label(for="subscribe-itf") Improtheater Frankfurt Newsletter
+                    br
+                    input(type="checkbox" name="subscribe-improglycerin" id="input-newsletter-1")
+                    label(for="subscribe-improglycerin") Improglycerin Newsletter
                     br
 
                     input(type="submit" class="input-newsletter-button" value="ANMELDEN")

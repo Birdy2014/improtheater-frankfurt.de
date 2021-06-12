@@ -163,6 +163,7 @@ function workshop_updateValues(id) {
     workshops[id].texts.email = container.querySelector(".edit-workshop-email").value;
     workshops[id].texts.color = container.querySelector(".input-workshop-color").value;
     workshops[id].texts.propertiesHidden = container.querySelector(".workshop-input-propertieshidden")?.checked;
+    workshops[id].texts.type = container.querySelector(".workshop-input-type").value
 }
 
 function workshop_changed(id) {
@@ -181,6 +182,7 @@ function workshop_changed(id) {
         workshops[id].texts.price !== container.querySelector(".edit-workshop-price").value ||
         workshops[id].texts.email !== container.querySelector(".edit-workshop-email").value ||
         workshops[id].texts.color !== container.querySelector(".input-workshop-color").value ||
-        (container.querySelector(".workshop-input-propertieshidden") && workshops[id].texts.propertiesHidden !== container.querySelector(".workshop-input-propertieshidden").checked)
+        (container.querySelector(".workshop-input-propertieshidden") && workshops[id].texts.propertiesHidden !== container.querySelector(".workshop-input-propertieshidden").checked) ||
+        workshops[id].texts.type !== container.querySelector(".workshop-input-type").value
     )
 }

@@ -5,7 +5,8 @@ async function subscribers_add(event) {
     try {
         let email = document.getElementById("subscribers-add-email").value;
         let name = document.getElementById("subscribers-add-name").value;
-        await axios.post("/api/newsletter/add", { email, name });
+        let subscribedTo = document.getElementById("subscribers-add-type").value;
+        await axios.post("/api/newsletter/add", { email, name, subscribedTo });
         alert(ALERT_SUCCESS, "Abonent hinzugefügt");
         navigate(currentRoute, true, false)
     } catch(err) {

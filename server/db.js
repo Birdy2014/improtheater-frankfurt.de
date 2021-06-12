@@ -23,6 +23,7 @@ exports.init = async () => {
             propertiesHidden INTEGER DEFAULT 0,
             newsletterSent INTEGER DEFAULT 0,
             facebookEventCreated INTEGER DEFAULT 0,
+            type INTEGER NOT NULL,
             PRIMARY KEY (id)
         )
     `);
@@ -35,6 +36,7 @@ exports.init = async () => {
             timestamp INTEGER NOT NULL,
             confirmed INTEGER DEFAULT 0,
             last_viewed_newsletter INTEGER DEFAULT 0,
+            subscribedTo INTEGER NOT NULL,
             PRIMARY KEY(email)
         )
     `);
