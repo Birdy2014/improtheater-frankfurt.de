@@ -1,6 +1,16 @@
-@media screen and (min-width: 750px) {
+@media screen and (min-width: 870px) {
     #newsletter-text-container {
         width: 75%;
+    }
+}
+
+@media screen and (min-width: 700px) {
+    #newsletter-form > div {
+        flex-direction: row !important;
+    }
+
+    #newsletter-form-input-checkbox-container {
+        margin-left: 20px;
     }
 }
 
@@ -8,7 +18,12 @@
     margin-top: 35px;
 }
 
-#newsletter-form > .input-newsletter-text {
+#newsletter-form > div {
+    display: flex;
+    flex-direction: column;
+}
+
+#newsletter-form .input-newsletter-text {
     border: none;
     border-bottom: 2px solid black;
     max-width: 350px;
@@ -19,16 +34,16 @@
     background-color: white;
 }
 
-#newsletter-form > .input-newsletter-text:focus {
+#newsletter-form .input-newsletter-text:focus {
     border-bottom-color: var(--color-fg);
     transition: border .4s;
 }
 
-#newsletter-form > .input-newsletter-text::placeholder {
+#newsletter-form .input-newsletter-text::placeholder {
     color: #101010;
 }
 
-#newsletter-form > .input-newsletter-button {
+#newsletter-form .input-newsletter-button {
     color: white;
     background-color: var(--color-fg);
     border: none;
@@ -37,6 +52,6 @@
     font-weight: bold;
 }
 
-#newsletter-form > .input-newsletter-button:hover {
+#newsletter-form .input-newsletter-button:hover {
     background-color: #552726;
 }
