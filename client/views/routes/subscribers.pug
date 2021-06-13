@@ -19,12 +19,15 @@ block routeContent
             tbody
                 - let i = 0
                 each s in subscribers
-                    tr
+                    tr(id=`subscriber-${s.token}`)
                         td #{i}
-                        td #{s.name}
+                        td.subscribers-name #{s.name}
                         td #{s.email}
                         td
-                            +newsletterName(s.subscribedTo)
+                            select.subscribers-subscribedTo
+                                each i in [1, 2, 3]
+                                    option(value=i selected=i==s.subscribedTo)
+                                        +newsletterName(i)
                         td
                             if (s.last_viewed_newsletter_name)
                                 a(href='/workshop/' + s.last_viewed_newsletter)= s.last_viewed_newsletter_name

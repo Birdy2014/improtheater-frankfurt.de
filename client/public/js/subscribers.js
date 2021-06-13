@@ -1,5 +1,3 @@
-let subscribers_form;
-
 async function subscribers_add(event) {
     event.preventDefault();
     try {
@@ -25,7 +23,24 @@ async function subscribers_remove(token, name) {
     }
 }
 
+async function subscribers_change_type(event) {
+    try {
+        const row = event.target.parentNode.parentNode;
+        const token = row.id.substring(row.id.lastIndexOf("-") + 1);
+        const subscribedTo = event.target.value;
+        const name = row.querySelector(".subscribers-name").innerText;
+        await axios.post("/api/newsletter/subscribe", { token, subscribedTo, setSubscribed: true });
+        alert(ALERT_SUCCESS, `Newsletter für ${name} geändert.`);
+    } catch(err) {
+        showError(err);
+    }
+}
+
 function subscribers_init(container) {
-    subscribers_form = container.querySelector("#subscribers-add");
-    subscribers_form.addEventListener("submit", subscribers_add);
+    const form = container.querySelector("#subscribers-add");
+    form.addEventListener("submit", subscribers_add);
+
+    for (const select of container.querySelectorAll(".subscribers-subscribedTo")) {
+        select.addEventListener("change", subscribers_change_type);
+    }
 }

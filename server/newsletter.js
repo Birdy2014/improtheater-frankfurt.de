@@ -14,11 +14,22 @@ for (const email of config.email)
 exports.subscribe = async (req, res) => {
     // TODO: check email address, length limit name, sanitize name and email
     try {
-        if (!req.body.name || !req.body.email || !req.body.subscribedTo || !checkNewsletterType(req.body.subscribedTo)) {
+        if (((!req.body.name || !req.body.email) && !req.body.token) || !req.body.subscribedTo || !checkNewsletterType(req.body.subscribedTo)) {
             res.status(400);
             res.send();
             return;
         }
+
+        // User is already subscribed
+        if (req.body.token) {
+            const subscriber = await exports.getSubscriber(req.body.token);
+            if (req.body.subscribedTo == subscriber.subscribedTo)
+                return res.sendStatus(200);
+            await db.run("UPDATE subscriber SET subscribedTo = ? WHERE token = ?", (req.body.setSubscribed && req.user) ? parseInt(req.body.subscribedTo) : (subscriber.subscribedTo | parseInt(req.body.subscribedTo)), req.body.token);
+            return res.sendStatus(200);
+        }
+
+        // User is not subscribed
         await removeExpiredSubscribers();
         let token = utils.generateToken(20);
         let timestamp = utils.getCurrentTimestamp();
