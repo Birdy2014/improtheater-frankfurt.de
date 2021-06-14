@@ -164,8 +164,9 @@ async function getRenderOptions(route, loggedIn, query) {
             let subscribers = [];
             if (loggedIn) {
                 subscribers = await newsletter.getSubscribers();
+                let format = new Intl.DateTimeFormat("de-DE");
                 for (let subscriber of subscribers)
-                    subscriber.last_viewed_newsletter_name = (await workshops.getWorkshop(subscriber.last_viewed_newsletter, true))?.title;
+                    subscriber.last_viewed_newsletter_date = format.format(subscriber.last_viewed_newsletter * 1000);
             }
             return { loggedIn, subscribers };
         case "hygienekonzept":

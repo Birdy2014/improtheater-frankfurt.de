@@ -14,7 +14,7 @@ block routeContent
                     th Name
                     th Email
                     th Newsletter
-                    th Letzter Newsletter
+                    th Gelesen
                     th Entfernen
             tbody
                 - let i = 0
@@ -29,8 +29,8 @@ block routeContent
                                     option(value=i selected=i==s.subscribedTo)
                                         +newsletterName(i)
                         td
-                            if (s.last_viewed_newsletter_name)
-                                a(href='/workshop/' + s.last_viewed_newsletter)= s.last_viewed_newsletter_name
+                            if (s.last_viewed_newsletter)
+                                a(href='/workshop/' + s.last_viewed_newsletter)= s.last_viewed_newsletter_date
                             else
                                 | Kein newsletter
                         td.subscribers-delete
