@@ -1,5 +1,6 @@
 #subscribers table {
     border: none;
+    width: 100%;
 }
 
 #subscribers th, #subscribers td {

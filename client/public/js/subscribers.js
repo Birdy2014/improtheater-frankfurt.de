@@ -17,7 +17,8 @@ async function subscribers_remove(token, name) {
         if (!await confirm(`Soll ${name} wirklich vom Newsletter abgemeldet werden?`))
             return;
         await axios.post("/api/newsletter/unsubscribe", { token });
-        navigate(currentRoute, true, false)
+        document.querySelector(`#subscriber-${token}`).remove();
+        alert(ALERT_SUCCESS, `${name} wurde entfernt.`);
     } catch(err) {
         showError(err);
     }
