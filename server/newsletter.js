@@ -101,7 +101,7 @@ exports.send = async (req, res) => {
         try {
             let unsubscribe = baseUrl + "/api/newsletter/unsubscribe?token=" + subscriber.token;
             let subscribername = subscriber.name;
-            let textColor = parseInt(workshop.color.substr(1, 2), 16) + parseInt(workshop.color.substr(3, 2), 16) + parseInt(workshop.color.substr(5, 2), 16) > 382 ? "#000000" : "#ffffff";
+            let textColor = exports.calcTextColor(workshop.color);
             let html = pug.renderFile(__dirname + "/../client/views/emails/newsletter.pug", {
                 title: workshop.title,
                 img: workshop.img + "&token=" + subscriber.token,
@@ -216,4 +216,15 @@ async function sendMail(type, options) {
     const newOptions = Object.assign({ from: config.email[i].from }, options);
     await exports.transporter[i].sendMail(newOptions);
     return true;
+}
+
+exports.calcTextColor = (backgroundColor) => {
+    const r = parseInt(backgroundColor.substr(1, 2), 16);
+    const g = parseInt(backgroundColor.substr(3, 2), 16);
+    const b = parseInt(backgroundColor.substr(5, 2), 16);
+    const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+    if (luminance > 0.5)
+        return "#000000";
+    else
+        return "#ffffff";
 }
