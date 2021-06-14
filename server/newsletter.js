@@ -210,8 +210,8 @@ function checkNewsletterType(subscribedTo) {
 
 async function sendMail(type, options) {
     let i;
-    for (i = 0; !(type & (1 << i)); i++);
-    if (i >= exports.transporter.length)
+    for (i = exports.transporter.length; !(type & (1 << i)) && i >= 0; i--);
+    if (i < 0)
         return false;
     const newOptions = Object.assign({ from: config.email[i].from }, options);
     await exports.transporter[i].sendMail(newOptions);
