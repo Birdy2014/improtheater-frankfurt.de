@@ -75,6 +75,17 @@ async function unsubscribe(event) {
     }
 }
 
+async function newsletter_subscribe_other(token) {
+    try {
+        await axios.post("/api/newsletter/subscribe", { token, subscribedTo: 3 });
+        document.getElementById("newsletter-subscribe-other").style.display = "none";
+        document.getElementById("newsletter-subscribe-other-success").style.removeProperty("display");
+    } catch(e) {
+        document.getElementById("newsletter-subscribe-other").style.display = "none";
+        document.getElementById("newsletter-subscribe-other-error").style.removeProperty("display");
+    }
+}
+
 const subscribe_form = document.getElementById("newsletter-form");
 if (subscribe_form) {
     subscribe_form.addEventListener("submit", subscribe);

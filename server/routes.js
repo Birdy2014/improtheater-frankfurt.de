@@ -117,15 +117,18 @@ router.get("/newsletter-preview/:workshopID", auth.getUser, async (req, res) => 
     } else {
         let baseUrl = process.env.TEST ? "http://localhost:" + config.port : "https://improtheater-frankfurt.de";
         let logo = baseUrl + "/public/img/Improtheater-Frankfurt-Logo.png";
-        let unsubscribe = "#";
         let website = baseUrl + "/workshop/"+ w.id;
-        let subscribername = req.user.username;
+        let subscriber = {
+            name: req.user.username,
+            subscribedTo: w.type
+        }
         let textColor = newsletter.calcTextColor(w.color);
         res.render("emails/newsletter", {
             ...w,
-            unsubscribe,
+            unsubscribe: "#",
+            subscribe: "#",
             logo,
-            subscribername,
+            subscriber,
             marked,
             textColor,
             website
@@ -156,7 +159,7 @@ async function getRenderOptions(route, loggedIn, query) {
         case "workshops":
             return { loggedIn, workshops: await workshops.getWorkshops(loggedIn), page: 0 };
         case "newsletter":
-            return { loggedIn, subscriber: await newsletter.getSubscriber(query.token), unsubscribe: query.unsubscribe };
+            return { loggedIn, subscriber: await newsletter.getSubscriber(query.token), unsubscribe: query.unsubscribe, subscribe: query.subscribe };
         case "subscribers":
             let subscribers = [];
             if (loggedIn) {

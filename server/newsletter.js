@@ -14,6 +14,9 @@ for (const email of config.email)
 exports.subscribe = async (req, res) => {
     // TODO: check email address, length limit name, sanitize name and email
     try {
+        if (req.body.subscribedTo)
+            req.body.subscribedTo &= 3;
+
         if (((!req.body.name || !req.body.email) && !req.body.token) || !req.body.subscribedTo || !checkNewsletterType(req.body.subscribedTo)) {
             res.status(400);
             res.send();
@@ -25,7 +28,7 @@ exports.subscribe = async (req, res) => {
             const subscriber = await exports.getSubscriber(req.body.token);
             if (req.body.subscribedTo == subscriber.subscribedTo)
                 return res.sendStatus(200);
-            await db.run("UPDATE subscriber SET subscribedTo = ? WHERE token = ?", (req.body.setSubscribed && req.user) ? parseInt(req.body.subscribedTo) : (subscriber.subscribedTo | parseInt(req.body.subscribedTo)), req.body.token);
+            await db.run("UPDATE subscriber SET subscribedTo = ? WHERE token = ?", req.body.subscribedTo, req.body.token);
             return res.sendStatus(200);
         }
 
@@ -108,7 +111,7 @@ exports.send = async (req, res) => {
             continue;
         try {
             let unsubscribe = baseUrl + "/newsletter?unsubscribe=1&token=" + subscriber.token;
-            let subscribername = subscriber.name;
+            let subscribe = baseUrl + "/newsletter?subscribe=1&token=" + subscriber.token;
             let textColor = exports.calcTextColor(workshop.color);
             let html = pug.renderFile(__dirname + "/../client/views/emails/newsletter.pug", {
                 title: workshop.title,
@@ -122,8 +125,9 @@ exports.send = async (req, res) => {
                 color: workshop.color,
                 textColor: workshop.textColor,
                 unsubscribe,
+                subscribe,
                 logo,
-                subscribername,
+                subscriber,
                 marked,
                 textColor,
                 website: website + "?token=" + subscriber.token,

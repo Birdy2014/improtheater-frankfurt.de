@@ -29,7 +29,7 @@ async function subscribers_change_type(event) {
         const token = row.id.substring(row.id.lastIndexOf("-") + 1);
         const subscribedTo = event.target.value;
         const name = row.querySelector(".subscribers-name").innerText;
-        await axios.post("/api/newsletter/subscribe", { token, subscribedTo, setSubscribed: true });
+        await axios.post("/api/newsletter/subscribe", { token, subscribedTo });
         alert(ALERT_SUCCESS, `Newsletter für ${name} geändert.`);
     } catch(err) {
         showError(err);

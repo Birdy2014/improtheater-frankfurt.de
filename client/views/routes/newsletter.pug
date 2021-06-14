@@ -1,5 +1,7 @@
 extends ../template.pug
 
+include ../includes/utils.pug
+
 block routeContent
     link(rel="stylesheet" href="/public/css/newsletter.css")
     img(src="/public/img/banner-newsletter.jpg" class="banner")
@@ -25,6 +27,16 @@ block routeContent
                 p Du bist anscheinend schon vom Mailverteiler abgemeldet.
             #newsletter-unsubscribe-error(style="display: none;")
                 p Beim Abmelden ist leider etwas schiefgelaufen.
+        else if subscribe && subscriber && subscriber.subscribedTo != 3
+            #newsletter-subscribe-other
+                h1 Bei #[+newsletterName(~subscriber.subscribedTo)] Newsletter anmelden
+                button(onclick=`newsletter_subscribe_other('${subscriber.token}')`) Bestätigen
+            #newsletter-subscribe-other-success(style="display: none;")
+                h1 Vielen Dank für Deine Newsletter-Anmeldung
+                p Du erhältst jetzt auch den Newsletter von #[+newsletterName(~subscriber.subscribedTo)].
+            #newsletter-subscribe-other-error(style="display: none;")
+                h1 Die Newsletter-Anmeldung war nicht erfolgreich
+                p Es ist ein unbekannter Fehler aufgetreten.
         else if subscriber.confirmed
             p.
                 Liebe/r #{subscriber.name},
