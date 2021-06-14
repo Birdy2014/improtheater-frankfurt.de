@@ -60,24 +60,24 @@ block routeContent
 
                 p.
                     Improglycerin Newsletter bestellen und immer gut informiert sein!
+
                 p.
-                    Ja, ich möchte den Newsletter bestellen und erhalte einmal wöchentlich die Einladung für Mittwochabend und monatlich
-                    die Einladung zur Samstagsjam sowie zur Show von Improglycerin. Der Newsletter kann jederzeit wieder abbestellt werden.
+                    Hier könnt ihr zwei Newsletter bestellen. Der eine Newsletter kommt wöchentlich von Improtheater Frankfurt und enthält die Einladungen für unsere Workshops.
+                    Der andere Newsletter kommt ca. zehn mal pro Jahr von Improglycerin für unsere Shows.
 
                 form#newsletter-form
-                    div
-                        div#newsletter-form-input-text-container
-                            input(type="email" class="input-newsletter-text" id="input-newsletter-email" placeholder="E-Mail-Adresse" required)
-                            br
-                            input(type="text" class="input-newsletter-text" id="input-newsletter-name" placeholder="Vorname und Nachname" required)
-                            br
-                        div#newsletter-form-input-checkbox-container
-                            input(type="checkbox" name="subscribe-itf" id="input-newsletter-0")
-                            label(for="subscribe-itf") Improtheater Frankfurt Newsletter
-                            br
-                            input(type="checkbox" name="subscribe-improglycerin" id="input-newsletter-1")
-                            label(for="subscribe-improglycerin") Improglycerin Newsletter
-                            br
+                    #newsletter-form-checkbox-container
+                        input(type="checkbox" name="subscribe-itf" id="input-newsletter-0")
+                        label(for="subscribe-itf") Workshops
+                        br
+                        input(type="checkbox" name="subscribe-improglycerin" id="input-newsletter-1")
+                        label(for="subscribe-improglycerin") Shows
+                        br
+                    #newsletter-form-text-container
+                        input(type="email" class="input-newsletter-text" id="input-newsletter-email" placeholder="E-Mail-Adresse" required)
+                        br
+                        input(type="text" class="input-newsletter-text" id="input-newsletter-name" placeholder="Vorname und Nachname" required)
+                        br
 
                     input(type="submit" class="input-newsletter-button" value="ANMELDEN")
             #newsletter-subscribe-success(style="display: none;")

@@ -1,26 +1,19 @@
-@media screen and (min-width: 870px) {
-    #newsletter-text-container {
-        width: 75%;
-    }
-}
-
-@media screen and (min-width: 700px) {
-    #newsletter-form > div {
-        flex-direction: row !important;
-    }
-
-    #newsletter-form-input-checkbox-container {
-        margin-left: 20px;
-    }
-}
-
 #newsletter-form {
-    margin-top: 35px;
+    margin-top: 10px;
 }
 
-#newsletter-form > div {
-    display: flex;
-    flex-direction: column;
+#newsletter-form label {
+    font-weight: bold;
+    margin-left: 5px;
+    vertical-align: middle;
+}
+
+#newsletter-form input[type="checkbox"] {
+    vertical-align: middle;
+}
+
+#newsletter-form-text-container {
+    margin-top: 20px;
 }
 
 #newsletter-form .input-newsletter-text {
