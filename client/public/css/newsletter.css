@@ -55,3 +55,7 @@
 #newsletter-form .input-newsletter-button:hover {
     background-color: #552726;
 }
+
+#newsletter-unsubscribe-token {
+    display: none;
+}

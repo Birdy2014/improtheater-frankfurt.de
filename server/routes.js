@@ -39,7 +39,7 @@ router.post("/api/workshops", auth.getUser, workshops.post);
 router.delete("/api/workshops", auth.getUser, workshops.delete);
 router.post("/api/newsletter/subscribe", newsletter.subscribe);
 router.get("/api/newsletter/confirm", newsletter.confirm);
-router.get("/api/newsletter/unsubscribe", newsletter.unsubscribe);
+router.post("/api/newsletter/unsubscribe", newsletter.unsubscribe);
 router.post("/api/newsletter/send", auth.getUser, newsletter.send);
 router.get("/api/newsletter/export", auth.getUser, newsletter.exportSubscribers);
 router.post("/api/newsletter/add", auth.getUser, newsletter.addSubscriber);
@@ -156,7 +156,7 @@ async function getRenderOptions(route, loggedIn, query) {
         case "workshops":
             return { loggedIn, workshops: await workshops.getWorkshops(loggedIn), page: 0 };
         case "newsletter":
-            return { loggedIn, subscriber: await newsletter.getSubscriber(query.token), unsubscribed: query.unsubscribed };
+            return { loggedIn, subscriber: await newsletter.getSubscriber(query.token), unsubscribe: query.unsubscribe };
         case "subscribers":
             let subscribers = [];
             if (loggedIn) {

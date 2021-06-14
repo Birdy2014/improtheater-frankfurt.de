@@ -59,13 +59,21 @@ exports.confirm = async (req, res) => {
 }
 
 exports.unsubscribe = async (req, res) => {
-    if (!req.query.token) {
-        res.redirect("/newsletter");
-        return;
-    }
-    let subscriber = await db.get("SELECT name, email FROM subscriber WHERE token = ?", req.query.token);
-    await db.run("DELETE FROM subscriber WHERE token = ?", req.query.token);
-    res.redirect("/newsletter?unsubscribed=" + subscriber.email);
+    if (!req.body.token)
+        return res.sendStatus(400);
+
+    let subscriber = await exports.getSubscriber(req.body.token);
+    if (!subscriber)
+        return res.sendStatus(404);
+
+    const unsubscribeFrom = req.body.type || 0xFF
+
+    const newSubscribedTo = subscriber.subscribedTo & ~unsubscribeFrom;
+    if (newSubscribedTo)
+        await db.run("UPDATE subscriber SET subscribedTo = ? WHERE token = ?", newSubscribedTo, req.body.token);
+    else
+        await db.run("DELETE FROM subscriber WHERE token = ?", req.body.token);
+    res.sendStatus(200);
 }
 
 exports.send = async (req, res) => {
@@ -99,7 +107,7 @@ exports.send = async (req, res) => {
         if (!(subscriber.subscribedTo & workshop.type))
             continue;
         try {
-            let unsubscribe = baseUrl + "/api/newsletter/unsubscribe?token=" + subscriber.token;
+            let unsubscribe = baseUrl + "/newsletter?unsubscribe=1&token=" + subscriber.token;
             let subscribername = subscriber.name;
             let textColor = exports.calcTextColor(workshop.color);
             let html = pug.renderFile(__dirname + "/../client/views/emails/newsletter.pug", {

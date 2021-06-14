@@ -5,8 +5,26 @@ block routeContent
     img(src="/public/img/banner-newsletter.jpg" class="banner")
 
     #newsletter-text-container
-        if unsubscribed
-            p Deine E-Mail Adresse #{unsubscribed} wurde erfolgreich vom Mailverteiler abgemeldet
+        if unsubscribe && subscriber
+            span#newsletter-unsubscribe-token #{subscriber.token}
+            #newsletter-unsubscribe
+                h1 Von welchem Newsletter möchtest du dich abmelden?
+                form#newsletter-unsubscribe-form
+                    if subscriber.subscribedTo & 1
+                        input(type="checkbox" name="unsubscribe-itf" id="input-newsletter-0")
+                        label(for="unsubscribe-itf") Improtheater Frankfurt Newsletter
+                        br
+                    if subscriber.subscribedTo & 2
+                        input(type="checkbox" name="unsubscribe-improglycerin" id="input-newsletter-1")
+                        label(for="unsubscribe-improglycerin") Improglycerin Newsletter
+                        br
+                    input(type="submit" value="Bestätigen")
+            #newsletter-unsubscribe-success(style="display: none;")
+                p Deine E-Mail Adresse #{subscriber.email} wurde erfolgreich vom Mailverteiler abgemeldet
+            #newsletter-unsubscribe-failed(style="display: none;")
+                p Du bist anscheinend schon vom Mailverteiler abgemeldet.
+            #newsletter-unsubscribe-error(style="display: none;")
+                p Beim Abmelden ist leider etwas schiefgelaufen.
         else if subscriber.confirmed
             p.
                 Liebe/r #{subscriber.name},
@@ -34,7 +52,7 @@ block routeContent
                     Ja, ich möchte den Newsletter bestellen und erhalte einmal wöchentlich die Einladung für Mittwochabend und monatlich
                     die Einladung zur Samstagsjam sowie zur Show von Improglycerin. Der Newsletter kann jederzeit wieder abbestellt werden.
 
-                form(id="newsletter-form")
+                form#newsletter-form
                     div
                         div#newsletter-form-input-text-container
                             input(type="email" class="input-newsletter-text" id="input-newsletter-email" placeholder="E-Mail-Adresse" required)
