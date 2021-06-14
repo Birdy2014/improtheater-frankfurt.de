@@ -14,11 +14,11 @@ block routeContent
                 form#newsletter-unsubscribe-form
                     if subscriber.subscribedTo & 1
                         input(type="checkbox" name="unsubscribe-itf" id="input-newsletter-0")
-                        label(for="unsubscribe-itf") Improtheater Frankfurt Newsletter
+                        label(for="unsubscribe-itf") Improtheater Frankfurt Newsletter (wöchentlich &mdash; Workshops)
                         br
                     if subscriber.subscribedTo & 2
                         input(type="checkbox" name="unsubscribe-improglycerin" id="input-newsletter-1")
-                        label(for="unsubscribe-improglycerin") Improglycerin Newsletter
+                        label(for="unsubscribe-improglycerin") Improglycerin Newsletter (ca. zehn mal im Jahr &mdash; Shows)
                         br
                     input(type="submit" value="Bestätigen")
             #newsletter-unsubscribe-success(style="display: none;")

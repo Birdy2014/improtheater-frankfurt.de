@@ -1,11 +1,14 @@
-#newsletter-form {
+#newsletter {
     margin-top: 10px;
+}
+
+#newsletter label {
+    vertical-align: middle;
 }
 
 #newsletter-form label {
     font-weight: bold;
     margin-left: 5px;
-    vertical-align: middle;
 }
 
 #newsletter-form input[type="checkbox"] {
