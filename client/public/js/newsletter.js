@@ -79,10 +79,12 @@ const subscribe_form = document.getElementById("newsletter-form");
 if (subscribe_form) {
     subscribe_form.addEventListener("submit", subscribe);
     subscribe_form.addEventListener("change", newsletter_checkValidity);
+    newsletter_checkValidity();
 }
 
 const unsubscribe_form = document.getElementById("newsletter-unsubscribe-form");
 if (unsubscribe_form) {
     unsubscribe_form.addEventListener("submit", unsubscribe);
     unsubscribe_form.addEventListener("change", newsletter_checkValidity);
+    newsletter_checkValidity();
 }
