@@ -1,12 +1,36 @@
 :root {
     --color-bg: white;
+    --color-bg-light: #f6f6f6;
     --color-fg: #cf0d2b;
+    --color-text: black;
+    --color-text-light: #101010;
+    --color-border: #ebeaea;
+    --color-input: #f0f0f0;
+    --color-input-hover: #e9e9ed;
+    --color-code-bg: #c7c7c7;
     --site-width: 1100px;
+    --logo: url("/public/img/Improtheater-Frankfurt-Logo.png");
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --color-bg: #181a1b;
+        --color-bg-light: #080a0b;
+        --color-text: white;
+        --color-text-light: #909090;
+        --color-border: #282a2b;
+        --color-input: #787878;
+        --color-input-hover: #696981;
+        --color-code-bg: #636363;
+        --logo: url("/public/img/Improtheater-Frankfurt-Logo-dark.png");
+    }
 }
 
 html {
+    background-color: var(--color-bg);
     overflow-x: hidden;
     overflow-y: scroll;
+    color: var(--color-text);
 }
 
 body {
@@ -49,8 +73,12 @@ nav #menu {
 nav #logo {
     float: left;
     height: 100%;
+    width: 240px;
     max-height: 80px;
     transform: translateZ(0);
+    background-image: var(--logo);
+    background-size: contain;
+    background-repeat: no-repeat;
 }
 
 nav #main-menu {
@@ -66,7 +94,7 @@ nav #menu .icon {
 nav #main-menu a {
     display: inline-block;
     text-align: center;
-    color: black;
+    color: var(--color-text);
     text-decoration: none;
     font-weight: 700;
     font-size: 14px;
@@ -111,7 +139,7 @@ nav #main-menu .active {
 }
 
 .arrow-down {
-    border: solid black;
+    border: solid var(--color-text);
     border-width: 0 3px 3px 0;
     display: inline-block;
     padding: 3px;
@@ -148,7 +176,7 @@ nav #main-menu .active {
         position: fixed;
         top: 0;
         right: 0;
-        color: black;
+        color: var(--color-text);
         font-weight: bold;
     }
 
@@ -182,7 +210,7 @@ h1 {
 
 h2 {
     font-size: 22px;
-    color: black;
+    color: var(--color-text);
     font-weight: bold;
 }
 
@@ -211,7 +239,7 @@ footer {
 
 footer a {
     text-decoration: none;
-    color: black;
+    color: var(--color-text);
 }
 
 .clearfix::after {
@@ -225,26 +253,26 @@ footer a {
 }
 
 input, button, select {
-    background-color: white;
-    color: black;
+    background-color: var(--color-bg);
+    color: var(--color-text);
     border: 1px solid #8f8f9d;
     border-radius: 2px;
 }
 
 input[type="text"]::placeholder, input[type="email"]::placeholder {
-    color: #101010;
+    color: var(--color-text-light);
 }
 
 input[type="submit"], button {
-    background-color: #f0f0f0;
+    background-color: var(--color-input);
     cursor: pointer;
 }
 
 input[type="submit"]:hover, button:hover {
-    background-color: #e9e9ed;
+    background-color: var(--color-input-hover);
 }
 
 select {
     display: block;
-    background-color: #f0f0f0;
+    background-color: var(--color-input);
 }

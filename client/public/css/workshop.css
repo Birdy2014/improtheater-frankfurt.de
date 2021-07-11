@@ -1,12 +1,12 @@
 .edit-button {
     text-decoration: none;
-    color: black;
+    color: var(--color-text);
     font-weight: 700;
     transition: color .3s ease-out;
 }
 
 .edit-button:hover {
-    color: red;
+    color: var(--color-fg);
 }
 
 .edit-title {
@@ -36,7 +36,7 @@
 }
 
 .workshop-right {
-    background-color: #f6f6f6;
+    background-color: var(--color-bg-light);
     padding: 10px;
     margin: 0;
     float: right;
@@ -78,11 +78,13 @@ textarea {
     box-sizing: border-box;
     resize: vertical;
     border: 1px solid #b2b2b2;
+    background-color: var(--color-bg);
+    color: var(--color-text);
     padding: 5px;
     overflow: hidden;
 }
 
 code {
     display: block;
-    background-color: #c7c7c7;
+    background-color: var(--color-code-bg);
 }
