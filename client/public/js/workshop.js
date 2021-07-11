@@ -66,6 +66,21 @@ async function sendNewsletter() {
     }
 }
 
+async function sendTestNewsletter() {
+    try {
+        let id = currentRoute.substring(currentRoute.indexOf("/") + 1);
+        let container = document.getElementById("workshop/" + id);
+        if (workshop_changed(id)) {
+            alert(ALERT_ERROR, "Es gibt ungespeicherte Änderungen. Der Newsletter wurde nicht versendet.");
+            return;
+        }
+        await axios.post("/api/newsletter/send", { workshop: id, test: true });
+        alert(ALERT_SUCCESS, "Testmail gesendet");
+    } catch (e) {
+        showError(e);
+    }
+}
+
 function textareaAutoGrow(field) {
     if (field.scrollHeight > field.clientHeight)
         field.style.height = field.scrollHeight + "px";
