@@ -98,6 +98,7 @@ function toggleWorkshopPreview() {
     let email_input = container.querySelector(".edit-workshop-email");
     let email_preview = container.querySelector(".workshop-email-preview");
     let properties = container.querySelector(".workshop-properties");
+    let markdown_examples = container.querySelector(".workshop-markdown-examples");
 
     if (workshops[id].buttons.previewToggled) {
         content_textarea.style.display = "block";
@@ -109,6 +110,7 @@ function toggleWorkshopPreview() {
         email_input.style.display = "block";
         email_preview.style.display = "none";
         properties.style.display = null;
+        markdown_examples.style.display = null;
     } else {
         content_preview.innerHTML = marked(content_textarea.value);
         content_textarea.style.display = "none";
@@ -123,6 +125,7 @@ function toggleWorkshopPreview() {
         email_input.style.display = "none";
         email_preview.style.display = "block";
         properties.style.display = workshops[id].texts.propertiesHidden ? "none" : null;
+        markdown_examples.style.display = "none";
     }
     workshops[id].buttons.previewToggled = !workshops[id].buttons.previewToggled;
 }

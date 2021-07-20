@@ -36,11 +36,14 @@
 }
 
 .workshop-right {
+    float: right;
+    width: 32%;
+}
+
+.workshop-right-item {
     background-color: var(--color-bg-light);
     padding: 10px;
     margin: 0;
-    float: right;
-    width: 32%;
 }
 
 .workshop-properties dd {

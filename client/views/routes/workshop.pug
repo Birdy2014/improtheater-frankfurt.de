@@ -12,76 +12,76 @@ block routeContent
 
     div
         img.workshop-image(src=img onclick=loggedIn ? "editWorkshopImage()" : "")
-        if loggedIn || !propertiesHidden
-            dl.workshop-right.workshop-properties
-                if loggedIn
-                    span(style=`display: ${permissions.includes("hideproperties") ? "inline" : "none"}`)
-                        input.workshop-input-propertieshidden(type="checkbox" name=propertieshidden checked=propertiesHidden)
-                        label(for=propertieshidden) Infobox verstecken
-                    select.workshop-input-type(name=id)
-                        each i in [1, 2, 3]
-                            option(value=i selected=(i==type))
-                                +newsletterName(i)
-                dt Wann?
-                dd
+        .workshop-right
+            if loggedIn || !propertiesHidden
+                dl.workshop-right-item.workshop-properties
                     if loggedIn
-                        input(type="date" value=dateISO class="input-workshop-date")
-                    else
-                        | #{dateText}
-                dd
-                    if loggedIn
-                        input(type="time" value=beginTimeISO class="input-workshop-time-begin")
-                        | -
-                        input(type="time" value=endTimeISO class="input-workshop-time-end")
-                    else
-                        | #{timeText}
-                dt Wo?
-                dd
-                    if loggedIn
-                        input.workshop-input.edit-workshop-location(type="text" autocomplete="off" value=location)
-                        .workshop-location-preview
-                    else
-                        span!= marked.parseInline(location)
-                dt Kosten?
-                dd
-                    if loggedIn
-                        input.workshop-input.edit-workshop-price(type="text" autocomplete="off" value=price)
-                        .workshop-price-preview
-                    else
-                        span!= marked.parseInline(price)
-                dt Anmelden?
-                dd
-                    if loggedIn
-                        input.workshop-input.edit-workshop-email(type="text" autocomplete="off" value=email)
-                        .workshop-email-preview
-                    else
-                        span!= marked.parseInline(email)
-                if loggedIn
-                    dt Farbe?
+                        span(style=`display: ${permissions.includes("hideproperties") ? "inline" : "none"}`)
+                            input.workshop-input-propertieshidden(type="checkbox" name=propertieshidden checked=propertiesHidden)
+                            label(for=propertieshidden) Infobox verstecken
+                        select.workshop-input-type(name=id)
+                            each i in [1, 2, 3]
+                                option(value=i selected=(i==type))
+                                    +newsletterName(i)
+                    dt Wann?
                     dd
-                        if permissions.includes("restricted")
-                            select.input-workshop-color
-                                option(value="#e65656") Rot
-                                option(value="#5663E6") Blau
-                                option(value="#328026") Grün
-                                option(value="#7C8026") Khaki
-                                option(value="#ECD426") Gelb
+                        if loggedIn
+                            input(type="date" value=dateISO class="input-workshop-date")
                         else
-                            input(type="color" value=color class="input-workshop-color")
-                            | #{color}
+                            | #{dateText}
+                    dd
+                        if loggedIn
+                            input(type="time" value=beginTimeISO class="input-workshop-time-begin")
+                            | -
+                            input(type="time" value=endTimeISO class="input-workshop-time-end")
+                        else
+                            | #{timeText}
+                    dt Wo?
+                    dd
+                        if loggedIn
+                            input.workshop-input.edit-workshop-location(type="text" autocomplete="off" value=location)
+                            .workshop-location-preview
+                        else
+                            span!= marked.parseInline(location)
+                    dt Kosten?
+                    dd
+                        if loggedIn
+                            input.workshop-input.edit-workshop-price(type="text" autocomplete="off" value=price)
+                            .workshop-price-preview
+                        else
+                            span!= marked.parseInline(price)
+                    dt Anmelden?
+                    dd
+                        if loggedIn
+                            input.workshop-input.edit-workshop-email(type="text" autocomplete="off" value=email)
+                            .workshop-email-preview
+                        else
+                            span!= marked.parseInline(email)
+                    if loggedIn
+                        dt Farbe?
+                        dd
+                            if permissions.includes("restricted")
+                                select.input-workshop-color
+                                    option(value="#e65656") Rot
+                                    option(value="#5663E6") Blau
+                                    option(value="#328026") Grün
+                                    option(value="#7C8026") Khaki
+                                    option(value="#ECD426") Gelb
+                            else
+                                input(type="color" value=color class="input-workshop-color")
+                                | #{color}
 
-        if loggedIn
-            .clearfix
-            .workshop-right(style="margin-top: 10px;")
-                h3(style="margin: 5px 0") Markdown Beispiele
-                b Überschrift
-                code # Überschrift
-                b Link
-                code [Text](https://example.com)
-                b Fett
-                code **Text**
-                b Kursiv
-                code *Text*
+            if loggedIn
+                .workshop-right-item.workshop-markdown-examples(style="margin-top: 10px;")
+                    h3(style="margin: 5px 0") Markdown Beispiele
+                    b Überschrift
+                    code # Überschrift
+                    b Link
+                    code [Text](https://example.com)
+                    b Fett
+                    code **Text**
+                    b Kursiv
+                    code *Text*
 
     if loggedIn
         .workshop-content
