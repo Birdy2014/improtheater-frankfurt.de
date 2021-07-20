@@ -7,6 +7,9 @@ const logger = require("./logger");
 const config = require("../config.json");
 const workshops = require("./workshops");
 
+const type_itf = 1;
+const type_improglycerin = 2;
+
 exports.transporter = [];
 for (const email of config.email)
     exports.transporter.push(nodemailer.createTransport(email));
@@ -113,7 +116,9 @@ exports.send = async (req, res) => {
     res.sendStatus(200);
     // Send newsletter
     let baseUrl = process.env.TEST ? "http://localhost:" + config.port : "https://improtheater-frankfurt.de";
-    let logo = baseUrl + "/public/img/Improtheater-Frankfurt-Logo.png";
+    let logo = "https://improglycerin.de/wp-content/uploads/2017/04/improglycerin_logo_website_white_medium_2.jpg";
+    if (workshop.type == type_itf)
+        logo = baseUrl + "/public/img/Improtheater-Frankfurt-Logo.png";
     let reply = /\S+@\S+\.\S+/.test(workshop.email) ? workshop.email : "hallo@improglycerin.de";
     let website = baseUrl + "/workshop/" + workshop.id;
     for (let subscriber of subscribers) {
