@@ -238,8 +238,7 @@ function showError(error) {
     let errorText = "Ein Fehler ist aufgetreten: ";
     if (error.response) {
         errorText += "Status: " + JSON.stringify(error.response.status, null, 4) + "; ";
-        errorText += "Data: " + JSON.stringify(error.response.data, null, 4) + "; ";
-        errorText += "Response Headers: " + JSON.stringify(error.response.headers, null, 4);
+        errorText += "Data: " + JSON.stringify(error.response.data, null, 4);
     } else {
         errorText += error.message;
     }

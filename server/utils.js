@@ -21,4 +21,14 @@ exports.sleep = (ms) => {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+exports.wrapRoute = (route) => {
+    return async (req, res, next) => {
+        try {
+            await route(req, res, next);
+        } catch(err) {
+            next(err);
+        }
+    }
+}
+
 exports.base_url = process.env.TEST ? "http://localhost:" + config.port : "https://improtheater-frankfurt.de";

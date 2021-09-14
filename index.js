@@ -27,7 +27,8 @@ app.use(router);
 // Log errors
 app.use((err, req, res, next) => {
     logger.warn(JSON.stringify(err.stack));
-    next(err);
+    res.status(500);
+    res.json({ status: 500, data: { message: err.message } });
 });
 
 app.listen(config.port || 8080);

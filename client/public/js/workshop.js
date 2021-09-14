@@ -13,8 +13,12 @@ async function changeWorkshopValues() {
     workshop_updateValues(id);
     if (typeof editWorkshopItem !== "undefined")
         editWorkshopItem(workshops[id].texts);
-    await axios.post("/api/workshops", workshops[id].texts);
-    alert(ALERT_SUCCESS, "Daten gespeichert");
+    try {
+        await axios.post("/api/workshops", workshops[id].texts);
+        alert(ALERT_SUCCESS, "Daten gespeichert");
+    } catch(err) {
+        showError(err);
+    }
 }
 
 async function publishWorkshop() {

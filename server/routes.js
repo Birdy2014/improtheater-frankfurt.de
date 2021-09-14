@@ -9,6 +9,7 @@ const newsletter = require("./newsletter");
 const upload = require("./upload");
 const editableWebsite = require("./editableWebsite");
 const config = require("../config");
+const { wrapRoute: route } = require("./utils");
 
 const router = express.Router();
 
@@ -34,19 +35,19 @@ router.use(function (req, res, next) {
 router.get("/robots.txt", (req, res) => res.sendFile(path.join(__dirname, "/../client/robots.txt")));
 router.get("/api/authhook", auth.authhook);
 router.get("/api/login", auth.getUser, (req, res) => res.redirect(req.cookies.route || "/"));
-router.post("/api/logout", auth.logout);
-router.post("/api/workshops", auth.getUser, workshops.post);
-router.delete("/api/workshops", auth.getUser, workshops.delete);
-router.post("/api/newsletter/subscribe", newsletter.subscribe);
-router.get("/api/newsletter/confirm", newsletter.confirm);
-router.post("/api/newsletter/unsubscribe", newsletter.unsubscribe);
-router.post("/api/newsletter/send", auth.getUser, newsletter.send);
-router.get("/api/newsletter/export", auth.getUser, newsletter.exportSubscribers);
-router.post("/api/newsletter/add", auth.getUser, newsletter.addSubscriber);
-router.get("/api/upload", upload.get);
+router.post("/api/logout", route(auth.logout));
+router.post("/api/workshops", auth.getUser, route(workshops.post));
+router.delete("/api/workshops", auth.getUser, route(workshops.delete));
+router.post("/api/newsletter/subscribe", route(newsletter.subscribe));
+router.get("/api/newsletter/confirm", route(newsletter.confirm));
+router.post("/api/newsletter/unsubscribe", route(newsletter.unsubscribe));
+router.post("/api/newsletter/send", auth.getUser, route(newsletter.send));
+router.get("/api/newsletter/export", auth.getUser, route(newsletter.exportSubscribers));
+router.post("/api/newsletter/add", auth.getUser, route(newsletter.addSubscriber));
+router.get("/api/upload", route(upload.get));
 router.post("/api/upload", auth.getUser, fileUpload({ limits: { fileSize: 10 * 1024 * 1024 } }), upload.post);
-router.delete("/api/upload", auth.getUser, upload.delete);
-router.post("/api/hygienekonzept", auth.getUser, editableWebsite.setEditableWebsiteMiddleware("hygienekonzept"));
+router.delete("/api/upload", auth.getUser, route(upload.delete));
+router.post("/api/hygienekonzept", auth.getUser, route(editableWebsite.setEditableWebsiteMiddleware("hygienekonzept")));
 
 // Libraries
 router.get("/lib/nprogress.js", (req, res) => res.sendFile(path.join(__dirname, "/../node_modules/nprogress/nprogress.js")));
