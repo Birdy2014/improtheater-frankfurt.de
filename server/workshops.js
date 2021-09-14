@@ -110,12 +110,19 @@ exports.editWorkshop = async (workshop) => {
     };
     const id = workshop.id || defaultWorkshop.id;
 
+    let params = {};
+
+    // Create params
+    for (let key in defaultWorkshop) {
+        params['$' + key] = workshop[key] || defaultWorkshop[key];
+    }
+
     // Create update string
     let update = "";
     for (let key in defaultWorkshop) {
         if (workshop[key] !== undefined) {
             if (typeof workshop[key] === "boolean") workshop[key] = workshop[key] ? 1 : 0;
-            update += `${key} = '${workshop[key]}', `
+            update += `${key} = $${key}, `
         }
     }
     update = update.substring(0, update.length - 2);
@@ -127,15 +134,15 @@ exports.editWorkshop = async (workshop) => {
     }
     insert = insert.substring(0, insert.length - 2) + `) VALUES (`;
     for (let key in defaultWorkshop) {
-        insert += `'${workshop[key] || defaultWorkshop[key]}', `;
+        insert += `$${key}, `;
     }
     insert = insert.substring(0, insert.length - 2) + `)`;
 
     // Run upsert query
     if (update.length > 0)
-        await db.run(`INSERT INTO workshop ${insert} ON CONFLICT(id) DO UPDATE SET ${update} WHERE id = '${id}'`);
+        await db.run(`INSERT INTO workshop ${insert} ON CONFLICT(id) DO UPDATE SET ${update} WHERE id = '${id}'`, params);
     else
-        await db.run(`INSERT INTO workshop ${insert} ON CONFLICT(id) DO NOTHING`);
+        await db.run(`INSERT INTO workshop ${insert} ON CONFLICT(id) DO NOTHING`, params);
 
     return id;
 }
