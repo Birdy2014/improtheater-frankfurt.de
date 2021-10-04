@@ -8,6 +8,7 @@
     --color-input: #f0f0f0;
     --color-input-hover: #e9e9ed;
     --color-code-bg: #c7c7c7;
+    --color-nav-button: #54393b;
     --site-width: 1100px;
     --logo: url("/public/img/Improtheater-Frankfurt-Logo.png");
 
@@ -26,6 +27,7 @@
         --color-input: #787878;
         --color-input-hover: #696981;
         --color-code-bg: #636363;
+        --color-nav-button: #e8e6e3;
         --logo: url("/public/img/Improtheater-Frankfurt-Logo-dark.png");
     }
 }
@@ -44,9 +46,9 @@ body {
 .icon-nav-bars {
     width: 25px;
     height: 2px;
-    background-color: #54393b;
+    background-color: var(--color-nav-button);
     margin: 4px 0;
-    border: 1px solid #54393b;
+    border: 1px solid var(--color-nav-button);
     border-radius: 5px;
 }
 
@@ -91,7 +93,7 @@ nav #main-menu {
     text-align: right;
 }
 
-nav #menu .icon {
+nav .icon {
     display: none;
 }
 
@@ -173,15 +175,19 @@ nav #main-menu .active {
         text-align: left;
     }
 
-    nav #menu .icon {
+    nav .icon {
         display: block;
         text-decoration: none;
-        padding: 20px 20px;
+        padding: 30px 20px;
         position: fixed;
         top: 0;
         right: 0;
         color: var(--color-text);
         font-weight: bold;
+    }
+
+    .nav-sticky .icon {
+        padding: 20px 20px;
     }
 
     .dropdown {
