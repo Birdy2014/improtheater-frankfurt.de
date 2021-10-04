@@ -1,24 +1,25 @@
 #uploads-images-list {
     width: 100%;
     overflow: auto;
+    column-count: 2;
+    column-gap: 15px;
+    margin-top: 20px;
 }
 
 #uploads-images-list div {
     position: relative;
-    float: left;
-    margin: 10px;
-    width: 47%;
 }
 
 @media only screen and (max-width: 1000px) {
-    #uploads-images-list div {
-        width: 100%;
+    #uploads-images-list {
+        column-count: 1;
     }
 }
 
 #uploads-images-list img {
     height: auto;
     width: 100%;
+    cursor: pointer;
 }
 
 #uploads-images-list p {
