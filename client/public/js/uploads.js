@@ -6,6 +6,7 @@ async function upload() {
         await axios.post("/api/upload", formData, { headers: { "Content-Type": "multipart/form-data" } });
         addImage(file.name, true);
         alert(ALERT_SUCCESS, "Hochgeladen!");
+        selectImage(file.name);
     } catch (e) {
         showError(e);
     }
