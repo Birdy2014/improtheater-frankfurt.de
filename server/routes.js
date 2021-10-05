@@ -9,7 +9,7 @@ const newsletter = require("./newsletter");
 const upload = require("./upload");
 const editableWebsite = require("./editableWebsite");
 const config = require("../config");
-const { wrapRoute: route, routeITF, routeImproglycerin } = require("./utils");
+const { wrapRoute: route, routeITF, routeImproglycerin, base_url } = require("./utils");
 
 const router = express.Router();
 
@@ -208,7 +208,7 @@ async function getRenderOptions(req, route) {
             break;
         }
     }
-    let improglycerinUrl = process.env.TEST ? `http://improglycerin.localhost:${config.port}` : "https://improglycerin.de";
-    let itfUrl = process.env.TEST ? `http://improtheater-frankfurt.localhost:${config.port}` : "https://improtheater-frankfurt.de";
+    let improglycerinUrl = base_url("improglycerin");
+    let itfUrl = base_url("itf");
     return Object.assign(options, { loggedIn, website, doctype: "html", partial: query.partial, improglycerinUrl, itfUrl });
 }

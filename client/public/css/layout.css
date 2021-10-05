@@ -10,11 +10,18 @@
     --color-code-bg: #c7c7c7;
     --color-nav-button: #54393b;
     --site-width: 1100px;
-    --logo: url("/public/img/Improtheater-Frankfurt-Logo.png");
 
     --menu-height: 80px;
     --menu-scrolled-height: 65px;
     --menu-top-padding: 8px;
+}
+
+.itf {
+    --logo: url(/public/img/Improtheater-Frankfurt-Logo.png);
+}
+
+.improglycerin {
+    --logo: url(/public/img/Improglycerin-Logo.svg);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -28,7 +35,14 @@
         --color-input-hover: #696981;
         --color-code-bg: #636363;
         --color-nav-button: #e8e6e3;
-        --logo: url("/public/img/Improtheater-Frankfurt-Logo-dark.png");
+    }
+
+    .itf {
+        --logo: url(/public/img/Improtheater-Frankfurt-Logo-dark.png);
+    }
+
+    .improglycerin {
+        --logo: url(/public/img/Improglycerin-Logo.svg);
     }
 }
 
@@ -56,7 +70,6 @@ nav {
     position: fixed;
     top: 0;
     left: 0px;
-    padding-top: var(--menu-top-padding);
     width: 100%;
     height: var(--menu-height);
     z-index: 10;
@@ -78,13 +91,14 @@ nav #menu {
 
 nav #logo {
     float: left;
-    height: 100%;
+    height: calc(100% - 2 * var(--menu-top-padding));
     width: 240px;
     max-height: 80px;
     transform: translateZ(0);
     background-image: var(--logo);
     background-size: contain;
     background-repeat: no-repeat;
+    margin: var(--menu-top-padding) 0;
 }
 
 nav #main-menu {
@@ -114,7 +128,7 @@ nav #main-menu > a {
 }
 
 .nav-sticky #main-menu > a, nav #main-menu > div a {
-    padding: 20px 7.5px;
+    padding: 24px 7.5px;
 }
 
 nav #main-menu a:hover {

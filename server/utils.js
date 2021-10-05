@@ -45,4 +45,11 @@ exports.routeImproglycerin = (req, res, next) => {
         next("route");
 }
 
-exports.base_url = process.env.TEST ? "http://localhost:" + config.port : "https://improtheater-frankfurt.de";
+exports.base_url = (website) => {
+    switch (website) {
+        case "improglycerin":
+            return process.env.TEST ? `http://improglycerin.localhost:${config.port}` : "https://improglycerin.de";
+        default:
+            return process.env.TEST ? `http://improtheater-frankfurt.localhost:${config.port}` : "https://improtheater-frankfurt.de";
+    }
+}

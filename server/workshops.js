@@ -53,7 +53,7 @@ exports.getWorkshops = async (loggedIn, page, type) => {
             workshop.outdated = workshop.end < utils.getCurrentTimestamp();
         }
         if (!workshop.img.includes("/"))
-            workshop.img = utils.base_url + "/api/upload?name=" + workshop.img;
+            workshop.img = utils.base_url("itf") + "/api/upload?name=" + workshop.img;
     }
     return workshops;
 }
@@ -86,7 +86,7 @@ exports.getWorkshop = async (id, loggedIn) => {
         workshop.timeText = "Error: Invalid Time";
     }
     if (!workshop.img.includes("/"))
-        workshop.img = utils.base_url + "/api/upload?name=" + workshop.img;
+        workshop.img = utils.base_url("itf") + "/api/upload?name=" + workshop.img;
     workshop.propertiesHidden = workshop.propertiesHidden === 1;
     return workshop;
 }

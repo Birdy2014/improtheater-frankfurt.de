@@ -115,8 +115,8 @@ exports.send = async (req, res) => {
     }
     res.sendStatus(200);
     // Send newsletter
-    let baseUrl = process.env.TEST ? "http://localhost:" + config.port : "https://improtheater-frankfurt.de";
-    let logo = "https://improglycerin.de/wp-content/uploads/2017/04/improglycerin_logo_website_white_medium_2.jpg";
+    baseUrl = workshop.type == type_itf ? utils.base_url("itf") : utils.base_url("improglycerin");
+    let logo = baseUrl + "/public/img/Improglycerin-Logo.jpg";
     if (workshop.type == type_itf)
         logo = baseUrl + "/public/img/Improtheater-Frankfurt-Logo.png";
     let reply = /[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[a-zA-Z0-9]+/.test(workshop.email) ? workshop.email : "hallo@improglycerin.de";
