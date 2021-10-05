@@ -33,7 +33,7 @@ exports.authhook = async (req, res) => {
         res.cookie("access_token", response.data.data.access_token, { maxAge: response.data.data.expires * 1000 });
         res.cookie("refresh_token", response.data.data.refresh_token);
         res.clearCookie("route")
-        res.redirect(req.cookies.route || "/");
+        res.redirect(req.query.route || "/");
     } catch(e) {
         console.error(e);
         res.status(500);
@@ -114,7 +114,8 @@ exports.getUser = async (req, res, next) => {
         let code_challenge = crypto.createHash("sha256").update(code_verifier).digest("base64").replace(/\+/g, "_");
         exports.users[state] = code_verifier;
         let redirect_base_uri = process.env.TEST ? "http://localhost:" + config.port : "https://improtheater-frankfurt.de"
-        res.redirect(`${config.auth.url}/authorize?client_id=${config.auth.client_id}&redirect_uri=${redirect_base_uri + "/api/authhook"}&state=${state}&code_challenge=${code_challenge}&code_challenge_method=S256`);
+        let route_data_uri = req.query.route ? `?route=${req.query.route}` : "";
+        res.redirect(`${config.auth.url}/authorize?client_id=${config.auth.client_id}&redirect_uri=${redirect_base_uri}/api/authhook${route_data_uri}&state=${state}&code_challenge=${code_challenge}&code_challenge_method=S256`);
         return;
     }
 }

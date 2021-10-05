@@ -41,7 +41,10 @@ document.onclick = e => {
             return false;
         }
 
-        if (element.href.endsWith("/api/login")) document.cookie='route=' + window.location.pathname;
+        if (element.href.endsWith("/api/login")) {
+            location.href = "/api/login?route=" + location.pathname;
+            return false;
+        }
         return true;
     }
 }

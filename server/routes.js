@@ -34,7 +34,7 @@ router.use(function (req, res, next) {
 // Backend
 router.get("/robots.txt", (req, res) => res.sendFile(path.join(__dirname, "/../client/robots.txt")));
 router.get("/api/authhook", auth.authhook);
-router.get("/api/login", auth.getUser, (req, res) => res.redirect(req.cookies.route || "/"));
+router.get("/api/login", auth.getUser, (req, res) => res.redirect(req.query.route || "/"));
 router.post("/api/logout", route(auth.logout));
 router.post("/api/workshops", auth.getUser, route(workshops.post));
 router.delete("/api/workshops", auth.getUser, route(workshops.delete));
