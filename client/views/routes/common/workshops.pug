@@ -3,8 +3,9 @@ extends /layout.pug
 block routeContent
     - const workshopPath = website === "improglycerin" ? "/show/" : "/workshop/"
     - const workshopsPath = website === "improglycerin" ? "/shows/" : "/workshops/"
+    - const websiteTitle = website === "improglycerin" ? "SHOWS" : "WORKSHOPS"
     link(rel="stylesheet" href="/public/css/workshops.css")
-    h1 WORKSHOPS
+    h1 #{websiteTitle}
         if loggedIn
             a(id="workshops-add" href="javascript:void(0)" onclick="createWorkshop()") HINZUFÜGEN
             .workshops-navigation
