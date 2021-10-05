@@ -26,10 +26,16 @@ else
                     a(href="/start" class="navlink")
                         div#logo
                     #main-menu
-                        a.navlink(href="/start") START
-                        a.navlink(href="/newsletter") NEWSLETTER
-                        a.navlink(href="/workshops") WORKSHOPS
-                        a.navlink(href="https://improglycerin.de" target="_blank") IMPROGLYCERIN
+                        if website === "improglycerin"
+                            a.navlink(href="/start") START
+                            a.navlink(href="/newsletter") NEWSLETTER
+                            a.navlink(href="/shows") SHOWS
+                            a.navlink(href=itfUrl) IMPROSCHULE
+                        else
+                            a.navlink(href="/start") START
+                            a.navlink(href="/newsletter") NEWSLETTER
+                            a.navlink(href="/workshops") WORKSHOPS
+                            a.navlink(href=improglycerinUrl) IMPROGLYCERIN
                         if loggedIn
                             .dropdown
                                 a(href="javascript:void(0)")

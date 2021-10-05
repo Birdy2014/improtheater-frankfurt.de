@@ -31,4 +31,18 @@ exports.wrapRoute = (route) => {
     }
 }
 
+exports.routeITF = (req, res, next) => {
+    if (req.website === "itf")
+        next();
+    else
+        next("route");
+}
+
+exports.routeImproglycerin = (req, res, next) => {
+    if (req.website === "improglycerin")
+        next();
+    else
+        next("route");
+}
+
 exports.base_url = process.env.TEST ? "http://localhost:" + config.port : "https://improtheater-frankfurt.de";

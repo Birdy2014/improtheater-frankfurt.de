@@ -19,6 +19,8 @@ const app = express();
 
 app.set("views", __dirname + "/client/views");
 app.set("view engine", "pug");
+app.locals.basedir = __dirname + "/client/views";
+app.set("trust proxy", config.proxy);
 app.use(express.json());
 app.use(cookieParser());
 

@@ -9,17 +9,31 @@ const newsletter = require("./newsletter");
 const upload = require("./upload");
 const editableWebsite = require("./editableWebsite");
 const config = require("../config");
-const { wrapRoute: route } = require("./utils");
+const { wrapRoute: route, routeITF, routeImproglycerin } = require("./utils");
 
 const router = express.Router();
 
-// Get all routes
-let routes = [];
-let content = fs.readdirSync(path.join(__dirname, "/../client/views/routes"));
-for (let route of content) {
-    if (route.endsWith(".pug"))
-        routes.push(route.substring(0, route.lastIndexOf(".")));
-}
+const routes = {
+    improglycerin: {
+        "impressum": "common/impressum.pug",
+        "newsletter": "common/newsletter.pug",
+        "subscribers": "common/subscribers.pug",
+        "uploads": "common/uploads.pug",
+        "show": "common/workshop.pug",
+        "shows": "common/workshops.pug",
+        "start": "improglycerin/start.pug",
+    },
+    itf: {
+        "impressum": "common/impressum.pug",
+        "newsletter": "common/newsletter.pug",
+        "subscribers": "common/subscribers.pug",
+        "uploads": "common/uploads.pug",
+        "workshop": "common/workshop.pug",
+        "workshops": "common/workshops.pug",
+        "start": "itf/start.pug",
+        "hygienekonzept": "itf/hygienekonzept.pug",
+    },
+};
 
 // Redirect trailing slashes
 router.use(function (req, res, next) {
@@ -29,6 +43,15 @@ router.use(function (req, res, next) {
     } else {
         next();
     }
+});
+
+// Differentiate between improglycerin.de and improtheater-frankfurt.de
+router.use((req, res, next) => {
+    if (req.hostname.includes("improglycerin"))
+        req.website = "improglycerin";
+    else
+        req.website = "itf";
+    next();
 });
 
 // Backend
@@ -66,52 +89,39 @@ router.get("/index.html", (req, res) => {
     res.redirect("/start");
 });
 
-router.get("/workshop/:workshopID", auth.getUser, async (req, res) => {
+async function workshopRoute(req, res) {
     let w = await workshops.getWorkshop(req.params.workshopID, req.user !== undefined);
     if (!w) {
         res.status(404);
         res.render("404");
     } else {
-        if (req.query.partial) {
-            res.render("routes/workshop", {
-                partial: true,
-                doctype: "html",
-                ...w,
-                loggedIn: req.user !== undefined,
-                marked,
-                permissions: req.user?.permissions || []
-            });
-        } else {
-            res.render("routes/workshop", {
-                route: "workshop/" + req.params.workshopID,
-                ...w,
-                loggedIn: req.user !== undefined,
-                marked,
-                permissions: req.user?.permissions || []
-            });
-        }
+        res.render("routes/common/workshop", {
+            route: "workshop/" + req.params.workshopID,
+            ...(await getRenderOptions(req, "workshop"))
+        });
     }
-});
+}
 
-router.get("/workshops/:page", auth.getUser, async (req, res) => {
+async function workshopsRoute(req, res) {
     let page = parseInt(req.params.page);
-    let w = await workshops.getWorkshops(req.user !== undefined, page);
+    let w = await workshops.getWorkshops(req.user !== undefined, page, req.website === "improglycerin" ? 1 : 2);
     if (!w || w.length === 0) {
         res.status(404);
         res.render("404");
     } else {
-        res.render("routes/workshops", {
-            route: req.params.route,
-            doctype: "html",
-            partial: req.query.partial,
-            workshops: w,
-            loggedIn: req.user !== undefined,
-            page
+        res.render("routes/common/workshops", {
+            route: "workshops/" + page,
+            ...(await getRenderOptions(req, "workshops"))
         });
     }
-});
+}
 
-router.get("/newsletter-preview/:workshopID", auth.getUser, async (req, res) => {
+router.get("/workshop/:workshopID", routeITF, auth.getUser, route(workshopRoute));
+router.get("/workshops/:page", routeITF, auth.getUser, route(workshopsRoute));
+router.get("/show/:workshopID", routeImproglycerin, auth.getUser, route(workshopRoute));
+router.get("/shows/:page", routeImproglycerin, auth.getUser, route(workshopsRoute));
+
+router.get("/newsletter-preview/:workshopID", auth.getUser, route(async (req, res) => {
     let w = await workshops.getWorkshop(req.params.workshopID, true);
     if (!req.user || !w) {
         res.sendStatus(400);
@@ -135,33 +145,50 @@ router.get("/newsletter-preview/:workshopID", auth.getUser, async (req, res) => 
             website
         });
     }
-});
+}));
 
-router.get("/:route", auth.getUser, async (req, res) => {
-    if (!routes.includes(req.params.route)) {
+router.get("/:route", auth.getUser, route(async (req, res) => {
+    const template = routes[req.website][req.params.route];
+    if (!template) {
         res.status(404);
         res.render("404");
     } else {
-        if (req.query.partial) {
-            res.render("routes/" + req.params.route, { partial: true, doctype: "html", ...(await getRenderOptions(req.params.route, req.user !== undefined, req.query)) });
-        } else {
-            res.render("routes/" + req.params.route, {
-                route: req.params.route,
-                ...(await getRenderOptions(req.params.route, req.user !== undefined, req.query))
-            });
-        }
+        res.render("routes/" + template, {
+            route: req.params.route,
+            ...(await getRenderOptions(req, req.params.route))
+        });
     }
-});
+}));
 
 module.exports = router;
 
-async function getRenderOptions(route, loggedIn, query) {
+async function getRenderOptions(req, route) {
+    const loggedIn = req.user !== undefined;
+    const query = req.query;
+    const website = req.website;
+    let options = {};
     switch(route) {
-        case "workshops":
-            return { loggedIn, workshops: await workshops.getWorkshops(loggedIn), page: 0 };
-        case "newsletter":
-            return { loggedIn, subscriber: await newsletter.getSubscriber(query.token), unsubscribe: query.unsubscribe, subscribe: query.subscribe };
-        case "subscribers":
+        case "show":
+        case "workshop": {
+            let workshop = await workshops.getWorkshop(req.params.workshopID, loggedIn);
+            options = { ...workshop, marked, permissions: req.user?.permissions || [] };
+            break;
+        }
+        case "shows": {
+            let page = req.params.page ? parseInt(req.params.page) : 0;
+            options = { workshops: await workshops.getWorkshops(loggedIn, page, 2), page };
+            break;
+        }
+        case "workshops": {
+            let page = req.params.page ? parseInt(req.params.page) : 0;
+            options = { workshops: await workshops.getWorkshops(loggedIn, page, 1), page };
+            break;
+        }
+        case "newsletter": {
+            options = { subscriber: await newsletter.getSubscriber(query.token), unsubscribe: query.unsubscribe, subscribe: query.subscribe };
+            break;
+        }
+        case "subscribers": {
             let subscribers = [];
             if (loggedIn) {
                 subscribers = await newsletter.getSubscribers();
@@ -169,12 +196,19 @@ async function getRenderOptions(route, loggedIn, query) {
                 for (let subscriber of subscribers)
                     subscriber.last_viewed_newsletter_date = format.format(subscriber.last_viewed_newsletter * 1000);
             }
-            return { loggedIn, subscribers };
-        case "hygienekonzept":
-            return { loggedIn, marked, content: await editableWebsite.getEditableWebsite("hygienekonzept") };
-        case "uploads":
-            return { loggedIn, uploads: await upload.getAll() };
-        default:
-            return { loggedIn };
+            options = { subscribers };
+            break;
+        }
+        case "hygienekonzept": {
+            options = { marked, content: await editableWebsite.getEditableWebsite("hygienekonzept") };
+            break;
+        }
+        case "uploads": {
+            options = { uploads: await upload.getAll() };
+            break;
+        }
     }
+    let improglycerinUrl = process.env.TEST ? `http://improglycerin.localhost:${config.port}` : "https://improglycerin.de";
+    let itfUrl = process.env.TEST ? `http://improtheater-frankfurt.localhost:${config.port}` : "https://improtheater-frankfurt.de";
+    return Object.assign(options, { loggedIn, website, doctype: "html", partial: query.partial, improglycerinUrl, itfUrl });
 }

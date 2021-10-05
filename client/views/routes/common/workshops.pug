@@ -1,25 +1,27 @@
-extends ../layout.pug
+extends /layout.pug
 
 block routeContent
+    - const workshopPath = website === "improglycerin" ? "/show/" : "/workshop/"
+    - const workshopsPath = website === "improglycerin" ? "/shows/" : "/workshops/"
     link(rel="stylesheet" href="/public/css/workshops.css")
     h1 WORKSHOPS
         if loggedIn
             a(id="workshops-add" href="javascript:void(0)" onclick="createWorkshop()") HINZUFÜGEN
             .workshops-navigation
                 if page > 0
-                    a(href="/workshops/" + (page - 1)) Vorwärts
-                a(href="/workshops/" + (page + 1)) Zurück
+                    a(href=workshopsPath + (page - 1)) Vorwärts
+                a(href=workshopsPath + (page + 1)) Zurück
 
     #workshop-list.clearfix
         each workshop in workshops
-            +workshop-item(workshop.id, workshop.title, workshop.img, workshop.visible, workshop.timeText, workshop.outdated, workshop.propertiesHidden)
+            +workshop-item(workshop.id, workshop.title, workshop.img, workshop.visible, workshop.timeText, workshop.outdated, workshop.propertiesHidden, workshopPath)
 
     template#template-workshop-item
         +workshop-item(0, "", "", false, "", false, false)
 
-mixin workshop-item(id, title, img, visible, timeText, outdated, propertiesHidden)
+mixin workshop-item(id, title, img, visible, timeText, outdated, propertiesHidden, workshopPath)
     .workshop-item(class=outdated ? "workshops-outdated" : "", id="workshop-item-" + id)
-        a(href="/workshop/" + id)
+        a(href=workshopPath + id)
             .workshops-image-container
                 img(src=img || "/public/img/workshop-default.png")
                 .workshops-draft-text
