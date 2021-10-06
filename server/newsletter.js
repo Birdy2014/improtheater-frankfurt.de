@@ -139,6 +139,7 @@ exports.send = async (req, res) => {
                 content: workshop.content,
                 color: workshop.color,
                 textColor: workshop.textColor,
+                propertiesHidden: workshop.propertiesHidden,
                 unsubscribe,
                 subscribe,
                 logo,
@@ -147,12 +148,16 @@ exports.send = async (req, res) => {
                 textColor,
                 website: website + "?token=" + subscriber.token,
             });
+            let subject = workshop.propertiesHidden ? workshop.title : workshop.title + ", am " + workshop.dateText;
+            let text = workshop.propertiesHidden
+                ? `${workshop.title}\n\n${workshop.content}\n\nImpressum: https://improtheater-frankfurt.de/impressum\nDatenschutz: https://improglycerin.de/datenschutz\nKontakt: https://improglycerin.de/kontakt/\nAbmelden: ${unsubscribe}`
+                : `Improglycerin lädt ein zu ${workshop.title} am ${workshop.dateText}.\n\n${workshop.content}\n\nWann? ${workshop.timeText}\nWo? ${workshop.location}\nBetrag ${workshop.price}\n\nImpressum: https://improtheater-frankfurt.de/impressum\nDatenschutz: https://improglycerin.de/datenschutz\nKontakt: https://improglycerin.de/kontakt/\nAbmelden: ${unsubscribe}`;
             await sendMail(workshop.type, {
                 to: subscriber.email,
                 replyTo: reply,
-                subject: workshop.title + ", am " + workshop.dateText,
-                html: html,
-                text: `Improglycerin lädt ein zu ${workshop.title} am ${workshop.dateText}.\n\n${workshop.content}\n\nWann? ${workshop.timeText}\nWo? ${workshop.location}\nBetrag ${workshop.price}\n\nImpressum: https://improglycerin.de/impressum\nDatenschutz: https://improglycerin.de/datenschutz\nKontakt: https://improglycerin.de/kontakt/\nAbmelden: ${unsubscribe}`
+                subject,
+                html,
+                text
             });
         } catch (e) {
             console.log(e);
