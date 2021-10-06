@@ -1,0 +1,66 @@
+mixin slideshow(aspect)
+    .slideshow-container(style="aspect-ratio: " + aspect)
+        a.slideshow-prev(onclick="slideshow_plus(this.parentElement, 1)") &#10094;
+        a.slideshow-next(onclick="slideshow_plus(this.parentElement, -1)") &#10095;
+        .slideshow-image-container
+            block
+
+mixin slideshow-image(src)
+    img.slideshow-image(src=src)
+
+style.
+    .slideshow-container {
+        position: relative;
+        overflow: hidden;
+    }
+
+    .slideshow-image-container {
+        position: absolute;
+        width: max-content;
+        height: 100%;
+    }
+
+    .slideshow-image-container-moving {
+        transition: margin-left ease-out 0.4s;
+        margin-left: -100%;
+    }
+
+    .slideshow-image {
+        float: left;
+        height: 100%;
+    }
+
+    .slideshow-prev, .slideshow-next {
+        display: block;
+        cursor: pointer;
+        position: absolute;
+        z-index: 1;
+        top: 50%;
+        transition: background-color linear 0.2s;
+        color: white;
+        background-color: #00000050;
+    }
+
+    .slideshow-prev:hover, .slideshow-next:hover {
+        background-color: #000000e0;
+    }
+
+    .slideshow-prev {
+        left: 0;
+    }
+
+    .slideshow-next {
+        right: 0;
+    }
+
+script.
+    function slideshow_plus(slideshow, amount) {
+        const image_container = slideshow.querySelector(".slideshow-image-container");
+        const image = slideshow.querySelector(".slideshow-image");
+        image_container.classList.add("slideshow-image-container-moving");
+        setTimeout(() => {
+            image.remove();
+            image_container.append(image);
+            image_container.classList.remove("slideshow-image-container-moving");
+        }, 500);
+    }
