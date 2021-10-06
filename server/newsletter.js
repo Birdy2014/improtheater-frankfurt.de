@@ -88,7 +88,7 @@ exports.send = async (req, res) => {
         return;
     }
 
-    let workshop = await workshops.getWorkshop(req.body.workshop, false);
+    let workshop = await workshops.getWorkshop(req.body.workshop, req.body.test); // Testmail can be sent without publishing
     if (!workshop) {
         res.sendStatus(404);
         return;
