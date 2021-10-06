@@ -41,9 +41,9 @@ exports.getWorkshops = async (loggedIn, page, type) => {
         page = 0;
     let workshops;
     if (loggedIn)
-        workshops = await db.all(`SELECT * FROM workshop WHERE type = ? ORDER BY begin DESC LIMIT ?, ?`, type, perPage * page, perPage) || [];
+        workshops = await db.all(`SELECT * FROM workshop WHERE type = ? OR type = 3 ORDER BY begin DESC LIMIT ?, ?`, type, perPage * page, perPage) || [];
     else
-        workshops = await db.all(`SELECT * FROM workshop WHERE type = ? AND visible = 1 ORDER BY begin DESC LIMIT ?, ?`, type, perPage * page, perPage) || [];
+        workshops = await db.all(`SELECT * FROM workshop WHERE (type = ? OR type = 3) AND visible = 1 ORDER BY begin DESC LIMIT ?, ?`, type, perPage * page, perPage) || [];
     for (let workshop of workshops) {
         try {
             workshop.timeText = timeDateFormat.formatRange(workshop.begin * 1000, workshop.end * 1000);
