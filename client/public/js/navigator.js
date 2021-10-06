@@ -1,3 +1,15 @@
+const pagescripts = {
+    start: "start",
+    newsletter: "newsletter",
+    workshops: "workshops",
+    workshop: "workshop",
+    shows: "workshops",
+    show: "workshop",
+    uploads: "uploads",
+    subscribers: "subscribers",
+    hygienekonzept: "hygienekonzept"
+}
+
 window.onload = () => {
     NProgress.configure({ showSpinner: false });
     let url = new URL(document.location.href);
@@ -161,14 +173,17 @@ function toggleMenu(hideMenu) {
 // Initial page load scripts
 function loadPage(parent, page, query) {
     if (page.includes("/")) page = page.substring(0, page.indexOf("/"));
-    if (!document.getElementById("script-" + page)) {
+    const scriptName = pagescripts[page];
+    if (!scriptName)
+        return;
+    if (!document.getElementById("script-" + scriptName)) {
         let script = document.createElement("script");
-        script.id = "script-" + page;
-        script.src = "/public/js/" + page + ".js";
-        script.onload = () => initRoute(page, parent, query);
+        script.id = "script-" + scriptName;
+        script.src = "/public/js/" + scriptName + ".js";
+        script.onload = () => initRoute(scriptName, parent, query);
         document.head.append(script);
     } else {
-        initRoute(page, parent, query);
+        initRoute(scriptName, parent, query);
     }
 }
 
