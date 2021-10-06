@@ -14,7 +14,7 @@ async function changeWorkshopValues() {
     if (typeof editWorkshopItem !== "undefined")
         editWorkshopItem(workshops[id].texts);
     try {
-        await axios.post("/api/workshops", workshops[id].texts);
+        await axios.put("/api/workshops", workshops[id].texts);
         alert(ALERT_SUCCESS, "Daten gespeichert");
     } catch(err) {
         showError(err);
@@ -28,7 +28,7 @@ async function publishWorkshop() {
     workshops[id].buttons.published = !workshops[id].buttons.published;
     if (typeof editWorkshopItem !== "undefined")
         editWorkshopItem({ id, visible: workshops[id].buttons.published });
-    await axios.post("/api/workshops", { id, visible: workshops[id].buttons.published ? 1 : 0 });
+    await axios.put("/api/workshops", { id, visible: workshops[id].buttons.published ? 1 : 0 });
     if (workshops[id].buttons.published) {
         button.innerHTML = "Unsichtbar machen";
         alert(ALERT_SUCCESS, "Der Workshop ist jetzt sichtbar");
@@ -43,7 +43,7 @@ async function deleteWorkshop(id) {
     await axios.delete("/api/workshops", {
         data: { id }
     });
-    await navigate("workshops", true);
+    await navigate(getWebsite() === "itf" ? "workshops" : "shows", true);
 }
 
 function editWorkshopImage() {
@@ -171,7 +171,7 @@ function workshop_init(container) {
 
 function workshop_updateValues(id) {
     if (!id) id = currentRoute.substring(currentRoute.indexOf("/") + 1);
-    const container = document.getElementById("workshop/" + id);
+    const container = document.getElementById((getWebsite() === "itf" ? "workshop/" : "show/") + id);
     workshops[id].texts.title = container.querySelector(".edit-title").value;
     workshops[id].texts.content = container.querySelector(".edit-content").value;
     workshops[id].texts.img = workshops[id].current.img;
@@ -190,7 +190,7 @@ function workshop_updateValues(id) {
 
 function workshop_changed(id) {
     if (!id) id = currentRoute.substring(currentRoute.indexOf("/") + 1);
-    const container = document.getElementById("workshop/" + id);
+    const container = document.getElementById((getWebsite() === "itf" ? "workshop/" : "show/") + id);
     let date = container.querySelector(".input-workshop-date").value;
     let beginTime = container.querySelector(".input-workshop-time-begin").value;
     let endTime = container.querySelector(".input-workshop-time-end").value;

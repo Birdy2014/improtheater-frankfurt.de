@@ -2,8 +2,8 @@ async function createWorkshop() {
     try {
         let response = await axios.post("/api/workshops");
         let id = response.data.data.id;
-        await navigate("workshops", true, true, true);
-        await navigate(`workshop/${id}`, true);
+        await navigate(getWebsite() === "itf" ? "workshops" : "shows", true, true, true);
+        await navigate(getWebsite() === "itf" ? `workshop/${id}` : `show/${id}`, true);
     } catch(e) {
         showError(e);
     }

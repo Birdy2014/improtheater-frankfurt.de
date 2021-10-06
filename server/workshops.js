@@ -7,10 +7,22 @@ const dateFormat = Intl.DateTimeFormat("de-DE", { weekday: "long", year: "numeri
 const timeFormat = Intl.DateTimeFormat("de-DE", { hour: "numeric", minute: "numeric" });
 const isoFormat = Intl.DateTimeFormat("sv-SE", { timeZone: "Europe/Berlin", year: "numeric", month: "numeric", day: "numeric", hour: "numeric", minute: "numeric" });
 
-exports.defaultTitle = "Name des Workshops";
-exports.defaultContent = "Eine Beschreibung des Workshops";
+exports.defaultTitle = { itf: "Name des Workshops", improglycerin: "Name der Show" };
+exports.defaultContent = { itf: "Eine Beschreibung des Workshops", improglycerin: "Eine Beschreibung der Show" };
 
 exports.post = async (req, res) => {
+    if (!req.user) {
+        res.status(400);
+        res.json({ status: 400 });
+        return;
+    }
+
+    let id = await exports.editWorkshop({ type: req.website === "itf" ? 1 : 2, title: exports.defaultTitle[req.website], content: exports.defaultContent[req.website] });
+    res.status(201);
+    res.json({ status: 201, data: { id } });
+}
+
+exports.put = async (req, res) => {
     if (!req.user) {
         res.status(400);
         res.json({ status: 400 });
@@ -97,8 +109,8 @@ exports.editWorkshop = async (workshop) => {
         id: timestamp,
         begin: timestamp,
         end: timestamp,
-        title: exports.defaultTitle,
-        content: exports.defaultContent,
+        title: exports.defaultTitle.itf,
+        content: exports.defaultContent.itf,
         color: "#e65656",
         visible: 0,
         location: "Ort",

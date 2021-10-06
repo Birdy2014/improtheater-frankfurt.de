@@ -60,6 +60,7 @@ router.get("/api/authhook", auth.authhook);
 router.get("/api/login", auth.getUser, (req, res) => res.redirect(req.query.route || "/"));
 router.post("/api/logout", route(auth.logout));
 router.post("/api/workshops", auth.getUser, route(workshops.post));
+router.put("/api/workshops", auth.getUser, route(workshops.put));
 router.delete("/api/workshops", auth.getUser, route(workshops.delete));
 router.post("/api/newsletter/subscribe", route(newsletter.subscribe));
 router.get("/api/newsletter/confirm", route(newsletter.confirm));

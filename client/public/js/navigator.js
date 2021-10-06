@@ -276,3 +276,10 @@ function confirm(text) {
         });
     });
 }
+
+function getWebsite() {
+    if (location.hostname.includes("improglycerin"))
+        return "improglycerin";
+    else
+        return "itf";
+}

@@ -97,7 +97,8 @@ exports.send = async (req, res) => {
         res.sendStatus(409);
         return;
     }
-    if (workshop.title === workshops.defaultTitle || workshop.content === workshops.defaultContent) {
+    const workshopTypeName = workshop.type === type_itf ? "itf" : "improglycerin";
+    if (workshop.title === workshops.defaultTitle[workshopTypeName] || workshop.content === workshops.defaultContent[workshopTypeName]) {
         res.status(400).send("Der Workshop enthält Standartwerte");
         return;
     }
@@ -115,12 +116,12 @@ exports.send = async (req, res) => {
     }
     res.sendStatus(200);
     // Send newsletter
-    baseUrl = workshop.type == type_itf ? utils.base_url("itf") : utils.base_url("improglycerin");
+    baseUrl = utils.base_url(workshopTypeName);
     let logo = baseUrl + "/public/img/Improglycerin-Logo.jpg";
     if (workshop.type == type_itf)
         logo = baseUrl + "/public/img/Improtheater-Frankfurt-Logo.png";
     let reply = /[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[a-zA-Z0-9]+/.test(workshop.email) ? workshop.email : "hallo@improglycerin.de";
-    let website = baseUrl + "/workshop/" + workshop.id;
+    let website = baseUrl + (workshop.type === type_itf ? "/workshop/" : "/show/") + workshop.id;
     for (let subscriber of subscribers) {
         if (!(subscriber.subscribedTo & workshop.type))
             continue;
