@@ -1,7 +1,7 @@
 mixin slideshow(aspect, interval)
     .slideshow-container(style="aspect-ratio: " + aspect)
-        a.slideshow-prev(onclick="slideshow_plus(this.parentElement, 1)") &#10094;
-        a.slideshow-next(onclick="slideshow_plus(this.parentElement, -1)") &#10095;
+        a.slideshow-prev(onclick="slideshow_plus(this.parentElement, true)") &#10094;
+        a.slideshow-next(onclick="slideshow_plus(this.parentElement, false)") &#10095;
         .slideshow-image-container
             block
         script.
@@ -22,9 +22,13 @@ style.
         height: 100%;
     }
 
-    .slideshow-image-container-moving {
+    .slideshow-image-container-moving-right {
         transition: margin-left ease-out 0.4s;
         margin-left: -100%;
+    }
+
+    .slideshow-image-container-moving-left {
+        transition: margin-left ease-out 0.4s;
     }
 
     .slideshow-image {
@@ -56,20 +60,29 @@ style.
     }
 
 script.
-    // FIXME: Move back
-    function slideshow_plus(slideshow, amount) {
+    function slideshow_plus(slideshow, backwards) {
         const image_container = slideshow.querySelector(".slideshow-image-container");
-        const image = slideshow.querySelector(".slideshow-image");
-        image_container.classList.add("slideshow-image-container-moving");
-        setTimeout(() => {
-            image.remove();
-            image_container.append(image);
-            image_container.classList.remove("slideshow-image-container-moving");
-        }, 500);
+        const images = slideshow.querySelectorAll(".slideshow-image");
+        if (backwards) {
+            images[images.length - 1].remove();
+            image_container.prepend(images[images.length - 1]);
+            image_container.style["margin-left"] = "-100%";
+            image_container.clientHeight // Reading this property forces a DOM reflow
+            image_container.classList.add("slideshow-image-container-moving-left");
+            image_container.style.removeProperty("margin-left");
+            setTimeout(() => image_container.classList.remove("slideshow-image-container-moving-left"), 500);
+        } else {
+            image_container.classList.add("slideshow-image-container-moving-right");
+            setTimeout(() => {
+                images[0].remove();
+                image_container.append(images[0]);
+                image_container.classList.remove("slideshow-image-container-moving-right");
+            }, 500);
+        }
     }
 
     function slideshow_auto(slideshow, interval) {
         if (!interval)
             return;
-        setInterval(() => slideshow_plus(slideshow, 1), interval);
+        setInterval(() => slideshow_plus(slideshow, false), interval);
     }
