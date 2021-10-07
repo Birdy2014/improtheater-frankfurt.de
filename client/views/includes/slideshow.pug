@@ -1,9 +1,11 @@
-mixin slideshow(aspect)
+mixin slideshow(aspect, interval)
     .slideshow-container(style="aspect-ratio: " + aspect)
         a.slideshow-prev(onclick="slideshow_plus(this.parentElement, 1)") &#10094;
         a.slideshow-next(onclick="slideshow_plus(this.parentElement, -1)") &#10095;
         .slideshow-image-container
             block
+        script.
+            slideshow_auto(document.currentScript.parentElement, #{interval});
 
 mixin slideshow-image(src)
     img.slideshow-image(src=src)
@@ -54,6 +56,7 @@ style.
     }
 
 script.
+    // FIXME: Move back
     function slideshow_plus(slideshow, amount) {
         const image_container = slideshow.querySelector(".slideshow-image-container");
         const image = slideshow.querySelector(".slideshow-image");
@@ -63,4 +66,10 @@ script.
             image_container.append(image);
             image_container.classList.remove("slideshow-image-container-moving");
         }, 500);
+    }
+
+    function slideshow_auto(slideshow, interval) {
+        if (!interval)
+            return;
+        setInterval(() => slideshow_plus(slideshow, 1), interval);
     }
