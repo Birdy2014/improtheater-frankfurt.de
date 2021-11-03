@@ -210,7 +210,13 @@ exports.addSubscriber = async (req, res) => {
 function sendConfirmMail(subscriber) {
     let url = process.env.TEST ? "http://localhost:" + config.port : "https://improtheater-frankfurt.de";
     let link = url + "/api/newsletter/confirm?token=" + subscriber.token;
-    let html = pug.renderFile(__dirname + "/../client/views/emails/confirm.pug", { name: subscriber.name, link });
+    let subscribe = url + "/newsletter?subscribe=1&token=" + subscriber.token;
+    let html = pug.renderFile(__dirname + "/../client/views/emails/confirm.pug", {
+        name: subscriber.name,
+        link,
+        subscribedTo: subscriber.subscribedTo,
+        subscribe,
+    });
     sendMail(subscriber.subscribedTo, {
         to: subscriber.email,
         subject: "Improtheater Frankfurt Newsletterbestätigung",

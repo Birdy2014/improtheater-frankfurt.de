@@ -1,3 +1,5 @@
+include ../includes/utils.pug
+
 doctype html
 html
     head
@@ -62,3 +64,6 @@ html
                         a(href="https://improglycerin.de/datenschutz" style="text-decoration: none; color: black;") Datenschutz
                         = " | "
                         a(href="https://improglycerin.de/kontakt/" style="text-decoration: none; color: black;") Kontakt
+                        if subscribedTo == 1 || subscribedTo == 2
+                            = " | "
+                            a(href=subscribe style="text-decoration: none; color: black;") #[+newsletterName(~subscribedTo)] abonnieren
