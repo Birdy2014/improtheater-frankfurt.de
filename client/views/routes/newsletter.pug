@@ -40,28 +40,44 @@ block routeContent
         else if subscriber.confirmed
             p.
                 Liebe/r #{subscriber.name},
-            p
-                | herzlich willkommen auf dem Mailverteiler von
-                |
-                if subscriber.subscribedTo & 2
-                    | Improglycerin
-                if subscriber.subscribedTo === 3
-                    |
-                    | und
-                    |
-                if subscriber.subscribedTo & 1
-                    | Improtheater Frankfurt
-                | . Du wirst jetzt einmal
-                | wöchentlich zu unserem offenen Workshop eingeladen, der jeden Mittwochabend stattfindet und jedes Mal ein anderes Thema
-                | hat, sowie manchmal zu einem Workshop am Wochenende und ca. einmal im Monat zu einer Show von Improglycerin. Die Daten,
-                | Ort und Zeit kannst Du der jeweiligen Einladung entnehmen.
-            if subscriber.subscribedTo & 1
-                p.
-                    Normalerweise finden die Workshops in Frankfurt, in der Großen Friedberger Straße 42, statt. Es gibt manchmal
-                    Verwechslungen mit der Friedberger Landstraße. Die Große Friedberger Straße geht allerdings direkt von der
-                    Konstablerwache ab. Da wir die Klingel in unserem Raum nicht hören, bitte pünktlich unten stehen, oder Du lässt Dir die
-                    Handynummer des Einladenden geben. Im Sommer sind wir manchmal im Koreanischen Garten (derzeit wegen Bauarbeiten bei der
-                    Georgioskirche). Gut, aber nicht zwingend ist, wenn Du Dein Kommen anmeldest.
+            case subscriber.subscribedTo
+                when 1
+                    // Improtheater Frankfurt Workshops
+                    p.
+                        herzlich willkommen auf dem Mailverteiler von Improtheater Frankfurt. Du wirst jetzt einmal
+                        wöchentlich zu unserem offenen Workshop eingeladen, der jeden Mittwochabend stattfindet
+                        und jedes Mal ein anderes Thema hat, sowie manchmal zu einem Workshop am Wochenende.
+                        Die Daten, Ort und Zeit kannst Du der jeweiligen Einladung entnehmen.
+                    p.
+                        Normalerweise finden die Workshops in Frankfurt, in der Großen Friedberger Straße 42, statt.
+                        Es gibt manchmal Verwechslungen mit der Friedberger Landstraße. Die Große Friedberger
+                        Straße geht allerdings direkt von der Konstablerwache ab. Da wir die Klingel in unserem
+                        Raum nicht hören, bitte pünktlich unten stehen, oder Du lässt Dir die Handynummer des
+                        Einladenden geben. Im Sommer sind wir manchmal im Koreanischen Garten (derzeit wegen
+                        Bauarbeiten bei der Georgioskirche). Gut, aber nicht zwingend ist, wenn Du Dein Kommen
+                        anmeldest.
+                when 2
+                    // Improglycerin Shows
+                    p.
+                        herzlich willkommen auf dem Mailverteiler von Improglycerin. Du wirst jetzt ca. einmal im
+                        Monat zu einer Show von Improglycerin eingeladen. Die Daten, Ort und Zeit kannst Du der
+                        jeweiligen Einladung entnehmen.
+                when 3
+                    // Beide
+                    p.
+                        herzlich willkommen auf dem Mailverteiler von Improtheater Frankfurt und Improglycerin.
+                        Du wirst jetzt einmal wöchentlich zu unserem offenen Workshop eingeladen, der jeden
+                        Mittwochabend stattfindet und jedes Mal ein anderes Thema hat, sowie manchmal zu einem
+                        Workshop am Wochenende und ca. einmal im Monat zu einer Show von Improglycerin. Die
+                        Daten, Ort und Zeit kannst Du der jeweiligen Einladung entnehmen.
+                    p.
+                        Normalerweise finden die Workshops in Frankfurt, in der Großen Friedberger Straße 42, statt.
+                        Es gibt manchmal Verwechslungen mit der Friedberger Landstraße. Die Große Friedberger
+                        Straße geht allerdings direkt von der Konstablerwache ab. Da wir die Klingel in unserem
+                        Raum nicht hören, bitte pünktlich unten stehen, oder Du lässt Dir die Handynummer des
+                        Einladenden geben. Im Sommer sind wir manchmal im Koreanischen Garten (derzeit wegen
+                        Bauarbeiten bei der Georgioskirche). Gut, aber nicht zwingend ist, wenn Du Dein Kommen
+                        anmeldest.
             p.linebreak.
                 Herzliche Grüße
                 Dein Team von Improglycerin
@@ -101,6 +117,9 @@ block routeContent
 
                 p.
                     Entweder bist du schon angemeldet oder du hast den Link in der Bestätigungsmail noch nicht angeklickt.
+                p.
+                    Falls du bereits bei einem der Newsletter angemeldet bist und dich auch für den anderen Newsletter anmelden willst,
+                    findest du den passenden Anmeldelink im Footer eines Newsletters und der Newsletterbestätigung.
             #newsletter-subscribe-error(style="display: none;")
                 h1 Die Newsletter-Anmeldung war nicht erfolgreich
 
