@@ -1,6 +1,6 @@
 const Database = require("better-sqlite3");
 
-exports.init = async () => {
+exports.init = () => {
     exports.db = new Database(__dirname + "/../improtheater-frankfurt.db");
 
     exports.run(`

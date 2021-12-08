@@ -10,40 +10,40 @@ const isoFormat = Intl.DateTimeFormat("sv-SE", { timeZone: "Europe/Berlin", year
 exports.defaultTitle = "Name des Workshops";
 exports.defaultContent = "Eine Beschreibung des Workshops";
 
-exports.post = async (req, res) => {
+exports.post = (req, res) => {
     if (!req.user) {
         res.status(400);
         res.json({ status: 400 });
         return;
     }
 
-    let id = await exports.editWorkshop(req.body);
+    let id = exports.editWorkshop(req.body);
     res.status(200);
     res.json({ status: 200, data: { id } });
 }
 
-exports.delete = async (req, res) => {
+exports.delete = (req, res) => {
     if (!req.user || !req.body.id) {
         res.status(400);
         res.json({ status: 400 });
         return;
     }
 
-    await exports.deleteWorkshop(req.body.id);
+    exports.deleteWorkshop(req.body.id);
     res.status(200);
     res.json({ status: 200 });
 }
 
-exports.getWorkshops = async (loggedIn, page) => {
+exports.getWorkshops = (loggedIn, page) => {
     const perPage = 6;
     page = parseInt(page);
     if (!page)
         page = 0;
     let workshops;
     if (loggedIn)
-        workshops = await db.all(`SELECT * FROM workshop ORDER BY begin DESC LIMIT ?, ?`, perPage * page, perPage) || [];
+        workshops = db.all(`SELECT * FROM workshop ORDER BY begin DESC LIMIT ?, ?`, perPage * page, perPage) || [];
     else
-        workshops = await db.all(`SELECT * FROM workshop WHERE visible = 1 ORDER BY begin DESC LIMIT ?, ?`, perPage * page, perPage) || [];
+        workshops = db.all(`SELECT * FROM workshop WHERE visible = 1 ORDER BY begin DESC LIMIT ?, ?`, perPage * page, perPage) || [];
     for (let workshop of workshops) {
         try {
             workshop.timeText = timeDateFormat.formatRange(workshop.begin * 1000, workshop.end * 1000);
@@ -58,10 +58,10 @@ exports.getWorkshops = async (loggedIn, page) => {
     return workshops;
 }
 
-exports.getWorkshop = async (id, loggedIn) => {
+exports.getWorkshop = (id, loggedIn) => {
     let workshop;
     if (loggedIn) {
-        workshop = await db.get(`SELECT * FROM workshop WHERE id = '${id}'`);
+        workshop = db.get(`SELECT * FROM workshop WHERE id = '${id}'`);
         if (!workshop) return undefined;
         try {
             let beginISO = isoFormat.format(workshop.begin * 1000);
@@ -75,7 +75,7 @@ exports.getWorkshop = async (id, loggedIn) => {
             workshop.endTimeISO = "";
         }
     } else {
-        workshop = await db.get(`SELECT * FROM workshop WHERE id = '${id}' AND visible = 1`);
+        workshop = db.get(`SELECT * FROM workshop WHERE id = '${id}' AND visible = 1`);
         if (!workshop) return undefined;
     }
     try {
@@ -91,7 +91,7 @@ exports.getWorkshop = async (id, loggedIn) => {
     return workshop;
 }
 
-exports.editWorkshop = async (workshop) => {
+exports.editWorkshop = (workshop) => {
     const timestamp = utils.getCurrentTimestamp();
     const defaultWorkshop = {
         id: timestamp,
@@ -140,13 +140,13 @@ exports.editWorkshop = async (workshop) => {
 
     // Run upsert query
     if (update.length > 0)
-        await db.run(`INSERT INTO workshop ${insert} ON CONFLICT(id) DO UPDATE SET ${update} WHERE id = '${id}'`, params);
+        db.run(`INSERT INTO workshop ${insert} ON CONFLICT(id) DO UPDATE SET ${update} WHERE id = '${id}'`, params);
     else
-        await db.run(`INSERT INTO workshop ${insert} ON CONFLICT(id) DO NOTHING`, params);
+        db.run(`INSERT INTO workshop ${insert} ON CONFLICT(id) DO NOTHING`, params);
 
     return id;
 }
 
-exports.deleteWorkshop = async (id) => {
-    await db.run(`DELETE FROM workshop WHERE id = '${id}'`);
+exports.deleteWorkshop = (id) => {
+    db.run(`DELETE FROM workshop WHERE id = '${id}'`);
 }

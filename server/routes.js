@@ -66,8 +66,8 @@ router.get("/index.html", (req, res) => {
     res.redirect("/start");
 });
 
-router.get("/workshop/:workshopID", auth.getUser, async (req, res) => {
-    let w = await workshops.getWorkshop(req.params.workshopID, req.user !== undefined);
+router.get("/workshop/:workshopID", auth.getUser, (req, res) => {
+    let w = workshops.getWorkshop(req.params.workshopID, req.user !== undefined);
     if (!w) {
         res.status(404);
         res.render("404");
@@ -95,7 +95,7 @@ router.get("/workshop/:workshopID", auth.getUser, async (req, res) => {
 
 router.get("/workshops/:page", auth.getUser, async (req, res) => {
     let page = parseInt(req.params.page);
-    let w = await workshops.getWorkshops(req.user !== undefined, page);
+    let w = workshops.getWorkshops(req.user !== undefined, page);
     if (!w || w.length === 0) {
         res.status(404);
         res.render("404");
@@ -112,7 +112,7 @@ router.get("/workshops/:page", auth.getUser, async (req, res) => {
 });
 
 router.get("/newsletter-preview/:workshopID", auth.getUser, async (req, res) => {
-    let w = await workshops.getWorkshop(req.params.workshopID, true);
+    let w = workshops.getWorkshop(req.params.workshopID, true);
     if (!req.user || !w) {
         res.sendStatus(400);
     } else {
@@ -143,11 +143,11 @@ router.get("/:route", auth.getUser, async (req, res) => {
         res.render("404");
     } else {
         if (req.query.partial) {
-            res.render("routes/" + req.params.route, { partial: true, doctype: "html", ...(await getRenderOptions(req.params.route, req.user !== undefined, req.query)) });
+            res.render("routes/" + req.params.route, { partial: true, doctype: "html", ...getRenderOptions(req.params.route, req.user !== undefined, req.query) });
         } else {
             res.render("routes/" + req.params.route, {
                 route: req.params.route,
-                ...(await getRenderOptions(req.params.route, req.user !== undefined, req.query))
+                ...getRenderOptions(req.params.route, req.user !== undefined, req.query)
             });
         }
     }
@@ -155,25 +155,25 @@ router.get("/:route", auth.getUser, async (req, res) => {
 
 module.exports = router;
 
-async function getRenderOptions(route, loggedIn, query) {
+function getRenderOptions(route, loggedIn, query) {
     switch(route) {
         case "workshops":
-            return { loggedIn, workshops: await workshops.getWorkshops(loggedIn), page: 0 };
+            return { loggedIn, workshops: workshops.getWorkshops(loggedIn), page: 0 };
         case "newsletter":
-            return { loggedIn, subscriber: await newsletter.getSubscriber(query.token), unsubscribe: query.unsubscribe, subscribe: query.subscribe };
+            return { loggedIn, subscriber: newsletter.getSubscriber(query.token), unsubscribe: query.unsubscribe, subscribe: query.subscribe };
         case "subscribers":
             let subscribers = [];
             if (loggedIn) {
-                subscribers = await newsletter.getSubscribers();
+                subscribers = newsletter.getSubscribers();
                 let format = new Intl.DateTimeFormat("de-DE");
                 for (let subscriber of subscribers)
                     subscriber.last_viewed_newsletter_date = format.format(subscriber.last_viewed_newsletter * 1000);
             }
             return { loggedIn, subscribers };
         case "hygienekonzept":
-            return { loggedIn, marked, content: await editableWebsite.getEditableWebsite("hygienekonzept") };
+            return { loggedIn, marked, content: editableWebsite.getEditableWebsite("hygienekonzept") };
         case "uploads":
-            return { loggedIn, uploads: await upload.getAll() };
+            return { loggedIn, uploads: upload.getAll() };
         default:
             return { loggedIn };
     }

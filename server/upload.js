@@ -1,22 +1,21 @@
 const db = require("./db");
 const utils = require("./utils");
 
-exports.get = async (req, res) => {
+exports.get = (req, res) => {
     if (!req.query.name) {
-        let files = await db.all("SELECT name FROM upload ORDER BY time DESC");
+        let files = db.all("SELECT name FROM upload ORDER BY time DESC");
         res.status(200);
         res.json(files);
         return;
     }
 
     if (req.query.token) {
-        db.get("SELECT id FROM workshop WHERE img = ? ORDER BY begin DESC", req.query.name).then(workshop => {
-            if (workshop)
-                db.run("UPDATE subscriber SET last_viewed_newsletter = ? WHERE token = ? AND last_viewed_newsletter < ?", workshop.id, req.query.token, workshop.id);
-        });
+        let workshop = db.get("SELECT id FROM workshop WHERE img = ? ORDER BY begin DESC", req.query.name);
+        if (workshop)
+            db.run("UPDATE subscriber SET last_viewed_newsletter = ? WHERE token = ? AND last_viewed_newsletter < ?", workshop.id, req.query.token, workshop.id);
     }
 
-    let file = await db.get("SELECT data, mimetype FROM upload WHERE name = ?", req.query.name);
+    let file = db.get("SELECT data, mimetype FROM upload WHERE name = ?", req.query.name);
 
     if (!file)
         return res.sendStatus(404);
@@ -26,7 +25,7 @@ exports.get = async (req, res) => {
     res.end(file.data, "binary");
 }
 
-exports.post = async (req, res) => {
+exports.post = (req, res) => {
     if (!req.files || !req.files.img || !req.user) {
         res.sendStatus(400);
         return;
@@ -38,7 +37,7 @@ exports.post = async (req, res) => {
     }
 
     try {
-        await db.run("INSERT INTO upload (name, mimetype, size, data, user_id, time) VALUES (?, ?, ?, ?, ?, ?)", req.files.img.name, req.files.img.mimetype, req.files.img.size, req.files.img.data, req.user.user_id, utils.getCurrentTimestamp());
+        db.run("INSERT INTO upload (name, mimetype, size, data, user_id, time) VALUES (?, ?, ?, ?, ?, ?)", req.files.img.name, req.files.img.mimetype, req.files.img.size, req.files.img.data, req.user.user_id, utils.getCurrentTimestamp());
         res.sendStatus(200);
     } catch (e) {
         if (e.errno === 19) {
@@ -49,16 +48,16 @@ exports.post = async (req, res) => {
     }
 }
 
-exports.delete = async (req, res) => {
+exports.delete = (req, res) => {
     if (!req.query.name || !req.user) {
         res.sendStatus(400);
         return;
     }
 
-    await db.run("DELETE FROM upload WHERE name = ?", req.query.name);
+    db.run("DELETE FROM upload WHERE name = ?", req.query.name);
     res.sendStatus(200);
 }
 
-exports.getAll = async () => {
-    return await db.all("SELECT name FROM upload ORDER BY time DESC");
+exports.getAll = () => {
+    return db.all("SELECT name FROM upload ORDER BY time DESC");
 }

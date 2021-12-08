@@ -1,24 +1,24 @@
 const db = require("./db");
 
-exports.getEditableWebsite = async name => {
+exports.getEditableWebsite = name => {
     try {
-        return (await db.get("SELECT content FROM editableWebsite WHERE name = ?", name)).content;
+        return db.get("SELECT content FROM editableWebsite WHERE name = ?", name).content;
     } catch(e) {
         return "";
     }
 }
 
-exports.setEditableWebsite = async (name, content) => {
-    await db.run("INSERT INTO editableWebsite (name, content) VALUES (?, ?) ON CONFLICT(name) DO UPDATE SET content = ?", name, content, content);
+exports.setEditableWebsite = (name, content) => {
+    db.run("INSERT INTO editableWebsite (name, content) VALUES (?, ?) ON CONFLICT(name) DO UPDATE SET content = ?", name, content, content);
 }
 
 exports.setEditableWebsiteMiddleware = name => {
-    return async (req, res) => {
+    return (req, res) => {
         if (!req.user || !req.body.content)
             return res.sendStatus(400);
 
         try {
-            await exports.setEditableWebsite(name, req.body.content);
+            exports.setEditableWebsite(name, req.body.content);
             res.sendStatus(200);
         } catch(e) {
             console.log(e);

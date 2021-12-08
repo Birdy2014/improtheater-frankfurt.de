@@ -14,7 +14,7 @@ exports.transporter = [];
 for (const email of config.email)
     exports.transporter.push(nodemailer.createTransport(email));
 
-exports.subscribe = async (req, res) => {
+exports.subscribe = (req, res) => {
     // TODO: check email address, length limit name, sanitize name and email
     try {
         if (req.body.subscribedTo)
@@ -28,18 +28,18 @@ exports.subscribe = async (req, res) => {
 
         // User is already subscribed
         if (req.body.token) {
-            const subscriber = await exports.getSubscriber(req.body.token);
+            const subscriber = exports.getSubscriber(req.body.token);
             if (req.body.subscribedTo == subscriber.subscribedTo)
                 return res.sendStatus(200);
-            await db.run("UPDATE subscriber SET subscribedTo = ? WHERE token = ?", req.body.subscribedTo, req.body.token);
+            db.run("UPDATE subscriber SET subscribedTo = ? WHERE token = ?", req.body.subscribedTo, req.body.token);
             return res.sendStatus(200);
         }
 
         // User is not subscribed
-        await removeExpiredSubscribers();
+        removeExpiredSubscribers();
         let token = utils.generateToken(20);
         let timestamp = utils.getCurrentTimestamp();
-        await db.run("INSERT INTO subscriber (name, email, token, timestamp, subscribedTo) VALUES (?, ?, ?, ?, ?)", req.body.name, req.body.email, token, timestamp, req.body.subscribedTo);
+        db.run("INSERT INTO subscriber (name, email, token, timestamp, subscribedTo) VALUES (?, ?, ?, ?, ?)", req.body.name, req.body.email, token, timestamp, req.body.subscribedTo);
         sendConfirmMail({ name: req.body.name, email: req.body.email, token, subscribedTo: req.body.subscribedTo });
         res.status(200);
         res.send();
@@ -55,20 +55,20 @@ exports.subscribe = async (req, res) => {
     }
 }
 
-exports.confirm = async (req, res) => {
+exports.confirm = (req, res) => {
     if (!req.query.token) {
         res.redirect("/newsletter");
         return;
     }
-    await db.run("UPDATE subscriber SET confirmed = 1 WHERE token = ?", req.query.token);
+    db.run("UPDATE subscriber SET confirmed = 1 WHERE token = ?", req.query.token);
     res.redirect("/newsletter?token=" + req.query.token);
 }
 
-exports.unsubscribe = async (req, res) => {
+exports.unsubscribe = (req, res) => {
     if (!req.body.token)
         return res.sendStatus(400);
 
-    let subscriber = await exports.getSubscriber(req.body.token);
+    let subscriber = exports.getSubscriber(req.body.token);
     if (!subscriber)
         return res.sendStatus(404);
 
@@ -76,9 +76,9 @@ exports.unsubscribe = async (req, res) => {
 
     const newSubscribedTo = subscriber.subscribedTo & ~unsubscribeFrom;
     if (newSubscribedTo)
-        await db.run("UPDATE subscriber SET subscribedTo = ? WHERE token = ?", newSubscribedTo, req.body.token);
+        db.run("UPDATE subscriber SET subscribedTo = ? WHERE token = ?", newSubscribedTo, req.body.token);
     else
-        await db.run("DELETE FROM subscriber WHERE token = ?", req.body.token);
+        db.run("DELETE FROM subscriber WHERE token = ?", req.body.token);
     res.sendStatus(200);
 }
 
@@ -88,7 +88,7 @@ exports.send = async (req, res) => {
         return;
     }
 
-    let workshop = await workshops.getWorkshop(req.body.workshop, req.body.test); // Testmail can be sent without publishing
+    let workshop = workshops.getWorkshop(req.body.workshop, req.body.test); // Testmail can be sent without publishing
     if (!workshop) {
         res.sendStatus(404);
         return;
@@ -110,8 +110,8 @@ exports.send = async (req, res) => {
             subscribedTo: 3
         };
     } else {
-        await db.run("UPDATE workshop SET newsletterSent = 1 WHERE id = ?", workshop.id);
-        subscribers = await exports.getSubscribers();
+        db.run("UPDATE workshop SET newsletterSent = 1 WHERE id = ?", workshop.id);
+        subscribers = exports.getSubscribers();
     }
     res.sendStatus(200);
     // Send newsletter
@@ -167,11 +167,11 @@ exports.send = async (req, res) => {
     }
 }
 
-exports.exportSubscribers = async (req, res) => {
+exports.exportSubscribers = (req, res) => {
     if (!req.user)
         return res.sendStatus(403);
 
-    let subscribers = await exports.getSubscribers();
+    let subscribers = exports.getSubscribers();
     let csv = "email,name,firstname,lastname,subscribedate\r\n";
     for (let subscriber of subscribers) {
         let nameparts = subscriber.name.split(" ");
@@ -185,7 +185,7 @@ exports.exportSubscribers = async (req, res) => {
     res.send(csv);
 }
 
-exports.addSubscriber = async (req, res) => {
+exports.addSubscriber = (req, res) => {
     if (!req.user)
         return res.sendStatus(403);
 
@@ -193,10 +193,10 @@ exports.addSubscriber = async (req, res) => {
         return res.sendStatus(400);
 
     try {
-        await removeExpiredSubscribers();
+        removeExpiredSubscribers();
         let token = utils.generateToken(20);
         let timestamp = utils.getCurrentTimestamp();
-        await db.run("INSERT INTO subscriber (name, email, token, timestamp, confirmed, subscribedTo) VALUES (?, ?, ?, ?, 1, ?)", req.body.name, req.body.email, token, timestamp, req.body.subscribedTo);
+        db.run("INSERT INTO subscriber (name, email, token, timestamp, confirmed, subscribedTo) VALUES (?, ?, ?, ?, 1, ?)", req.body.name, req.body.email, token, timestamp, req.body.subscribedTo);
         res.sendStatus(200);
     } catch(e) {
         if (e.errno === 19) {
@@ -225,17 +225,17 @@ function sendConfirmMail(subscriber) {
     });
 }
 
-exports.getSubscribers = async () => {
-    return await db.all("SELECT * FROM subscriber WHERE confirmed = 1");
+exports.getSubscribers = () => {
+    return db.all("SELECT * FROM subscriber WHERE confirmed = 1");
 }
 
-exports.getSubscriber = async (token) => {
-    return await db.get("SELECT * FROM subscriber WHERE token = ?", token) || {};
+exports.getSubscriber = (token) => {
+    return db.get("SELECT * FROM subscriber WHERE token = ?", token) || {};
 }
 
-async function removeExpiredSubscribers() {
+function removeExpiredSubscribers() {
     let expired = utils.getCurrentTimestamp() - 86400;
-    await db.run("DELETE FROM subscriber WHERE confirmed = 0 AND timestamp < ?", expired);
+    db.run("DELETE FROM subscriber WHERE confirmed = 0 AND timestamp < ?", expired);
 }
 
 function checkNewsletterType(subscribedTo) {
