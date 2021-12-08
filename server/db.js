@@ -1,11 +1,7 @@
-const sqlite3 = require("sqlite3");
-const { promisify } = require("util");
+const Database = require("better-sqlite3");
 
 exports.init = async () => {
-    exports.db = new sqlite3.Database(__dirname + "/../improtheater-frankfurt.db");
-    exports.run = promisify(exports.db.run).bind(exports.db);
-    exports.get = promisify(exports.db.get).bind(exports.db);
-    exports.all = promisify(exports.db.all).bind(exports.db);
+    exports.db = new Database(__dirname + "/../improtheater-frankfurt.db");
 
     exports.run(`
         CREATE TABLE IF NOT EXISTS workshop (
@@ -60,4 +56,19 @@ exports.init = async () => {
             PRIMARY KEY(name)
         )
     `);
+}
+
+exports.run = (sql, ...params) => {
+    let statement = exports.db.prepare(sql);
+    statement.run(...params);
+}
+
+exports.get = (sql, ...params) => {
+    let statement = exports.db.prepare(sql);
+    return statement.get(params);
+}
+
+exports.all = (sql, ...params) => {
+    let statement = exports.db.prepare(sql);
+    return statement.all(...params);
 }

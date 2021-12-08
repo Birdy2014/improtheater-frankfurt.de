@@ -114,7 +114,7 @@ exports.editWorkshop = async (workshop) => {
 
     // Create params
     for (let key in defaultWorkshop) {
-        params['$' + key] = workshop[key] || defaultWorkshop[key];
+        params[key] = workshop[key] || defaultWorkshop[key];
     }
 
     // Create update string
