@@ -44,6 +44,7 @@ function addImage(name, prepend) {
 
     let imageContainer = document.createElement("div");
     imageContainer.id = "uploads-image-" + name;
+    imageContainer.style.height = "auto";
     imageContainer.appendChild(image);
     imageContainer.appendChild(imageName);
     imageContainer.appendChild(imageDelete);
@@ -53,4 +54,15 @@ function addImage(name, prepend) {
         imagesList.prepend(imageContainer);
     else
         imagesList.appendChild(imageContainer);
+}
+
+function uploads_init() {
+    const lazyloadImages = document.querySelectorAll(".lazy");
+
+   for (const image of lazyloadImages) {
+        image.src = image.dataset.src;
+        image.addEventListener("load", () => {
+            image.parentElement.style.height = "auto";
+        });
+    }
 }

@@ -8,6 +8,7 @@
 
 #uploads-images-list div {
     position: relative;
+    height: 500px;
 }
 
 @media only screen and (max-width: 1000px) {
