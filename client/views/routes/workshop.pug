@@ -90,7 +90,7 @@ block routeContent
             //- The textarea name is important, because the browser will autocomplete content from other textareas without it
             .workshop-content-preview
     else
-        div.workshop-content!= marked(content)
+        div.workshop-content!= marked.parse(content)
 
     if loggedIn
         a(href="javascript:void(0)" onclick="changeWorkshopValues()" class="edit-button edit-save") Speichern

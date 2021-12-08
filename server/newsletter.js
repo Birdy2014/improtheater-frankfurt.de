@@ -1,6 +1,6 @@
 const nodemailer = require("nodemailer");
 const pug = require("pug");
-const marked = require("marked");
+const { marked } = require("marked");
 const db = require("./db");
 const utils = require("./utils");
 const logger = require("./logger");

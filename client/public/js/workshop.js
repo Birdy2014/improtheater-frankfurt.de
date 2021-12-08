@@ -116,7 +116,7 @@ function toggleWorkshopPreview() {
         properties.style.display = null;
         markdown_examples.style.display = null;
     } else {
-        content_preview.innerHTML = marked(content_textarea.value);
+        content_preview.innerHTML = marked.parse(content_textarea.value);
         content_textarea.style.display = "none";
         content_preview.style.display = "block";
         location_preview.innerHTML = marked.parseInline(location_input.value);

@@ -15,7 +15,7 @@ function hygienekonzept_togglePreview() {
         window["hygienekonzept-src"].style.display = "block";
         window["hygienekonzept-preview"].style.display = "none";
     } else {
-        window["hygienekonzept-preview"].innerHTML = marked(window["hygienekonzept-src"].querySelector("textarea").value);
+        window["hygienekonzept-preview"].innerHTML = marked.parse(window["hygienekonzept-src"].querySelector("textarea").value);
         window["hygienekonzept-src"].style.display = "none";
         window["hygienekonzept-preview"].style.display = "block";
     }

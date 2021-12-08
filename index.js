@@ -1,6 +1,6 @@
 const express = require("express");
 const cookieParser = require("cookie-parser");
-const marked = require("marked");
+const { marked } = require("marked");
 const router = require("./server/routes");
 const db = require("./server/db");
 const config = require("./config");

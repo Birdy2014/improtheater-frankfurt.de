@@ -12,4 +12,4 @@ block routeContent
         = " | "
         a(href="javascript:void(0)" onclick="hygienekonzept_togglePreview()") Vorschau
     else
-        != marked(content)
+        != marked.parse(content)
