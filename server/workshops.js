@@ -115,13 +115,13 @@ exports.editWorkshop = (workshop) => {
     // Create params
     for (let key in defaultWorkshop) {
         params[key] = workshop[key] || defaultWorkshop[key];
+        if (typeof params[key] === "boolean") params[key] = params[key] ? 1 : 0;
     }
 
     // Create update string
     let update = "";
     for (let key in defaultWorkshop) {
         if (workshop[key] !== undefined) {
-            if (typeof workshop[key] === "boolean") workshop[key] = workshop[key] ? 1 : 0;
             update += `${key} = $${key}, `
         }
     }
