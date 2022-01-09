@@ -55,7 +55,7 @@ html
             #title-container(style=`color: ${textColor}; background-color: ${color};`)
                 .centered-container(style="max-width: 1100px; width: 100%; display: inline-block; box-sizing: border-box;")
                     h1(style="margin-top: 0;")
-                        a(href=website)!= marked.parseInline(title)
+                        a(href=website style="color: inherit;")!= marked.parseInline(title)
                     img(src=img style="width: 100%;")
             .centered-container(style="max-width: 1100px; width: 100%; display: inline-block; box-sizing: border-box;")
                 #description-container(style="text-align: left;")
@@ -66,7 +66,7 @@ html
                         thead
                             tr
                                 th(colspan=4 style="padding-bottom: 5px;")
-                                    a(href=website)!= marked.parseInline(title)
+                                    a(href=website style="color: inherit;")!= marked.parseInline(title)
                         tbody
                             tr
                                 th Wann?
@@ -88,7 +88,7 @@ html
                         thead
                             tr
                                 th(style="padding-bottom: 5px;")
-                                    a(href=website)!= marked.parseInline(title)
+                                    a(href=website style="color: inherit;")!= marked.parseInline(title)
                         tbody
                             tr
                                 th(style="padding-top: 5px;") Wann?
@@ -118,7 +118,7 @@ html
                         thead
                             tr
                                 th(colspan=4 style="padding-bottom: 5px;")
-                                    a(href=website)!= marked.parseInline(title)
+                                    a(href=website style="color: inherit;")!= marked.parseInline(title)
                         tbody
                             tr
                                 th Wann?
