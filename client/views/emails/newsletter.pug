@@ -61,6 +61,7 @@ html
                 #description-container(style="text-align: left;")
                     != marked(content)
                 unless propertiesHidden
+                    <!--[if !mso]><!-->
                     table#properties-table-desktop(style=`display: none; width: 100%; text-align: left; background-color: ${color}; color: ${textColor}; padding: 10px; margin-top: 10px; table-layout: fixed;`)
                         thead
                             tr
@@ -111,6 +112,31 @@ html
                             tr
                                 td
                                     != marked.parseInline(email)
+                    <!--<![endif]-->
+                    <!--[if mso]>
+                    table(style=`width: 100%; text-align: left; background-color: ${color}; color: ${textColor}; padding: 10px; margin-top: 10px; table-layout: fixed;`)
+                        thead
+                            tr
+                                th(colspan=4 style="padding-bottom: 5px;")
+                                    a(href=website)!= marked.parseInline(title)
+                        tbody
+                            tr
+                                th Wann?
+                                th Wo?
+                                th Beitrag?
+                                th Anmelden?
+                            tr
+                                td
+                                    | #{dateText}
+                                    br
+                                    | #{timeText}
+                                td
+                                    != marked.parseInline(location)
+                                td
+                                    != marked.parseInline(price)
+                                td
+                                    != marked.parseInline(email)
+                    <![endif]-->
             #footer(style="color: black;")
                 a(href="https://improtheater-frankfurt.de/impressum" style="text-decoration: none; color: black;") Impressum
                 = " | "
