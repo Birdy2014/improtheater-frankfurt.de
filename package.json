@@ -13,12 +13,12 @@
   "dependencies": {
     "axios": "^0.24.0",
     "cookie-parser": "^1.4.6",
-    "express": "^4.17.1",
+    "express": "^4.17.2",
     "express-fileupload": "^1.2.1",
-    "marked": "^4.0.6",
+    "marked": "^4.0.9",
     "nodemailer": "^6.7.2",
     "nprogress": "^0.2.0",
     "pug": "^3.0.2",
-    "better-sqlite3": "^7.4.5"
+    "better-sqlite3": "^7.4.6"
   }
 }
