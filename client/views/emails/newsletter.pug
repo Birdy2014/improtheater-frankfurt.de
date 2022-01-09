@@ -8,23 +8,6 @@ html
         meta(name="viewport" content="width=device-width, initial-scale=1.0")
         link(href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet")
         style.
-            .centered-container {
-                max-width: 1100px;
-                width: 100%;
-                display: inline-block;
-                box-sizing: border-box;
-            }
-
-            #message-container {
-                text-align: center;
-                font-family: Roboto;
-                background-color: white;
-            }
-
-            #message-container h1 {
-                margin-top: 0;
-            }
-
             #message-container div {
                 padding: 10px;
             }
@@ -36,28 +19,6 @@ html
 
             #description-container a {
                 font-weight: bold;
-            }
-
-            #header {
-                background-color: white;
-            }
-
-            #header img {
-                display: block;
-                height: 80px;
-            }
-
-            #title-container {
-                color: #{textColor};
-                background-color: #{color};
-            }
-
-            #title-container img {
-                width: 100%;
-            }
-
-            #description-container {
-                text-align: left;
             }
 
             /*
@@ -85,23 +46,19 @@ html
                 }
             }
 
-            #footer, #footer * {
-                color: black;
-            }
-
-    body
+    body(style="background-color: white;")
         p.
             Falls die E-Mail nicht korrekt angezeigt wird, kannst du sie #[a(href=website) hier im Browser anschauen].
-        #message-container
-            #header.centered-container
-                img(src=logo)
-            #title-container
-                .centered-container
-                    h1
+        #message-container(style="text-align: center; font-family: Roboto;")
+            #header.centered-container(style="max-width: 1100px; width: 100%; display: inline-block; box-sizing: border-box;")
+                img(src=logo style="display: block; height: 80px;")
+            #title-container(style=`color: ${textColor}; background-color: ${color};`)
+                .centered-container(style="max-width: 1100px; width: 100%; display: inline-block; box-sizing: border-box;")
+                    h1(style="margin-top: 0;")
                         a(href=website)!= marked.parseInline(title)
-                    img(src=img)
-            .centered-container
-                #description-container
+                    img(src=img style="width: 100%;")
+            .centered-container(style="max-width: 1100px; width: 100%; display: inline-block; box-sizing: border-box;")
+                #description-container(style="text-align: left;")
                     != marked(content)
                 unless propertiesHidden
                     table#properties-table-desktop(style=`display: none; width: 100%; text-align: left; background-color: ${color}; color: ${textColor}; padding: 10px; margin-top: 10px; table-layout: fixed;`)
@@ -154,14 +111,14 @@ html
                             tr
                                 td
                                     != marked.parseInline(email)
-            #footer
-                a(href="https://improtheater-frankfurt.de/impressum") Impressum
+            #footer(style="color: black;")
+                a(href="https://improtheater-frankfurt.de/impressum" style="text-decoration: none; color: black;") Impressum
                 = " | "
-                a(href="https://improglycerin.de/datenschutz") Datenschutz
+                a(href="https://improglycerin.de/datenschutz" style="text-decoration: none; color: black;") Datenschutz
                 = " | "
-                a(href="https://improglycerin.de/kontakt/") Kontakt
+                a(href="https://improglycerin.de/kontakt/" style="text-decoration: none; color: black;") Kontakt
                 = " | "
                 if subscriber.subscribedTo == 1 || subscriber.subscribedTo == 2
-                    a(href=subscribe) #[+newsletterName(~subscriber.subscribedTo)] abonnieren
+                    a(href=subscribe style="text-decoration: none; color: black;") #[+newsletterName(~subscriber.subscribedTo)] abonnieren
                     = " | "
-                a(href=unsubscribe) Abmelden
+                a(href=unsubscribe style="text-decoration: none; color: black;") Abmelden
