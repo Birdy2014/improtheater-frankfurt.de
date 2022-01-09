@@ -50,93 +50,102 @@ html
         p.
             Falls die E-Mail nicht korrekt angezeigt wird, kannst du sie #[a(href=website) hier im Browser anschauen].
         #message-container(style="text-align: center; font-family: Roboto;")
-            #header.centered-container(style="width: 1100px; max-width: 100%; display: inline-block; box-sizing: border-box;")
-                img(src=logo style="display: block; height: 80px;")
-            #title-container(style=`color: ${textColor}; background-color: ${color};`)
-                .centered-container(style="width: 1100px; max-width: 100%; display: inline-block; box-sizing: border-box;")
-                    h1(style="margin-top: 0;")
-                        a(href=website style="color: inherit;")!= marked.parseInline(title)
-                    img(src=img style="width: 100%;")
-            .centered-container(style="width: 1100px; max-width: 100%; display: inline-block; box-sizing: border-box;")
-                #description-container(style="text-align: left;")
-                    != marked(content)
-                unless propertiesHidden
-                    <!--[if !mso]><!-->
-                    table#properties-table-desktop(style=`display: none; width: 100%; text-align: left; background-color: ${color}; color: ${textColor}; padding: 10px; margin-top: 10px; table-layout: fixed;`)
-                        thead
-                            tr
-                                th(colspan=4 style="padding-bottom: 5px;")
-                                    a(href=website style="color: inherit;")!= marked.parseInline(title)
-                        tbody
-                            tr
-                                th Wann?
-                                th Wo?
-                                th Beitrag?
-                                th Anmelden?
-                            tr
-                                td
-                                    | #{dateText}
-                                    br
-                                    | #{timeText}
-                                td
-                                    != marked.parseInline(location)
-                                td
-                                    != marked.parseInline(price)
-                                td
-                                    != marked.parseInline(email)
-                    table#properties-table-mobile(style=`display: table; width: 100%; text-align: left; background-color: ${color}; color: ${textColor}; padding: 10px; margin-top: 10px; table-layout: fixed;`)
-                        thead
-                            tr
-                                th(style="padding-bottom: 5px;")
-                                    a(href=website style="color: inherit;")!= marked.parseInline(title)
-                        tbody
-                            tr
-                                th(style="padding-top: 5px;") Wann?
-                            tr
-                                td
-                                    | #{dateText}
-                                    br
-                                    | #{timeText}
-                            tr
-                                th(style="padding-top: 5px;") Wo?
-                            tr
-                                td
-                                    != marked.parseInline(location)
-                            tr
-                                th(style="padding-top: 5px;") Beitrag?
-                            tr
-                                td
-                                    != marked.parseInline(price)
-                            tr
-                                th(style="padding-top: 5px;") Anmelden?
-                            tr
-                                td
-                                    != marked.parseInline(email)
-                    <!--<![endif]-->
-                    <!--[if mso]>
-                    table(style=`width: 100%; text-align: left; background-color: ${color}; color: ${textColor}; padding: 10px; margin-top: 10px; table-layout: fixed;`)
-                        thead
-                            tr
-                                th(colspan=4 style="padding-bottom: 5px;")
-                                    a(href=website style="color: inherit;")!= marked.parseInline(title)
-                        tbody
-                            tr
-                                th Wann?
-                                th Wo?
-                                th Beitrag?
-                                th Anmelden?
-                            tr
-                                td
-                                    | #{dateText}
-                                    br
-                                    | #{timeText}
-                                td
-                                    != marked.parseInline(location)
-                                td
-                                    != marked.parseInline(price)
-                                td
-                                    != marked.parseInline(email)
-                    <![endif]-->
+            table(cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse;")
+                tr
+                    td
+                    td(width="900" height="80")
+                        img(src=logo style="display: block; height: 80px;")
+                    td
+                tr(style=`color: ${textColor}; background-color: ${color};`)
+                    td
+                    td(width="900" style="text-align: center;")
+                        h1(style="margin-top: 20px;")
+                            a(href=website style="color: inherit;")!= marked.parseInline(title)
+                        img(src=img style="width: 100%;")
+                    td
+                tr
+                    td
+                    td(width="900")
+                        #description-container(style="text-align: left;")
+                            != marked(content)
+                        unless propertiesHidden
+                            <!--[if !mso]><!-->
+                            table#properties-table-desktop(cellpadding="0" cellspacing="0" width="100%" style=`display: none; text-align: left; background-color: ${color}; color: ${textColor}; padding: 10px; margin-top: 10px; table-layout: fixed;`)
+                                thead
+                                    tr
+                                        th(colspan=4 style="padding-bottom: 5px;")
+                                            a(href=website style="color: inherit;")!= marked.parseInline(title)
+                                tbody
+                                    tr
+                                        th Wann?
+                                        th Wo?
+                                        th Beitrag?
+                                        th Anmelden?
+                                    tr
+                                        td
+                                            | #{dateText}
+                                            br
+                                            | #{timeText}
+                                        td
+                                            != marked.parseInline(location)
+                                        td
+                                            != marked.parseInline(price)
+                                        td
+                                            != marked.parseInline(email)
+                            table#properties-table-mobile(cellpadding="0" cellspacing="0" width="100%" style=`display: table; text-align: left; background-color: ${color}; color: ${textColor}; padding: 10px; margin-top: 10px; table-layout: fixed;`)
+                                thead
+                                    tr
+                                        th(style="padding-bottom: 5px;")
+                                            a(href=website style="color: inherit;")!= marked.parseInline(title)
+                                tbody
+                                    tr
+                                        th(style="padding-top: 5px;") Wann?
+                                    tr
+                                        td
+                                            | #{dateText}
+                                            br
+                                            | #{timeText}
+                                    tr
+                                        th(style="padding-top: 5px;") Wo?
+                                    tr
+                                        td
+                                            != marked.parseInline(location)
+                                    tr
+                                        th(style="padding-top: 5px;") Beitrag?
+                                    tr
+                                        td
+                                            != marked.parseInline(price)
+                                    tr
+                                        th(style="padding-top: 5px;") Anmelden?
+                                    tr
+                                        td
+                                            != marked.parseInline(email)
+                            <!--<![endif]-->
+                            <!--[if mso]>
+                            table(cellpadding="0" cellspacing="0" width="100%" style=`text-align: left; background-color: ${color}; color: ${textColor}; padding: 10px; margin-top: 10px; table-layout: fixed;`)
+                                thead
+                                    tr
+                                        th(colspan=4 style="padding-bottom: 5px;")
+                                            a(href=website style="color: inherit;")!= marked.parseInline(title)
+                                tbody
+                                    tr
+                                        th Wann?
+                                        th Wo?
+                                        th Beitrag?
+                                        th Anmelden?
+                                    tr
+                                        td
+                                            | #{dateText}
+                                            br
+                                            | #{timeText}
+                                        td
+                                            != marked.parseInline(location)
+                                        td
+                                            != marked.parseInline(price)
+                                        td
+                                            != marked.parseInline(email)
+                            <![endif]-->
+                    td
             #footer(style="color: black;")
                 a(href="https://improtheater-frankfurt.de/impressum" style="text-decoration: none; color: black;") Impressum
                 = " | "
