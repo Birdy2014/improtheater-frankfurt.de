@@ -50,14 +50,14 @@ html
         p.
             Falls die E-Mail nicht korrekt angezeigt wird, kannst du sie #[a(href=website) hier im Browser anschauen].
         #message-container(style="text-align: center; font-family: Roboto;")
-            #header.centered-container(style="max-width: 1100px; width: 100%; display: inline-block; box-sizing: border-box;")
+            #header.centered-container(style="width: 1100px; max-width: 100%; display: inline-block; box-sizing: border-box;")
                 img(src=logo style="display: block; height: 80px;")
             #title-container(style=`color: ${textColor}; background-color: ${color};`)
-                .centered-container(style="max-width: 1100px; width: 100%; display: inline-block; box-sizing: border-box;")
+                .centered-container(style="width: 1100px; max-width: 100%; display: inline-block; box-sizing: border-box;")
                     h1(style="margin-top: 0;")
                         a(href=website style="color: inherit;")!= marked.parseInline(title)
                     img(src=img style="width: 100%;")
-            .centered-container(style="max-width: 1100px; width: 100%; display: inline-block; box-sizing: border-box;")
+            .centered-container(style="width: 1100px; max-width: 100%; display: inline-block; box-sizing: border-box;")
                 #description-container(style="text-align: left;")
                     != marked(content)
                 unless propertiesHidden
