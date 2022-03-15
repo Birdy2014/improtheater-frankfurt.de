@@ -1,5 +1,4 @@
 const express = require("express");
-const fs = require("fs");
 const path = require("path");
 const fileUpload = require("express-fileupload");
 const { marked } = require("marked");
@@ -14,12 +13,15 @@ const { wrapRoute: route } = require("./utils");
 const router = express.Router();
 
 // Get all routes
-let routes = [];
-let content = fs.readdirSync(path.join(__dirname, "/../client/views/routes"));
-for (let route of content) {
-    if (route.endsWith(".pug"))
-        routes.push(route.substring(0, route.lastIndexOf(".")));
-}
+const routes = [
+    "hygienekonzept",
+    "impressum",
+    "newsletter",
+    "start",
+    "subscribers",
+    "uploads",
+    "workshops"
+];
 
 // Redirect trailing slashes
 router.use(function (req, res, next) {
