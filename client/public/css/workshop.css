@@ -46,6 +46,11 @@
     margin: 0;
 }
 
+.workshop-properties a {
+    color: inherit;
+    text-decoration: underline;
+}
+
 .workshop-properties dd {
     margin: 0;
 }

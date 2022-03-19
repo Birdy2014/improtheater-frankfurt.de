@@ -79,6 +79,7 @@ router.get("/workshop/:workshopID", auth.getUser, (req, res) => {
                 partial: true,
                 doctype: "html",
                 ...w,
+                textColor: newsletter.calcTextColor(w.color),
                 loggedIn: req.user !== undefined,
                 marked,
                 permissions: req.user?.permissions || []
@@ -87,6 +88,7 @@ router.get("/workshop/:workshopID", auth.getUser, (req, res) => {
             res.render("routes/workshop", {
                 route: "workshop/" + req.params.workshopID,
                 ...w,
+                textColor: newsletter.calcTextColor(w.color),
                 loggedIn: req.user !== undefined,
                 marked,
                 permissions: req.user?.permissions || []

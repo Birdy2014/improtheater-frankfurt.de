@@ -14,7 +14,7 @@ block routeContent
         img.workshop-image(src=img onclick=loggedIn ? "editWorkshopImage()" : "")
         .workshop-right
             if loggedIn || !propertiesHidden
-                dl.workshop-right-item.workshop-properties
+                dl.workshop-right-item.workshop-properties(style=loggedIn ? '' : `background-color: ${color}; color: ${textColor}`)
                     if loggedIn
                         span(style=`display: ${permissions.includes("hideproperties") ? "inline" : "none"}`)
                             input.workshop-input-propertieshidden(type="checkbox" name=propertieshidden checked=propertiesHidden)
