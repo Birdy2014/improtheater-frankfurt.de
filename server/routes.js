@@ -121,7 +121,7 @@ router.get("/newsletter-preview/:workshopID", auth.getUser, async (req, res) => 
         res.sendStatus(400);
     } else {
         let baseUrl = process.env.TEST ? "http://localhost:" + config.port : "https://improtheater-frankfurt.de";
-        let logo = baseUrl + "/public/img/Improtheater-Frankfurt-Logo.png";
+        let logo = baseUrl + "/public/img/improtheater_frankfurt_logo.png";
         let website = baseUrl + "/workshop/"+ w.id;
         let subscriber = {
             name: req.user.username,

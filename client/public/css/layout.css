@@ -10,7 +10,7 @@
     --color-code-bg: #c7c7c7;
     --color-nav-button: #54393b;
     --site-width: 1100px;
-    --logo: url("/public/img/Improtheater-Frankfurt-Logo.png");
+    --logo: url("/public/img/improtheater_frankfurt_logo.svg");
 
     --menu-height: 80px;
     --menu-scrolled-height: 65px;
@@ -28,7 +28,7 @@
         --color-input-hover: #696981;
         --color-code-bg: #636363;
         --color-nav-button: #e8e6e3;
-        --logo: url("/public/img/Improtheater-Frankfurt-Logo-dark.png");
+        --logo: url("/public/img/improtheater_frankfurt_logo_dark.svg");
     }
 }
 
@@ -78,13 +78,16 @@ nav #menu {
 
 nav #logo {
     float: left;
+    box-sizing: border-box;
     height: 100%;
     width: 240px;
     max-height: 80px;
-    transform: translateZ(0);
+    padding-bottom: 20px;
     background-image: var(--logo);
     background-size: contain;
     background-repeat: no-repeat;
+    background-origin: content-box;
+    background-clip: content-box;
 }
 
 nav #main-menu {
