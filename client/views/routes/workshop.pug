@@ -5,10 +5,9 @@ include ../includes/utils.pug
 block routeContent
     link(rel="stylesheet" href="/public/css/workshop.css")
     h1
+        span.workshop-preview-field.workshop-title!= marked.parseInline(title)
         if loggedIn
-            input.workshop-input.edit-title(type="text" autocomplete="off" value=title)
-        else
-            span!= marked.parseInline(title)
+            input.workshop-input.workshop-edit-field.edit-title(type="text" autocomplete="off" value=title)
 
     div
         img.workshop-image(src=img onclick=loggedIn ? "editWorkshopImage()" : "")
@@ -16,55 +15,50 @@ block routeContent
             if loggedIn || !propertiesHidden
                 dl.workshop-right-item.workshop-properties(style=loggedIn ? '' : `background-color: ${color}; color: ${textColor}`)
                     if loggedIn
-                        span(style=`display: ${permissions.includes("hideproperties") ? "inline" : "none"}`)
-                            input.workshop-input-propertieshidden(type="checkbox" name=propertieshidden checked=propertiesHidden)
-                            label(for=propertieshidden) Infobox verstecken
-                        select.workshop-input-type(name=id)
-                            each i in [1, 2, 3]
-                                option(value=i selected=(i==type))
-                                    +newsletterName(i)
+                        .workshop-edit-field
+                            span(style=`display: ${permissions.includes("hideproperties") ? "inline" : "none"}`)
+                                input.workshop-input-propertieshidden(type="checkbox" name=propertieshidden checked=propertiesHidden)
+                                label(for=propertieshidden) Infobox verstecken
+                            select.workshop-input-type(name=id)
+                                each i in [1, 2, 3]
+                                    option(value=i selected=(i==type))
+                                        +newsletterName(i)
                     dt Wann?
                     dd
+                        span.workshop-preview-field.workshop-date #{dateText}
                         if loggedIn
-                            input(type="date" value=dateISO class="input-workshop-date")
-                        else
-                            | #{dateText}
+                            input.workshop-edit-field.input-workshop-date(type="date" value=dateISO)
                     dd
+                        span.workshop-preview-field.workshop-time #{timeText}
                         if loggedIn
-                            input(type="time" value=beginTimeISO class="input-workshop-time-begin")
-                            | -
-                            input(type="time" value=endTimeISO class="input-workshop-time-end")
-                        else
-                            | #{timeText}
+                            .workshop-edit-field
+                                input.input-workshop-time-begin(type="time" value=beginTimeISO)
+                                | -
+                                input.input-workshop-time-end(type="time" value=endTimeISO)
                     dt Wo?
                     dd
+                        span.workshop-preview-field.workshop-location!= marked.parseInline(location)
                         if loggedIn
-                            input.workshop-input.edit-workshop-location(type="text" autocomplete="off" value=location)
-                            .workshop-location-preview
-                        else
-                            span!= marked.parseInline(location)
+                            input.workshop-input.workshop-edit-field.edit-workshop-location(type="text" autocomplete="off" value=location)
                     dt Kosten?
                     dd
+                        span.workshop-preview-field.workshop-price!= marked.parseInline(price)
                         if loggedIn
-                            input.workshop-input.edit-workshop-price(type="text" autocomplete="off" value=price)
-                            .workshop-price-preview
-                        else
-                            span!= marked.parseInline(price)
+                            input.workshop-input.workshop-edit-field.edit-workshop-price(type="text" autocomplete="off" value=price)
                     dt Anmelden?
                     dd
+                        span.workshop-preview-field.workshop-email!= marked.parseInline(email)
                         if loggedIn
-                            input.workshop-input.edit-workshop-email(type="text" autocomplete="off" value=email)
-                            .workshop-email-preview
-                        else
-                            span!= marked.parseInline(email)
+                            input.workshop-input.workshop-edit-field.edit-workshop-email(type="text" autocomplete="off" value=email)
                     if loggedIn
-                        dt Farbe?
-                        dd
-                            input(type="color" value=color class="input-workshop-color")
-                            | #{color}
+                        .workshop-edit-field
+                            dt Farbe?
+                            dd
+                                input(type="color" value=color class="input-workshop-color")
+                                | #{color}
 
             if loggedIn
-                .workshop-right-item.workshop-markdown-examples(style="margin-top: 10px;")
+                .workshop-right-item.workshop-edit-field(style="margin-top: 10px;")
                     h3(style="margin: 5px 0") Markdown Beispiele
                     b Überschrift
                     code # Überschrift
@@ -75,14 +69,13 @@ block routeContent
                     b Kursiv
                     code *Text*
 
-    if loggedIn
-        .workshop-content
-            p Die Bearbeitungsansicht unterstützt #[a(href="https://guides.github.com/features/mastering-markdown/") Markdown]
-            textarea.edit-content(name="content-" + id) !{content}
-            //- The textarea name is important, because the browser will autocomplete content from other textareas without it
-            .workshop-content-preview
-    else
-        div.workshop-content!= marked.parse(content)
+    .workshop-content
+        .workshop-preview-field.workshop-content-preview!= marked.parse(content)
+        if loggedIn
+            .workshop-edit-field
+                p Die Bearbeitungsansicht unterstützt #[a(href="https://guides.github.com/features/mastering-markdown/") Markdown]
+                //- The textarea name is important, because the browser will autocomplete content from other textareas without it
+                textarea.edit-content(name="content-" + id) !{content}
 
     if loggedIn
         a(href="javascript:void(0)" onclick="changeWorkshopValues()" class="edit-button edit-save") Speichern

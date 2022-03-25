@@ -1,4 +1,6 @@
 const workshops = {};
+const dateFormat = Intl.DateTimeFormat("de-DE", { weekday: "long", year: "numeric", month: "long", day: "numeric" });
+const timeFormat = Intl.DateTimeFormat("de-DE", { hour: "numeric", minute: "numeric" });
 
 if (window.marked) {
     marked.setOptions({
@@ -93,43 +95,41 @@ function textareaAutoGrow(field) {
 function toggleWorkshopPreview() {
     let id = currentRoute.substring(currentRoute.indexOf("/") + 1);
     let container = document.getElementById(currentRoute);
-    let content_textarea = container.querySelector(".edit-content");
+    let title_preview = container.querySelector(".workshop-title");
     let content_preview = container.querySelector(".workshop-content-preview");
-    let location_input = container.querySelector(".edit-workshop-location");
-    let location_preview = container.querySelector(".workshop-location-preview");
-    let price_input = container.querySelector(".edit-workshop-price");
-    let price_preview = container.querySelector(".workshop-price-preview");
-    let email_input = container.querySelector(".edit-workshop-email");
-    let email_preview = container.querySelector(".workshop-email-preview");
+    let location_preview = container.querySelector(".workshop-location");
+    let price_preview = container.querySelector(".workshop-price");
+    let email_preview = container.querySelector(".workshop-email");
+    let date_preview = container.querySelector(".workshop-date");
+    let time_preview = container.querySelector(".workshop-time");
     let properties = container.querySelector(".workshop-properties");
-    let markdown_examples = container.querySelector(".workshop-markdown-examples");
+
+    let workshop_edit_fields = container.querySelectorAll(".workshop-edit-field");
+    let workshop_preview_fields = container.querySelectorAll(".workshop-preview-field");
 
     if (workshops[id].buttons.previewToggled) {
-        content_textarea.style.display = "block";
-        content_preview.style.display = "none";
-        location_input.style.display = "block";
-        location_preview.style.display = "none";
-        price_input.style.display = "block";
-        price_preview.style.display = "none";
-        email_input.style.display = "block";
-        email_preview.style.display = "none";
         properties.style.display = null;
-        markdown_examples.style.display = null;
+        properties.style.backgroundColor = null;
+        properties.style.color = null;
+
+        workshop_edit_fields.forEach(element => element.style.display = "block");
+        workshop_preview_fields.forEach(element => element.style.display = "none");
     } else {
-        content_preview.innerHTML = marked.parse(content_textarea.value);
-        content_textarea.style.display = "none";
-        content_preview.style.display = "block";
-        location_preview.innerHTML = marked.parseInline(location_input.value);
-        location_input.style.display = "none";
-        location_preview.style.display = "block";
-        price_preview.innerHTML = marked.parseInline(price_input.value);
-        price_input.style.display = "none";
-        price_preview.style.display = "block";
-        email_preview.innerHTML = marked.parseInline(email_input.value);
-        email_input.style.display = "none";
-        email_preview.style.display = "block";
+        workshop_updateValues(id);
+
+        title_preview.innerHTML = marked.parseInline(workshops[id].texts.title);
+        content_preview.innerHTML = marked.parse(workshops[id].texts.content);
+        location_preview.innerHTML = marked.parseInline(workshops[id].texts.location);
+        price_preview.innerHTML = marked.parseInline(workshops[id].texts.price);
+        email_preview.innerHTML = marked.parseInline(workshops[id].texts.email);
+        date_preview.innerHTML = dateFormat.formatRange(workshops[id].texts.begin * 1000, workshops[id].texts.end * 1000);
+        time_preview.innerHTML = timeFormat.formatRange(workshops[id].texts.begin * 1000, workshops[id].texts.end * 1000);
         properties.style.display = workshops[id].texts.propertiesHidden ? "none" : null;
-        markdown_examples.style.display = "none";
+        properties.style.backgroundColor = workshops[id].texts.color;
+        properties.style.color = workshop_calcTextColor(workshops[id].texts.color);
+
+        workshop_edit_fields.forEach(element => element.style.display = "none");
+        workshop_preview_fields.forEach(element => element.style.display = "block");
     }
     workshops[id].buttons.previewToggled = !workshops[id].buttons.previewToggled;
 }
@@ -200,4 +200,15 @@ function workshop_changed(id) {
         (container.querySelector(".workshop-input-propertieshidden") && workshops[id].texts.propertiesHidden !== container.querySelector(".workshop-input-propertieshidden").checked) ||
         workshops[id].texts.type !== container.querySelector(".workshop-input-type").value
     )
+}
+
+function workshop_calcTextColor(backgroundColor) {
+    const r = parseInt(backgroundColor.substr(1, 2), 16);
+    const g = parseInt(backgroundColor.substr(3, 2), 16);
+    const b = parseInt(backgroundColor.substr(5, 2), 16);
+    const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+    if (luminance > 0.5)
+        return "#000000";
+    else
+        return "#ffffff";
 }

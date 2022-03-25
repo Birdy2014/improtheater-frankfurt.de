@@ -81,7 +81,7 @@
     padding: 5px;
 }
 
-textarea {
+.edit-content {
     display: block;
     box-sizing: border-box;
     resize: vertical;
@@ -95,4 +95,8 @@ textarea {
 code {
     display: block;
     background-color: var(--color-code-bg);
+}
+
+.workshop-preview-field {
+    display: none;
 }
