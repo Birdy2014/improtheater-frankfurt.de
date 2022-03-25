@@ -60,16 +60,8 @@ block routeContent
                     if loggedIn
                         dt Farbe?
                         dd
-                            if permissions.includes("restricted")
-                                select.input-workshop-color
-                                    option(value="#e65656") Rot
-                                    option(value="#5663E6") Blau
-                                    option(value="#328026") Grün
-                                    option(value="#7C8026") Khaki
-                                    option(value="#ECD426") Gelb
-                            else
-                                input(type="color" value=color class="input-workshop-color")
-                                | #{color}
+                            input(type="color" value=color class="input-workshop-color")
+                            | #{color}
 
             if loggedIn
                 .workshop-right-item.workshop-markdown-examples(style="margin-top: 10px;")

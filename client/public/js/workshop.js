@@ -160,13 +160,6 @@ function workshop_init(container) {
         textareaAutoGrow(event.target);
     });
     textareaAutoGrow(edit_content);
-
-    let color = container.querySelector(".input-workshop-color");
-    if (color.tagName === "SELECT") {
-        let colorchange = () => color.style.backgroundColor = color.value;
-        color.addEventListener("change", colorchange);
-        colorchange();
-    }
 }
 
 function workshop_updateValues(id) {
