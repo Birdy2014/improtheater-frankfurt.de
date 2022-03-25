@@ -103,6 +103,7 @@ function toggleWorkshopPreview() {
     let date_preview = container.querySelector(".workshop-date");
     let time_preview = container.querySelector(".workshop-time");
     let properties = container.querySelector(".workshop-properties");
+    let preview_button = container.querySelector(".edit-preview");
 
     let workshop_edit_fields = container.querySelectorAll(".workshop-edit-field");
     let workshop_preview_fields = container.querySelectorAll(".workshop-preview-field");
@@ -111,6 +112,7 @@ function toggleWorkshopPreview() {
         properties.style.display = null;
         properties.style.backgroundColor = null;
         properties.style.color = null;
+        preview_button.innerHTML = "Bearbeiten beenden";
 
         workshop_edit_fields.forEach(element => element.style.display = "block");
         workshop_preview_fields.forEach(element => element.style.display = "none");
@@ -127,6 +129,7 @@ function toggleWorkshopPreview() {
         properties.style.display = workshops[id].texts.propertiesHidden ? "none" : null;
         properties.style.backgroundColor = workshops[id].texts.color;
         properties.style.color = workshop_calcTextColor(workshops[id].texts.color);
+        preview_button.innerHTML = "Bearbeiten";
 
         workshop_edit_fields.forEach(element => element.style.display = "none");
         workshop_preview_fields.forEach(element => element.style.display = "block");
@@ -147,7 +150,7 @@ function workshop_init(container) {
         },
         buttons: {
             published: container.querySelector(".edit-publish").innerHTML !== "Veröffentlichen",
-            previewToggled: false,
+            previewToggled: true,
             newsletterSent: container.querySelector(".edit-newsletter") === undefined
         },
         current: {

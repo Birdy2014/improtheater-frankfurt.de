@@ -97,6 +97,6 @@ code {
     background-color: var(--color-code-bg);
 }
 
-.workshop-preview-field {
+.workshop-edit-field {
     display: none;
 }
