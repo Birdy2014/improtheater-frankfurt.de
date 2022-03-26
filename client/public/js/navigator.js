@@ -86,6 +86,7 @@ async function navigate(to, reload, skipPushState, preload) {
         document.getElementById("wrapper").appendChild(targetContainer);
     }
     let containers = document.getElementsByClassName("container");
+    let load_promise;
     if (targetContainer.childElementCount === 0 || reload) {
         // clear container
         targetContainer.innerHTML = "";
@@ -106,9 +107,15 @@ async function navigate(to, reload, skipPushState, preload) {
             return;
         }
         targetContainer.innerHTML = website.data;
-        setTimeout(() => loadPage(targetContainer, route, to.includes("?") ? to.substring(to.indexOf("?")) : ""), 100);
+
+        load_promise = new Promise(resolve => {
+            setTimeout(() => loadPage(targetContainer, route, to.includes("?") ? to.substring(to.indexOf("?")) : "").then(resolve), 100);
+        });
     }
-    if (preload) return;
+    if (preload) {
+        await load_promise;
+        return;
+    }
     // set link anctive
     let links = document.getElementsByClassName("navlink");
     for (let link of links) {
@@ -132,6 +139,7 @@ async function navigate(to, reload, skipPushState, preload) {
     if (!skipPushState) {
         history.pushState({}, "", "/" + route);
     }
+    await load_promise;
 }
 
 function toggleMenu(hideMenu) {
@@ -160,16 +168,22 @@ function toggleMenu(hideMenu) {
 
 // Initial page load scripts
 function loadPage(parent, page, query) {
-    if (page.includes("/")) page = page.substring(0, page.indexOf("/"));
-    if (!document.getElementById("script-" + page)) {
-        let script = document.createElement("script");
-        script.id = "script-" + page;
-        script.src = "/public/js/" + page + ".js";
-        script.onload = () => initRoute(page, parent, query);
-        document.head.append(script);
-    } else {
-        initRoute(page, parent, query);
-    }
+    return new Promise(resolve => {
+        if (page.includes("/")) page = page.substring(0, page.indexOf("/"));
+        if (!document.getElementById("script-" + page)) {
+            let script = document.createElement("script");
+            script.id = "script-" + page;
+            script.src = "/public/js/" + page + ".js";
+            script.onload = () => {
+                initRoute(page, parent, query);
+                resolve();
+            }
+            document.head.append(script);
+        } else {
+            initRoute(page, parent, query);
+            resolve();
+        }
+    });
 }
 
 function initRoute(route, container, query) {
