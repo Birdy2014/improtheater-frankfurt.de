@@ -41,6 +41,8 @@ async function publishWorkshop() {
 }
 
 async function deleteWorkshop(id) {
+    if (!await confirm("Soll der Newsletter wirklich gelöscht werden?"))
+        return;
     if (!id) id = currentRoute.substring(currentRoute.indexOf("/") + 1);
     await axios.delete("/api/workshops", {
         data: { id }
