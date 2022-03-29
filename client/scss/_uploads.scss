@@ -1,0 +1,39 @@
+#uploads-images-list {
+    width: 100%;
+    overflow: auto;
+    column-count: 2;
+    column-gap: 15px;
+    margin-top: 20px;
+
+    div {
+        position: relative;
+        height: 500px;
+    }
+
+    img {
+        height: auto;
+        width: 100%;
+        cursor: pointer;
+    }
+
+    p {
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        background-color: var(--color-bg);
+        margin: 0;
+    }
+
+    a {
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        background-color: var(--color-bg);
+    }
+}
+
+@media only screen and (max-width: 1000px) {
+    #uploads-images-list {
+        column-count: 1;
+    }
+}

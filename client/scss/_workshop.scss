@@ -25,9 +25,6 @@
 
 .workshop-image {
     position: relative;
-}
-
-.workshop-image {
     width: calc(100% - 32% - 80px);
 }
 
@@ -46,17 +43,19 @@
     margin: 0;
 }
 
-.workshop-properties a {
-    color: inherit;
-    text-decoration: underline;
-}
+.workshop-properties {
+    a {
+        color: inherit;
+        text-decoration: underline;
+    }
 
-.workshop-properties dd {
-    margin: 0;
-}
+    dd {
+        margin: 0;
+    }
 
-.workshop-properties dt {
-    font-weight: bold;
+    dt {
+        font-weight: bold;
+    }
 }
 
 @media screen and (max-width: 750px) {

@@ -1,0 +1,54 @@
+#newsletter {
+    margin-top: 10px;
+
+    label {
+        vertical-align: middle;
+    }
+}
+
+#newsletter-form {
+    label {
+        font-weight: bold;
+        margin-left: 5px;
+    }
+
+    input[type="checkbox"] {
+        vertical-align: middle;
+    }
+
+    #newsletter-form-text-container {
+        margin-top: 20px;
+    }
+
+    .input-newsletter-text {
+        border: none;
+        border-bottom: 2px solid var(--color-text);
+        max-width: 350px;
+        width: 100%;
+        font-size: 20px;
+        margin-bottom: 12px;
+        padding-bottom: 3px;
+    }
+
+    .input-newsletter-text:focus {
+        border-bottom-color: var(--color-fg);
+        transition: border .4s;
+    }
+
+    .input-newsletter-button {
+        color: white;
+        background-color: var(--color-fg);
+        border: none;
+        padding: 13px 29px;
+        margin-top: 12px;
+        font-weight: bold;
+    }
+
+    .input-newsletter-button:hover {
+        background-color: #552726;
+    }
+}
+
+#newsletter-unsubscribe-token {
+    display: none;
+}

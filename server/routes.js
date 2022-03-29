@@ -2,6 +2,7 @@ const express = require("express");
 const path = require("path");
 const fileUpload = require("express-fileupload");
 const { marked } = require("marked");
+const sass = require("sass");
 const auth = require("./auth");
 const workshops = require("./workshops");
 const newsletter = require("./newsletter");
@@ -58,7 +59,17 @@ router.get("/lib/nprogress.js", (req, res) => res.sendFile(path.join(__dirname, 
 router.get("/lib/nprogress.css", (req, res) => res.sendFile(path.join(__dirname, "/../node_modules/nprogress/nprogress.css")));
 router.get("/lib/axios.min.js", (req, res) => res.sendFile(path.join(__dirname, "/../node_modules/axios/dist/axios.min.js")));
 router.get("/lib/marked.min.js", (req, res) => res.sendFile(path.join(__dirname, "/../node_modules/marked/marked.min.js")));
+
 router.use("/public", express.static(path.join(__dirname, "/../client/public")));
+const css = sass.compile(path.join(__dirname, "/../client/scss/index.scss")).css;
+router.use("/index.css", (req, res) => {
+    res.contentType("text/css");
+    if (process.env.NODE_ENV === "development") {
+        res.send(sass.compile(path.join(__dirname, "/../client/scss/index.scss")).css);
+    } else {
+        res.send(css);
+    }
+});
 
 // Frontend
 router.get("/", (req, res) => {
