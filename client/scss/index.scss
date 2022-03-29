@@ -1,3 +1,5 @@
+@use "../../node_modules/@fontsource/roboto/scss/mixins" as Roboto;
+
 @use 'hygienekonzept';
 @use 'layout';
 @use 'newsletter';
@@ -6,3 +8,8 @@
 @use 'uploads';
 @use 'workshop';
 @use 'workshops';
+
+@include Roboto.fontFace(
+    $weight: 400,
+    $fontDir: "/roboto"
+);

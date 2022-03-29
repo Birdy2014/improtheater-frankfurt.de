@@ -59,6 +59,7 @@ router.get("/lib/nprogress.js", (req, res) => res.sendFile(path.join(__dirname, 
 router.get("/lib/nprogress.css", (req, res) => res.sendFile(path.join(__dirname, "/../node_modules/nprogress/nprogress.css")));
 router.get("/lib/axios.min.js", (req, res) => res.sendFile(path.join(__dirname, "/../node_modules/axios/dist/axios.min.js")));
 router.get("/lib/marked.min.js", (req, res) => res.sendFile(path.join(__dirname, "/../node_modules/marked/marked.min.js")));
+router.use("/roboto", express.static(path.join(__dirname, "/../node_modules/@fontsource/roboto/files")));
 
 router.use("/public", express.static(path.join(__dirname, "/../client/public")));
 const css = sass.compile(path.join(__dirname, "/../client/scss/index.scss")).css;
