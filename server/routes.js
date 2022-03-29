@@ -8,7 +8,9 @@ const newsletter = require("./newsletter");
 const upload = require("./upload");
 const editableWebsite = require("./editableWebsite");
 const config = require("../config");
-const { wrapRoute: route } = require("./utils");
+const utils = require("./utils");
+
+const route = utils.wrapRoute;
 
 const router = express.Router();
 
@@ -120,9 +122,8 @@ router.get("/newsletter-preview/:workshopID", auth.getUser, async (req, res) => 
     if (!req.user || !w) {
         res.sendStatus(400);
     } else {
-        let baseUrl = process.env.TEST ? "http://localhost:" + config.port : "https://improtheater-frankfurt.de";
-        let logo = baseUrl + "/public/img/improtheater_frankfurt_logo.png";
-        let website = baseUrl + "/workshop/"+ w.id;
+        let logo = utils.base_url + "/public/img/improtheater_frankfurt_logo.png";
+        let website = utils.base_url + "/workshop/"+ w.id;
         let subscriber = {
             name: req.user.username,
             subscribedTo: w.type

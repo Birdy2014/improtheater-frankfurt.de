@@ -31,4 +31,4 @@ exports.wrapRoute = (route) => {
     }
 }
 
-exports.base_url = process.env.TEST ? "http://localhost:" + config.port : "https://improtheater-frankfurt.de";
+exports.base_url = process.env.NODE_ENV === 'development' ? "http://localhost:" + config.port : "https://improtheater-frankfurt.de";

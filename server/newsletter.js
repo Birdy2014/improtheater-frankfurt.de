@@ -115,18 +115,17 @@ exports.send = async (req, res) => {
     }
     res.sendStatus(200);
     // Send newsletter
-    let baseUrl = process.env.TEST ? "http://localhost:" + config.port : "https://improtheater-frankfurt.de";
     let logo = "https://improglycerin.de/wp-content/uploads/2017/04/improglycerin_logo_website_white_medium_2.jpg";
     if (workshop.type == type_itf)
-        logo = baseUrl + "/public/img/improtheater_frankfurt_logo.png";
+        logo = utils.base_url + "/public/img/improtheater_frankfurt_logo.png";
     let reply = /[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[a-zA-Z0-9]+/.test(workshop.email) ? workshop.email : "hallo@improglycerin.de";
-    let website = baseUrl + "/workshop/" + workshop.id;
+    let website = utils.base_url + "/workshop/" + workshop.id;
     for (let subscriber of subscribers) {
         if (!(subscriber.subscribedTo & workshop.type))
             continue;
         try {
-            let unsubscribe = baseUrl + "/newsletter?unsubscribe=1&token=" + subscriber.token;
-            let subscribe = baseUrl + "/newsletter?subscribe=1&token=" + subscriber.token;
+            let unsubscribe = utils.base_url + "/newsletter?unsubscribe=1&token=" + subscriber.token;
+            let subscribe = utils.base_url + "/newsletter?subscribe=1&token=" + subscriber.token;
             let textColor = exports.calcTextColor(workshop.color);
             let html = pug.renderFile(__dirname + "/../client/views/emails/newsletter.pug", {
                 title: workshop.title,
@@ -208,9 +207,8 @@ exports.addSubscriber = (req, res) => {
 }
 
 function sendConfirmMail(subscriber) {
-    let url = process.env.TEST ? "http://localhost:" + config.port : "https://improtheater-frankfurt.de";
-    let link = url + "/api/newsletter/confirm?token=" + subscriber.token;
-    let subscribe = url + "/newsletter?subscribe=1&token=" + subscriber.token;
+    let link = utils.base_url + "/api/newsletter/confirm?token=" + subscriber.token;
+    let subscribe = utils.base_url + "/newsletter?subscribe=1&token=" + subscriber.token;
     let html = pug.renderFile(__dirname + "/../client/views/emails/confirm.pug", {
         name: subscriber.name,
         link,

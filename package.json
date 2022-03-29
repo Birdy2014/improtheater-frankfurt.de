@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node index.js",
-    "debug": "TEST=1 node index.js"
+    "prod": "NODE_ENV=production npm start",
+    "dev": "NODE_ENV=development npm start"
   },
   "author": "Moritz Vogel",
   "license": "",
