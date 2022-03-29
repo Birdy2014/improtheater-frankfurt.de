@@ -13,3 +13,8 @@
     $weight: 400,
     $fontDir: "/roboto"
 );
+
+@include Roboto.fontFace(
+    $weight: 700,
+    $fontDir: "/roboto"
+);
