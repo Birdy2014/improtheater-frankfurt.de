@@ -1,3 +1,4 @@
+const sharp = require("sharp");
 const db = require("./db");
 const utils = require("./utils");
 
@@ -25,7 +26,7 @@ exports.get = (req, res) => {
     res.end(file.data, "binary");
 }
 
-exports.post = (req, res) => {
+exports.post = async (req, res) => {
     if (!req.files || !req.files.img || !req.user) {
         res.sendStatus(400);
         return;
@@ -36,8 +37,17 @@ exports.post = (req, res) => {
         return;
     }
 
+    const resized_image = await sharp(req.files.img.data)
+        .resize(900, 400, { fit: 'inside' })
+        .jpeg()
+        .toBuffer()
+
+    const mimetype = "image/jpeg";
+    const size = resized_image.length;
+    const name = req.files.img.name + ".jpg";
+
     try {
-        db.run("INSERT INTO upload (name, mimetype, size, data, user_id, time) VALUES (?, ?, ?, ?, ?, ?)", req.files.img.name, req.files.img.mimetype, req.files.img.size, req.files.img.data, req.user.user_id, utils.getCurrentTimestamp());
+        db.run("INSERT INTO upload (name, mimetype, size, data, user_id, time) VALUES (?, ?, ?, ?, ?, ?)", name, mimetype, size, resized_image, req.user.user_id, utils.getCurrentTimestamp());
         res.sendStatus(200);
     } catch (e) {
         if (e.errno === 19) {
