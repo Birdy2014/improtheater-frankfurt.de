@@ -123,6 +123,7 @@ function toggleWorkshopPreview() {
 
         title_preview.innerHTML = marked.parseInline(workshops[id].texts.title);
         content_preview.innerHTML = marked.parse(workshops[id].texts.content);
+        workshop_break_links(container);
         location_preview.innerHTML = marked.parseInline(workshops[id].texts.location);
         price_preview.innerHTML = marked.parseInline(workshops[id].texts.price);
         email_preview.innerHTML = marked.parseInline(workshops[id].texts.email);
@@ -140,6 +141,8 @@ function toggleWorkshopPreview() {
 }
 
 function workshop_init(container) {
+    workshop_break_links(container);
+
     if (!container.querySelector(".edit-publish"))
         return;
 
@@ -216,4 +219,14 @@ function workshop_calcTextColor(backgroundColor) {
         return "#000000";
     else
         return "#ffffff";
+}
+
+function workshop_break_links(container) {
+    const content = container.querySelector(".workshop-content-preview");
+    const links = content.querySelectorAll("a");
+
+    links.forEach(link => {
+        link.innerHTML = link.innerHTML.replaceAll("/", "/<wbr>");
+        console.log(link.innerHTML)
+    });
 }
