@@ -1,6 +1,7 @@
 const sharp = require("sharp");
 const db = require("./db");
 const utils = require("./utils");
+const logger = require("./logger");
 
 exports.get = (req, res) => {
     if (!req.query.name) {
@@ -48,11 +49,13 @@ exports.post = async (req, res) => {
 
     try {
         db.run("INSERT INTO upload (name, mimetype, size, data, user_id, time) VALUES (?, ?, ?, ?, ?, ?)", name, mimetype, size, resized_image, req.user.user_id, utils.getCurrentTimestamp());
-        res.sendStatus(200);
+        res.status(200);
+        res.json({ name });
     } catch (e) {
-        if (e.errno === 19) {
+        if (e.code === 'SQLITE_CONSTRAINT_PRIMARYKEY') {
             res.sendStatus(409);
         } else {
+            logger.error(`Upload error: name: '${name}', mimetype: '${mimetype}', size: '${size}'` + JSON.stringify(e));
             res.sendStatus(500);
         }
     }

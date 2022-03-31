@@ -3,12 +3,17 @@ async function upload() {
     let formData = new FormData();
     formData.append("img", file);
     try {
-        await axios.post("/api/upload", formData, { headers: { "Content-Type": "multipart/form-data" } });
-        addImage(file.name, true);
+        const response = await axios.post("/api/upload", formData, { headers: { "Content-Type": "multipart/form-data" } });
+        const { name } = response.data;
+        addImage(name, true);
         alert(ALERT_SUCCESS, "Hochgeladen!");
-        selectImage(file.name);
+        selectImage(name);
     } catch (e) {
-        showError(e);
+        if (e.response.status === 409) {
+            alert(ALERT_ERROR, "Es existiert bereits ein Bild mit dem gleichen Namen.", false);
+        } else {
+            showError(e);
+        }
     }
 }
 
