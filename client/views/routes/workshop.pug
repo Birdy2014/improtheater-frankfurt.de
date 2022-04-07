@@ -12,7 +12,7 @@ block routeContent
         img.workshop-image(src=img onclick=loggedIn ? "editWorkshopImage()" : "")
         .workshop-right
             if loggedIn || !propertiesHidden
-                dl.workshop-right-item.workshop-properties(style=loggedIn ? '' : `background-color: ${color}; color: ${textColor}`)
+                dl.workshop-right-item.workshop-properties(style=`background-color: ${color}; color: ${textColor}`)
                     if loggedIn
                         .workshop-edit-field
                             span(style=`display: ${permissions.includes("hideproperties") ? "inline" : "none"}`)
