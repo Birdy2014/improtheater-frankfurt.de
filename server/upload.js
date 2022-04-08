@@ -40,12 +40,11 @@ exports.post = async (req, res) => {
 
     const resized_image = await sharp(req.files.img.data)
         .resize(900, 400, { fit: 'inside' })
-        .jpeg()
         .toBuffer()
 
-    const mimetype = "image/jpeg";
+    const mimetype = req.files.img.mimetype;
     const size = resized_image.length;
-    const name = req.files.img.name + ".jpg";
+    const name = req.files.img.name;
 
     try {
         db.run("INSERT INTO upload (name, mimetype, size, data, user_id, time) VALUES (?, ?, ?, ?, ?, ?)", name, mimetype, size, resized_image, req.user.user_id, utils.getCurrentTimestamp());
