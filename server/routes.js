@@ -10,6 +10,7 @@ const upload = require("./upload");
 const editableWebsite = require("./editableWebsite");
 const config = require("../config");
 const utils = require("./utils");
+const logger = require("./logger")
 
 const route = utils.wrapRoute;
 
@@ -159,6 +160,8 @@ router.get("/:route", auth.getUser, async (req, res) => {
         res.status(404);
         res.render("404");
     } else {
+        const start_time = process.hrtime();
+
         if (req.query.partial) {
             res.render("routes/" + req.params.route, { partial: true, doctype: "html", ...getRenderOptions(req.params.route, req.user !== undefined, req.query) });
         } else {
@@ -167,6 +170,10 @@ router.get("/:route", auth.getUser, async (req, res) => {
                 ...getRenderOptions(req.params.route, req.user !== undefined, req.query)
             });
         }
+
+        const duration = process.hrtime(start_time);
+        if (duration[0] >= 1)
+            logger.warn(`rendering of route '${req.params.route}' took ${duration[0]}s ${duration[1] / 1000000}ms`);
     }
 });
 

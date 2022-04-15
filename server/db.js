@@ -1,4 +1,5 @@
 const Database = require("better-sqlite3");
+const logger = require("./logger");
 
 exports.init = () => {
     exports.db = new Database(__dirname + "/../improtheater-frankfurt.db");
@@ -59,16 +60,38 @@ exports.init = () => {
 }
 
 exports.run = (sql, ...params) => {
-    let statement = exports.db.prepare(sql);
+    const start_time = process.hrtime();
+
+    const statement = exports.db.prepare(sql);
     statement.run(...params);
+
+    const duration = process.hrtime(start_time);
+    if (duration[0] >= 1)
+        logger.warn(`SQL run with query '${sql}' took ${duration[0]}s ${duration[1] / 1000000}ms`);
 }
 
 exports.get = (sql, ...params) => {
-    let statement = exports.db.prepare(sql);
-    return statement.get(params);
+    const start_time = process.hrtime();
+
+    const statement = exports.db.prepare(sql);
+    const result = statement.get(params);
+
+    const duration = process.hrtime(start_time);
+    if (duration[0] >= 1)
+        logger.warn(`SQL get with query '${sql}' took ${duration[0]}s ${duration[1] / 1000000}ms`);
+
+    return result;
 }
 
 exports.all = (sql, ...params) => {
-    let statement = exports.db.prepare(sql);
-    return statement.all(...params);
+    const start_time = process.hrtime();
+
+    const statement = exports.db.prepare(sql);
+    const result = statement.all(...params);
+
+    const duration = process.hrtime(start_time);
+    if (duration[0] >= 1)
+        logger.warn(`SQL all with query '${sql}' took ${duration[0]}s ${duration[1] / 1000000}ms`);
+
+    return result;
 }
