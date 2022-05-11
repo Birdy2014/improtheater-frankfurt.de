@@ -71,7 +71,10 @@ async function sendNewsletter() {
         container.querySelectorAll(".edit-newsletter").forEach(value => value.style.display = "none");
         alert(ALERT_SUCCESS, "Newsletter gesendet");
     } catch (e) {
-        showError(e);
+        if (e.response.status === 404)
+            alert(ALERT_ERROR, "Der Workshop ist noch nicht öffentlich.", false);
+        else
+            showError(e);
     }
 }
 
