@@ -67,6 +67,7 @@ async function sendNewsletter() {
             return;
         await axios.post("/api/newsletter/send", { workshop: id });
         workshops[id].buttons.newsletterSent = true;
+        // TODO: Only do this if the user is not allowed to resend newsletters
         container.querySelectorAll(".edit-newsletter").forEach(value => value.style.display = "none");
         alert(ALERT_SUCCESS, "Newsletter gesendet");
     } catch (e) {

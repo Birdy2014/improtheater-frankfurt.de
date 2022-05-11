@@ -87,11 +87,14 @@ block routeContent
             = " | "
             a(href="javascript:void(0)" onclick="deleteWorkshop()" class="edit-button") Löschen
             br
-            unless newsletterSent
+            unless newsletterSent && !permissions.includes("resend-newsletter")
                 span.edit-newsletter
                     = "Newsletter: "
-                    a(href="javascript:void(0)" onclick="sendNewsletter()" class="edit-button edit-newsletter") Senden
+                    if newsletterSent
+                        strong.newsletter-sent BEREITS VERSENDET
+                        = " "
+                    a.edit-button(href="javascript:void(0)" onclick="sendNewsletter()") Senden
                     = " | "
-                    a(href="/newsletter-preview/" + id class="edit-button edit-newsletter forceReload" target="_blank") Vorschau
+                    a.edit-button.forceReload(href="/newsletter-preview/" + id target="_blank") Vorschau
                     = " | "
-                    a(href="javascript:void(0)" onclick="sendTestNewsletter()" class="edit-button edit-newsletter") Testmail
+                    a.edit-button(href="javascript:void(0)" onclick="sendTestNewsletter()") Testmail

@@ -93,7 +93,7 @@ exports.send = async (req, res) => {
         res.sendStatus(404);
         return;
     }
-    if (workshop.newsletterSent) {
+    if (workshop.newsletterSent && !req.user.permissions.includes("resend-newsletter")) {
         res.sendStatus(409);
         return;
     }
