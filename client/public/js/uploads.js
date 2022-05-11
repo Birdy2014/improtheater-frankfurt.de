@@ -18,6 +18,8 @@ async function upload() {
 }
 
 async function deleteImage(name) {
+    if (!await confirm("Soll das Bild wirklich gelöscht werden? Es verschwindet auch aus bereits gesendeten Newslettern."))
+        return;
     await axios.delete(`/api/upload?name=${name}`);
     document.getElementById(`uploads-image-${name}`).remove();
 }
