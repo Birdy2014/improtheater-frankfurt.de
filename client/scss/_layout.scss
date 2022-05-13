@@ -15,6 +15,8 @@
     --menu-height: 80px;
     --menu-scrolled-height: 65px;
     --menu-top-padding: 8px;
+
+    --margin-side: 10px;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -41,6 +43,7 @@ html {
 
 body {
     font-family: Roboto;
+    margin: var(--margin-side);
 }
 
 nav {
@@ -52,6 +55,7 @@ nav {
     height: var(--menu-height);
     z-index: 10;
     transition: height .3s ease-out;
+    margin: 0 var(--margin-side);
     margin-bottom: 5px;
     background-color: var(--color-bg);
 
