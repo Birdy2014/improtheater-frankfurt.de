@@ -5,9 +5,7 @@ const logger = require("./logger");
 
 exports.get = (req, res) => {
     if (!req.query.name) {
-        let files = db.all("SELECT name FROM upload ORDER BY time DESC");
-        res.status(200);
-        res.json(files);
+        res.status(400);
         return;
     }
 
