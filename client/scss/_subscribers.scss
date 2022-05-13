@@ -1,14 +1,20 @@
-#subscribers table {
-    border: none;
-    width: 100%;
+#subscribers {
+    table {
+        border: none;
+        width: 100%;
+    }
+
+    th, td {
+        text-align: left;
+        border: none;
+    }
+
+    .subscribers-delete {
+        text-align: center;
+    }
 }
 
-#subscribers th, #subscribers td {
-    text-align: left;
-    border: none;
-}
-
-@media screen and (max-width: 750px) {
+@media screen and (max-width: 800px) {
     tbody tr:nth-child(odd) {
         background-color: var(--color-bg-light);
     }
@@ -31,12 +37,6 @@
 
     table thead {
         display: none;
-    }
-}
-
-@media screen and (min-width: 750px) {
-    #subscribers .subscribers-delete {
-        text-align: center;
     }
 }
 
