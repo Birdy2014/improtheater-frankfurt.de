@@ -3,6 +3,8 @@ const db = require("./db");
 const utils = require("./utils");
 const logger = require("./logger");
 
+exports.uploads_name_cache = []
+
 exports.get = (req, res) => {
     if (!req.query.name) {
         res.status(400);
@@ -46,6 +48,7 @@ exports.post = async (req, res) => {
 
     try {
         db.run("INSERT INTO upload (name, mimetype, size, data, user_id, time) VALUES (?, ?, ?, ?, ?, ?)", name, mimetype, size, resized_image, req.user.user_id, utils.getCurrentTimestamp());
+        exports.uploads_name_cache.unshift(name);
         res.status(200);
         res.json({ name });
     } catch (e) {
@@ -65,9 +68,12 @@ exports.delete = (req, res) => {
     }
 
     db.run("DELETE FROM upload WHERE name = ?", req.query.name);
+    exports.uploads_name_cache = exports.uploads_name_cache.filter(name => name !== req.query.name);
     res.sendStatus(200);
 }
 
 exports.getAll = () => {
-    return db.all("SELECT name FROM upload ORDER BY time DESC");
+    if (exports.uploads_name_cache.length === 0)
+        exports.uploads_name_cache = db.all("SELECT name FROM upload ORDER BY time DESC").map(row => row.name);
+    return exports.uploads_name_cache;
 }
