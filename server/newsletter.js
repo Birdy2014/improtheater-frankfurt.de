@@ -129,7 +129,7 @@ exports.send = async (req, res) => {
             let textColor = exports.calcTextColor(workshop.color);
             let html = pug.renderFile(__dirname + "/../client/views/emails/newsletter.pug", {
                 title: workshop.title,
-                img: workshop.img + "&token=" + subscriber.token,
+                img: workshop.img + "?token=" + subscriber.token,
                 dateText: workshop.dateText,
                 timeText: workshop.timeText,
                 location: workshop.location,

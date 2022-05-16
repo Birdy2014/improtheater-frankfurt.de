@@ -24,7 +24,7 @@ function editWorkshopItem(workshop) {
     }
     let item = list.querySelector("#workshop-item-" + workshop.id);
     if (item) {
-        if (workshop.img) item.querySelector("img").src = "/api/upload?name=" + workshop.img || "/public/img/workshop-default.png";
+        if (workshop.img) item.querySelector("img").src = "/api/upload/" + workshop.img || "/public/img/workshop-default.png";
         if (workshop.title) item.querySelector("h2").innerHTML = workshop.title + (workshop.visible ? "<span>Entwurf</span>" : "");
         if (timeText || workshop.propertiesHidden) item.querySelector("h4").innerHTML = timeText;
         if (workshop.visible !== undefined) item.querySelector(".workshops-draft-text").innerText = workshop.visible ? "" : "Entwurf";

@@ -6,18 +6,20 @@ const logger = require("./logger");
 exports.uploads_name_cache = []
 
 exports.get = (req, res) => {
-    if (!req.query.name) {
+    const name = req.params.name || req.query.name;
+
+    if (!name) {
         res.status(400);
         return;
     }
 
     if (req.query.token) {
-        let workshop = db.get("SELECT id FROM workshop WHERE img = ? ORDER BY begin DESC", req.query.name);
+        let workshop = db.get("SELECT id FROM workshop WHERE img = ? ORDER BY begin DESC", name);
         if (workshop)
             db.run("UPDATE subscriber SET last_viewed_newsletter = ? WHERE token = ? AND last_viewed_newsletter < ?", workshop.id, req.query.token, workshop.id);
     }
 
-    let file = db.get("SELECT data, mimetype FROM upload WHERE name = ?", req.query.name);
+    let file = db.get("SELECT data, mimetype FROM upload WHERE name = ?", name);
 
     if (!file)
         return res.sendStatus(404);

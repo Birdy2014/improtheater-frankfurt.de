@@ -20,7 +20,7 @@ async function upload() {
 async function deleteImage(name) {
     if (!await confirm("Soll das Bild wirklich gelöscht werden? Es verschwindet auch aus bereits gesendeten Newslettern."))
         return;
-    await axios.delete(`/api/upload?name=${name}`);
+    await axios.delete(`/api/upload/${name}`);
     document.getElementById(`uploads-image-${name}`).remove();
 }
 
@@ -31,14 +31,14 @@ function selectImage(name) {
         let id = workshopRoute.substring(workshopRoute.indexOf("/") + 1);
         workshops[id].current.img = name;
         let container = document.getElementById(workshopRoute);
-        container.getElementsByClassName("workshop-image")[0].src = `/api/upload?name=${name}`
+        container.getElementsByClassName("workshop-image")[0].src = `/api/upload/${name}`
         navigate(workshopRoute);
     }
 }
 
 function addImage(name, prepend) {
     let image = document.createElement("img");
-    image.src = "/api/upload?name=" + name;
+    image.src = `/api/upload/${name}`;
     image.onclick = () => selectImage(name);
 
     let imageName = document.createElement("p");

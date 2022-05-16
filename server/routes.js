@@ -50,7 +50,8 @@ router.post("/api/newsletter/unsubscribe", route(newsletter.unsubscribe));
 router.post("/api/newsletter/send", auth.getUser, route(newsletter.send));
 router.get("/api/newsletter/export", auth.getUser, route(newsletter.exportSubscribers));
 router.post("/api/newsletter/add", auth.getUser, route(newsletter.addSubscriber));
-router.get("/api/upload", route(upload.get));
+router.get("/api/upload", route(upload.get)); // Old
+router.get("/api/upload/:name", route(upload.get));
 router.post("/api/upload", auth.getUser, fileUpload({ limits: { fileSize: 10 * 1024 * 1024 } }), upload.post);
 router.delete("/api/upload", auth.getUser, route(upload.delete));
 router.post("/api/hygienekonzept", auth.getUser, route(editableWebsite.setEditableWebsiteMiddleware("hygienekonzept")));
