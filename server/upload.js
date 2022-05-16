@@ -25,8 +25,8 @@ exports.get = (req, res) => {
         return res.sendStatus(404);
 
     res.status(200);
-    res.header(`Content-Type: ${file.mimetype}`);
-    res.end(file.data, "binary");
+    res.set("Content-Type", file.mimetype);
+    res.send(Buffer.from(file.data, "binary"));
 }
 
 exports.post = async (req, res) => {
