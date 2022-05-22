@@ -1,12 +1,12 @@
-const express = require("express");
-const cookieParser = require("cookie-parser");
-const { marked } = require("marked");
-const router = require("./server/routes");
-const db = require("./server/db");
-const config = require("./config");
-const logger = require("./server/logger");
+import express from "express";
+import cookieParser from "cookie-parser";
+import { marked } from "marked";
+import router from "./server/routes.js";
+import * as db from "./server/db.js";
+import * as utils from "./server/utils.js";
+import * as logger from "./server/logger.js";
 
-logger.init(config.logpath || __dirname + "/logs");
+logger.init(utils.config.logpath || utils.project_path + "/logs");
 db.init();
 
 marked.setOptions({
@@ -17,7 +17,7 @@ marked.setOptions({
 
 const app = express();
 
-app.set("views", __dirname + "/client/views");
+app.set("views", utils.project_path + "/client/views");
 app.set("view engine", "pug");
 app.use(express.json());
 app.use(cookieParser());
@@ -31,4 +31,4 @@ app.use((err, req, res, next) => {
     res.json({ status: 500, data: { message: err.message } });
 });
 
-app.listen(config.port || 8080);
+app.listen(utils.config.port || 8080);

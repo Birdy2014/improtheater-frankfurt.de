@@ -1,20 +1,19 @@
-const nodemailer = require("nodemailer");
-const pug = require("pug");
-const { marked } = require("marked");
-const db = require("./db");
-const utils = require("./utils");
-const logger = require("./logger");
-const config = require("../config.json");
-const workshops = require("./workshops");
+import nodemailer from "nodemailer";
+import pug from "pug";
+import { marked } from "marked";
+import * as db from "./db.js";
+import * as utils from "./utils.js";
+import * as logger from "./logger.js";
+import * as workshops from "./workshops.js";
 
 const type_itf = 1;
 const type_improglycerin = 2;
 
-exports.transporter = [];
-for (const email of config.email)
-    exports.transporter.push(nodemailer.createTransport(email));
+const transporter = [];
+for (const email of utils.config.email)
+    transporter.push(nodemailer.createTransport(email));
 
-exports.subscribe = (req, res) => {
+export function subscribe(req, res) {
     // TODO: check email address, length limit name, sanitize name and email
     try {
         if (req.body.subscribedTo)
@@ -28,7 +27,7 @@ exports.subscribe = (req, res) => {
 
         // User is already subscribed
         if (req.body.token) {
-            const subscriber = exports.getSubscriber(req.body.token);
+            const subscriber = getSubscriber(req.body.token);
             if (req.body.subscribedTo == subscriber.subscribedTo)
                 return res.sendStatus(200);
             db.run("UPDATE subscriber SET subscribedTo = ? WHERE token = ?", req.body.subscribedTo, req.body.token);
@@ -55,7 +54,7 @@ exports.subscribe = (req, res) => {
     }
 }
 
-exports.confirm = (req, res) => {
+export function confirm(req, res) {
     if (!req.query.token) {
         res.redirect("/newsletter");
         return;
@@ -64,11 +63,11 @@ exports.confirm = (req, res) => {
     res.redirect("/newsletter?token=" + req.query.token);
 }
 
-exports.unsubscribe = (req, res) => {
+export function unsubscribe(req, res) {
     if (!req.body.token)
         return res.sendStatus(400);
 
-    let subscriber = exports.getSubscriber(req.body.token);
+    let subscriber = getSubscriber(req.body.token);
     if (!subscriber)
         return res.sendStatus(404);
 
@@ -82,7 +81,7 @@ exports.unsubscribe = (req, res) => {
     res.sendStatus(200);
 }
 
-exports.send = async (req, res) => {
+export async function send(req, res) {
     if (!req.user || !req.body.workshop) {
         res.sendStatus(400);
         return;
@@ -111,7 +110,7 @@ exports.send = async (req, res) => {
         };
     } else {
         db.run("UPDATE workshop SET newsletterSent = 1 WHERE id = ?", workshop.id);
-        subscribers = exports.getSubscribers();
+        subscribers = getSubscribers();
     }
     res.sendStatus(200);
     // Send newsletter
@@ -126,8 +125,8 @@ exports.send = async (req, res) => {
         try {
             let unsubscribe = utils.base_url + "/newsletter?unsubscribe=1&token=" + subscriber.token;
             let subscribe = utils.base_url + "/newsletter?subscribe=1&token=" + subscriber.token;
-            let textColor = exports.calcTextColor(workshop.color);
-            let html = pug.renderFile(__dirname + "/../client/views/emails/newsletter.pug", {
+            let textColor = calcTextColor(workshop.color);
+            let html = pug.renderFile(utils.project_path + "/client/views/emails/newsletter.pug", {
                 title: workshop.title,
                 img: workshop.img + "?token=" + subscriber.token,
                 dateText: workshop.dateText,
@@ -166,11 +165,11 @@ exports.send = async (req, res) => {
     }
 }
 
-exports.exportSubscribers = (req, res) => {
+export function exportSubscribers(req, res) {
     if (!req.user)
         return res.sendStatus(403);
 
-    let subscribers = exports.getSubscribers();
+    let subscribers = getSubscribers();
     let csv = "email,name,firstname,lastname,subscribedate\r\n";
     for (let subscriber of subscribers) {
         let nameparts = subscriber.name.split(" ");
@@ -184,7 +183,7 @@ exports.exportSubscribers = (req, res) => {
     res.send(csv);
 }
 
-exports.addSubscriber = (req, res) => {
+export function addSubscriber(req, res) {
     if (!req.user)
         return res.sendStatus(403);
 
@@ -209,7 +208,7 @@ exports.addSubscriber = (req, res) => {
 function sendConfirmMail(subscriber) {
     let link = utils.base_url + "/api/newsletter/confirm?token=" + subscriber.token;
     let subscribe = utils.base_url + "/newsletter?subscribe=1&token=" + subscriber.token;
-    let html = pug.renderFile(__dirname + "/../client/views/emails/confirm.pug", {
+    let html = pug.renderFile(utils.project_path + "/client/views/emails/confirm.pug", {
         name: subscriber.name,
         link,
         subscribedTo: subscriber.subscribedTo,
@@ -223,11 +222,11 @@ function sendConfirmMail(subscriber) {
     });
 }
 
-exports.getSubscribers = () => {
+export function getSubscribers() {
     return db.all("SELECT * FROM subscriber WHERE confirmed = 1");
 }
 
-exports.getSubscriber = (token) => {
+export function getSubscriber(token) {
     return db.get("SELECT * FROM subscriber WHERE token = ?", token) || {};
 }
 
@@ -237,7 +236,7 @@ function removeExpiredSubscribers() {
 }
 
 function checkNewsletterType(subscribedTo) {
-    for (let i = 0; i < config.email.length; i++) {
+    for (let i = 0; i < utils.config.email.length; i++) {
         if (subscribedTo & (1 << i))
             return true;
     }
@@ -246,15 +245,15 @@ function checkNewsletterType(subscribedTo) {
 
 async function sendMail(type, options) {
     let i;
-    for (i = exports.transporter.length; !(type & (1 << i)) && i >= 0; i--);
+    for (i = transporter.length; !(type & (1 << i)) && i >= 0; i--);
     if (i < 0)
         return false;
-    const newOptions = Object.assign({ from: config.email[i].from }, options);
-    await exports.transporter[i].sendMail(newOptions);
+    const newOptions = Object.assign({ from: utils.config.email[i].from }, options);
+    await transporter[i].sendMail(newOptions);
     return true;
 }
 
-exports.calcTextColor = (backgroundColor) => {
+export function calcTextColor(backgroundColor) {
     const r = parseInt(backgroundColor.substr(1, 2), 16);
     const g = parseInt(backgroundColor.substr(3, 2), 16);
     const b = parseInt(backgroundColor.substr(5, 2), 16);

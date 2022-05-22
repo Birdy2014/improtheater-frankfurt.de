@@ -1,11 +1,11 @@
-const sharp = require("sharp");
-const db = require("./db");
-const utils = require("./utils");
-const logger = require("./logger");
+import sharp from "sharp";
+import * as db from "./db.js";
+import * as utils from "./utils.js";
+import * as logger from "./logger.js";
 
-exports.uploads_name_cache = []
+let uploads_name_cache = []
 
-exports.get = (req, res) => {
+export function get(req, res) {
     const name = req.params.name || req.query.name;
 
     if (!name) {
@@ -29,7 +29,7 @@ exports.get = (req, res) => {
     res.send(Buffer.from(file.data, "binary"));
 }
 
-exports.post = async (req, res) => {
+export async function post(req, res) {
     if (!req.files || !req.files.img || !req.user) {
         res.sendStatus(400);
         return;
@@ -50,7 +50,7 @@ exports.post = async (req, res) => {
 
     try {
         db.run("INSERT INTO upload (name, mimetype, size, data, user_id, time) VALUES (?, ?, ?, ?, ?, ?)", name, mimetype, size, resized_image, req.user.user_id, utils.getCurrentTimestamp());
-        exports.uploads_name_cache.unshift(name);
+        uploads_name_cache.unshift(name);
         res.status(200);
         res.json({ name });
     } catch (e) {
@@ -63,19 +63,19 @@ exports.post = async (req, res) => {
     }
 }
 
-exports.delete = (req, res) => {
+export function del(req, res) {
     if (!req.query.name || !req.user) {
         res.sendStatus(400);
         return;
     }
 
     db.run("DELETE FROM upload WHERE name = ?", req.query.name);
-    exports.uploads_name_cache = exports.uploads_name_cache.filter(name => name !== req.query.name);
+    uploads_name_cache = uploads_name_cache.filter(name => name !== req.query.name);
     res.sendStatus(200);
 }
 
-exports.getAll = () => {
-    if (exports.uploads_name_cache.length === 0)
-        exports.uploads_name_cache = db.all("SELECT name FROM upload ORDER BY time DESC").map(row => row.name);
-    return exports.uploads_name_cache;
+export function getAll() {
+    if (uploads_name_cache.length === 0)
+        uploads_name_cache = db.all("SELECT name FROM upload ORDER BY time DESC").map(row => row.name);
+    return uploads_name_cache;
 }

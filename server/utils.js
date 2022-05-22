@@ -1,6 +1,12 @@
-const config = require("../config");
+import { fileURLToPath } from "url";
+import path from "path";
+import fs from "fs";
 
-exports.getCurrentTimestamp = () => {
+export const project_path = path.dirname(path.join(fileURLToPath(import.meta.url), ".."));
+const config_text = fs.readFileSync(path.join(project_path, "config.json"));
+export const config = JSON.parse(config_text);
+
+export function getCurrentTimestamp() {
     return Math.floor(Date.now() / 1000);
 }
 
@@ -9,7 +15,7 @@ exports.getCurrentTimestamp = () => {
  * @param {number} length
  * @returns {string}
  */
-exports.generateToken = (length) => {
+export function generateToken(length) {
     let chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890";
     let text = "";
     for (let i = 0; i < length; i++)
@@ -17,11 +23,11 @@ exports.generateToken = (length) => {
     return text;
 }
 
-exports.sleep = (ms) => {
+export function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-exports.wrapRoute = (route) => {
+export function wrapRoute(route) {
     return async (req, res, next) => {
         try {
             await route(req, res, next);
@@ -31,4 +37,4 @@ exports.wrapRoute = (route) => {
     }
 }
 
-exports.base_url = process.env.NODE_ENV === 'development' ? "http://localhost:" + config.port : "https://improtheater-frankfurt.de";
+export const base_url = process.env.NODE_ENV === 'development' ? "http://localhost:" + config.port : "https://improtheater-frankfurt.de";

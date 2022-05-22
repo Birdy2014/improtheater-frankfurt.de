@@ -1,26 +1,26 @@
-const axios = require("axios").default;
-const crypto = require("crypto");
-const config = require("../config.json");
-const utils = require("./utils");
+import axios from "axios";
+import crypto from "crypto";
+import * as utils from "./utils.js";
 
-let loggedInRoutes = [ "/api/login", "/uploads", "/subscribers" ];
+const loggedInRoutes = [ "/api/login", "/uploads", "/subscribers" ];
+const config = utils.config;
 
-exports.users = {};
+const users = {};
 
-exports.authhook = async (req, res) => {
+export async function authhook(req, res) {
     if (!req.query.state || !req.query.authorization_code) {
         res.status(400);
         res.send("Invalid request");
         return;
     }
 
-    let code_verifier = exports.users[req.query.state];
+    let code_verifier = users[req.query.state];
     if (!code_verifier) {
         res.status(403);
         res.send("Invalid state");
         return;
     }
-    delete exports.users[req.query.state];
+    delete users[req.query.state];
 
     try {
         let response = await axios.post(`${config.auth.url}/api/token`, {
@@ -58,7 +58,7 @@ async function getUserInfo(access_token) {
     }
 }
 
-exports.getUser = async (req, res, next) => {
+export async function getUser(req, res, next) {
     let token = req.header("Authorization") || req.cookies.access_token;
     let refresh_token = req.cookies.refresh_token;
 
@@ -112,14 +112,14 @@ exports.getUser = async (req, res, next) => {
         let state = utils.generateToken(10);
         let code_verifier = utils.generateToken(10);
         let code_challenge = crypto.createHash("sha256").update(code_verifier).digest("base64").replace(/\+/g, "_");
-        exports.users[state] = code_verifier;
+        users[state] = code_verifier;
         let route_data_uri = req.query.route ? `?route=${req.query.route}` : "";
         res.redirect(`${config.auth.url}/authorize?client_id=${config.auth.client_id}&redirect_uri=${utils.base_url}/api/authhook${route_data_uri}&state=${state}&code_challenge=${code_challenge}&code_challenge_method=S256`);
         return;
     }
 }
 
-exports.logout = async (req, res) => {
+export async function logout(req, res) {
     if (!req.cookies.access_token && !req.cookies.refresh_token) {
         res.status(400);
         res.json({ status: 400 });

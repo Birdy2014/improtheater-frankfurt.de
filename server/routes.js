@@ -1,16 +1,15 @@
-const express = require("express");
-const path = require("path");
-const fileUpload = require("express-fileupload");
-const { marked } = require("marked");
-const sass = require("sass");
-const auth = require("./auth");
-const workshops = require("./workshops");
-const newsletter = require("./newsletter");
-const upload = require("./upload");
-const editableWebsite = require("./editableWebsite");
-const config = require("../config");
-const utils = require("./utils");
-const logger = require("./logger")
+import express from "express";
+import path from "path";
+import fileUpload from "express-fileupload";
+import { marked } from "marked";
+import sass from "sass";
+import * as auth from "./auth.js";
+import * as workshops from "./workshops.js";
+import * as newsletter from "./newsletter.js";
+import * as upload from "./upload.js";
+import * as editableWebsite from "./editableWebsite.js";
+import * as utils from "./utils.js";
+import * as logger from "./logger.js";
 
 const route = utils.wrapRoute;
 
@@ -38,12 +37,12 @@ router.use(function (req, res, next) {
 });
 
 // Backend
-router.get("/robots.txt", (req, res) => res.sendFile(path.join(__dirname, "/../client/robots.txt")));
+router.get("/robots.txt", (req, res) => res.sendFile(path.join(utils.project_path, "/client/robots.txt")));
 router.get("/api/authhook", auth.authhook);
 router.get("/api/login", auth.getUser, (req, res) => res.redirect(req.query.route || "/"));
 router.post("/api/logout", route(auth.logout));
 router.post("/api/workshops", auth.getUser, route(workshops.post));
-router.delete("/api/workshops", auth.getUser, route(workshops.delete));
+router.delete("/api/workshops", auth.getUser, route(workshops.del));
 router.post("/api/newsletter/subscribe", route(newsletter.subscribe));
 router.get("/api/newsletter/confirm", route(newsletter.confirm));
 router.post("/api/newsletter/unsubscribe", route(newsletter.unsubscribe));
@@ -53,22 +52,22 @@ router.post("/api/newsletter/add", auth.getUser, route(newsletter.addSubscriber)
 router.get("/api/upload", route(upload.get)); // Old
 router.get("/api/upload/:name", route(upload.get));
 router.post("/api/upload", auth.getUser, fileUpload({ limits: { fileSize: 10 * 1024 * 1024 } }), upload.post);
-router.delete("/api/upload", auth.getUser, route(upload.delete));
+router.delete("/api/upload", auth.getUser, route(upload.del));
 router.post("/api/hygienekonzept", auth.getUser, route(editableWebsite.setEditableWebsiteMiddleware("hygienekonzept")));
 
 // Libraries
-router.get("/lib/nprogress.js", (req, res) => res.sendFile(path.join(__dirname, "/../node_modules/nprogress/nprogress.js")));
-router.get("/lib/nprogress.css", (req, res) => res.sendFile(path.join(__dirname, "/../node_modules/nprogress/nprogress.css")));
-router.get("/lib/axios.min.js", (req, res) => res.sendFile(path.join(__dirname, "/../node_modules/axios/dist/axios.min.js")));
-router.get("/lib/marked.min.js", (req, res) => res.sendFile(path.join(__dirname, "/../node_modules/marked/marked.min.js")));
-router.use("/roboto", express.static(path.join(__dirname, "/../node_modules/@fontsource/roboto/files")));
+router.get("/lib/nprogress.js", (req, res) => res.sendFile(path.join(utils.project_path, "/node_modules/nprogress/nprogress.js")));
+router.get("/lib/nprogress.css", (req, res) => res.sendFile(path.join(utils.project_path, "/node_modules/nprogress/nprogress.css")));
+router.get("/lib/axios.min.js", (req, res) => res.sendFile(path.join(utils.project_path, "/node_modules/axios/dist/axios.min.js")));
+router.get("/lib/marked.min.js", (req, res) => res.sendFile(path.join(utils.project_path, "/node_modules/marked/marked.min.js")));
+router.use("/roboto", express.static(path.join(utils.project_path, "/node_modules/@fontsource/roboto/files")));
 
-router.use("/public", express.static(path.join(__dirname, "/../client/public")));
-const css = sass.compile(path.join(__dirname, "/../client/scss/index.scss")).css;
+router.use("/public", express.static(path.join(utils.project_path, "/client/public")));
+const css = sass.compile(path.join(utils.project_path, "/client/scss/index.scss")).css;
 router.use("/index.css", (req, res) => {
     res.contentType("text/css");
     if (process.env.NODE_ENV === "development") {
-        res.send(sass.compile(path.join(__dirname, "/../client/scss/index.scss")).css);
+        res.send(sass.compile(path.join(utils.project_path, "/client/scss/index.scss")).css);
     } else {
         res.send(css);
     }
@@ -161,14 +160,16 @@ router.get("/:route", auth.getUser, async (req, res) => {
         res.status(404);
         res.render("404");
     } else {
+        const render_options = getRenderOptions(req.params.route, req.user !== undefined, req.query);
+
         const start_time = process.hrtime();
 
         if (req.query.partial) {
-            res.render("routes/" + req.params.route, { partial: true, doctype: "html", ...getRenderOptions(req.params.route, req.user !== undefined, req.query) });
+            res.render("routes/" + req.params.route, { partial: true, doctype: "html", ...render_options });
         } else {
             res.render("routes/" + req.params.route, {
                 route: req.params.route,
-                ...getRenderOptions(req.params.route, req.user !== undefined, req.query)
+                ...render_options
             });
         }
 
@@ -178,7 +179,7 @@ router.get("/:route", auth.getUser, async (req, res) => {
     }
 });
 
-module.exports = router;
+export default router;
 
 function getRenderOptions(route, loggedIn, query) {
     switch(route) {

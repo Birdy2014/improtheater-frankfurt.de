@@ -1,10 +1,13 @@
-const Database = require("better-sqlite3");
-const logger = require("./logger");
+import Database from "better-sqlite3";
+import * as logger from "./logger.js";
+import * as utils from "./utils.js";
 
-exports.init = () => {
-    exports.db = new Database(__dirname + "/../improtheater-frankfurt.db");
+export let db;
 
-    exports.run(`
+export function init() {
+    db = new Database(utils.project_path + "/improtheater-frankfurt.db");
+
+    run(`
         CREATE TABLE IF NOT EXISTS workshop (
             id INTEGER NOT NULL,
             begin INTEGER NOT NULL,
@@ -25,7 +28,7 @@ exports.init = () => {
         )
     `);
 
-    exports.run(`
+    run(`
         CREATE TABLE IF NOT EXISTS subscriber (
             name TEXT NOT NULL,
             email TEXT NOT NULL,
@@ -38,7 +41,7 @@ exports.init = () => {
         )
     `);
 
-    exports.run(`
+    run(`
         CREATE TABLE IF NOT EXISTS upload (
             name TEXT NOT NULL,
             mimetype TEXT NOT NULL,
@@ -50,7 +53,7 @@ exports.init = () => {
         )
     `);
 
-    exports.run(`
+    run(`
         CREATE TABLE IF NOT EXISTS editableWebsite (
             name TEXT NOT NULL,
             content TEXT,
@@ -59,10 +62,10 @@ exports.init = () => {
     `);
 }
 
-exports.run = (sql, ...params) => {
+export function run(sql, ...params) {
     const start_time = process.hrtime();
 
-    const statement = exports.db.prepare(sql);
+    const statement = db.prepare(sql);
     statement.run(...params);
 
     const duration = process.hrtime(start_time);
@@ -70,10 +73,10 @@ exports.run = (sql, ...params) => {
         logger.warn(`SQL run with query '${sql}' took ${duration[0]}s ${duration[1] / 1000000}ms`);
 }
 
-exports.get = (sql, ...params) => {
+export function get(sql, ...params) {
     const start_time = process.hrtime();
 
-    const statement = exports.db.prepare(sql);
+    const statement = db.prepare(sql);
     const result = statement.get(params);
 
     const duration = process.hrtime(start_time);
@@ -83,10 +86,10 @@ exports.get = (sql, ...params) => {
     return result;
 }
 
-exports.all = (sql, ...params) => {
+export function all(sql, ...params) {
     const start_time = process.hrtime();
 
-    const statement = exports.db.prepare(sql);
+    const statement = db.prepare(sql);
     const result = statement.all(...params);
 
     const duration = process.hrtime(start_time);

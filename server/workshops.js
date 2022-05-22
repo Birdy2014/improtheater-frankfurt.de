@@ -1,40 +1,40 @@
-const db = require("./db");
-const utils = require("./utils");
-const logger = require("./logger");
+import * as db from "./db.js";
+import * as utils from "./utils.js";
+import * as logger from "./logger.js";
 
 const timeDateFormat = Intl.DateTimeFormat("de-DE", { weekday: "long", year: "numeric", month: "long", day: "numeric", hour: "numeric", minute: "numeric" });
 const dateFormat = Intl.DateTimeFormat("de-DE", { weekday: "long", year: "numeric", month: "long", day: "numeric" });
 const timeFormat = Intl.DateTimeFormat("de-DE", { hour: "numeric", minute: "numeric" });
 const isoFormat = Intl.DateTimeFormat("sv-SE", { timeZone: "Europe/Berlin", year: "numeric", month: "numeric", day: "numeric", hour: "numeric", minute: "numeric" });
 
-exports.defaultTitle = "Name des Workshops";
-exports.defaultContent = "Eine Beschreibung des Workshops";
+export const defaultTitle = "Name des Workshops";
+export const defaultContent = "Eine Beschreibung des Workshops";
 
-exports.post = (req, res) => {
+export function post(req, res) {
     if (!req.user) {
         res.status(400);
         res.json({ status: 400 });
         return;
     }
 
-    let id = exports.editWorkshop(req.body);
+    let id = editWorkshop(req.body);
     res.status(200);
     res.json({ status: 200, data: { id } });
 }
 
-exports.delete = (req, res) => {
+export function del(req, res) {
     if (!req.user || !req.body.id) {
         res.status(400);
         res.json({ status: 400 });
         return;
     }
 
-    exports.deleteWorkshop(req.body.id);
+    deleteWorkshop(req.body.id);
     res.status(200);
     res.json({ status: 200 });
 }
 
-exports.getWorkshops = (loggedIn, page) => {
+export function getWorkshops(loggedIn, page) {
     const perPage = 6;
     page = parseInt(page);
     if (!page)
@@ -58,7 +58,7 @@ exports.getWorkshops = (loggedIn, page) => {
     return workshops;
 }
 
-exports.getWorkshop = (id, loggedIn) => {
+export function getWorkshop(id, loggedIn) {
     let workshop;
     if (loggedIn) {
         workshop = db.get(`SELECT * FROM workshop WHERE id = '${id}'`);
@@ -91,14 +91,14 @@ exports.getWorkshop = (id, loggedIn) => {
     return workshop;
 }
 
-exports.editWorkshop = (workshop) => {
+export function editWorkshop(workshop) {
     const timestamp = utils.getCurrentTimestamp();
     const defaultWorkshop = {
         id: timestamp,
         begin: timestamp,
         end: timestamp,
-        title: exports.defaultTitle,
-        content: exports.defaultContent,
+        title: defaultTitle,
+        content: defaultContent,
         color: "#e65656",
         visible: 0,
         location: "Ort",
@@ -147,6 +147,6 @@ exports.editWorkshop = (workshop) => {
     return id;
 }
 
-exports.deleteWorkshop = (id) => {
+export function deleteWorkshop(id) {
     db.run(`DELETE FROM workshop WHERE id = '${id}'`);
 }

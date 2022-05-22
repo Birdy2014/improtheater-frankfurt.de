@@ -1,6 +1,6 @@
-const db = require("./db");
+import * as db from "./db.js";
 
-exports.getEditableWebsite = name => {
+export function getEditableWebsite(name) {
     try {
         return db.get("SELECT content FROM editableWebsite WHERE name = ?", name).content;
     } catch(e) {
@@ -8,17 +8,17 @@ exports.getEditableWebsite = name => {
     }
 }
 
-exports.setEditableWebsite = (name, content) => {
+export function setEditableWebsite(name, content) {
     db.run("INSERT INTO editableWebsite (name, content) VALUES (?, ?) ON CONFLICT(name) DO UPDATE SET content = ?", name, content, content);
 }
 
-exports.setEditableWebsiteMiddleware = name => {
+export function setEditableWebsiteMiddleware(name) {
     return (req, res) => {
         if (!req.user || !req.body.content)
             return res.sendStatus(400);
 
         try {
-            exports.setEditableWebsite(name, req.body.content);
+            setEditableWebsite(name, req.body.content);
             res.sendStatus(200);
         } catch(e) {
             console.log(e);
