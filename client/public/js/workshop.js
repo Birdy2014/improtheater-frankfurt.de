@@ -167,6 +167,10 @@ function workshop_init(container) {
         }
     }
     workshop_updateValues(id);
+
+    const properties = container.querySelector(".workshop-properties");
+    properties.style.display = workshops[id].texts.propertiesHidden ? "none" : null;
+
     const edit_content = container.querySelector(".edit-content");
     edit_content.addEventListener("keyup", (event) => {
         textareaAutoGrow(event.target);
