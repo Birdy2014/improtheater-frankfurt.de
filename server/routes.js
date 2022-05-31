@@ -36,6 +36,11 @@ router.use(function (req, res, next) {
     }
 });
 
+function cors_allow_all(_, res, next) {
+    res.set("Access-Control-Allow-Origin", "*");
+    next();
+}
+
 // Backend
 router.get("/robots.txt", (req, res) => res.sendFile(path.join(utils.project_path, "/client/robots.txt")));
 router.get("/api/authhook", auth.authhook);
@@ -60,7 +65,9 @@ router.get("/lib/nprogress.js", (req, res) => res.sendFile(path.join(utils.proje
 router.get("/lib/nprogress.css", (req, res) => res.sendFile(path.join(utils.project_path, "/node_modules/nprogress/nprogress.css")));
 router.get("/lib/axios.min.js", (req, res) => res.sendFile(path.join(utils.project_path, "/node_modules/axios/dist/axios.min.js")));
 router.get("/lib/marked.min.js", (req, res) => res.sendFile(path.join(utils.project_path, "/node_modules/marked/marked.min.js")));
-router.use("/roboto", express.static(path.join(utils.project_path, "/node_modules/@fontsource/roboto/files")));
+
+// Thunderbird needs CORS to be enabled to load fonts
+router.use("/roboto", cors_allow_all, express.static(path.join(utils.project_path, "/node_modules/@fontsource/roboto/files")));
 
 router.use("/public", express.static(path.join(utils.project_path, "/client/public")));
 const css = sass.compile(path.join(utils.project_path, "/client/scss/index.scss")).css;
@@ -150,7 +157,8 @@ router.get("/newsletter-preview/:workshopID", auth.getUser, async (req, res) => 
             subscriber,
             marked,
             textColor,
-            website
+            website,
+            base_url: utils.base_url
         });
     }
 });

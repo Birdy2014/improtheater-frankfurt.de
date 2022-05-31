@@ -145,6 +145,7 @@ export async function send(req, res) {
                 marked,
                 textColor,
                 website: website + "?token=" + subscriber.token,
+                base_url: utils.base_url
             });
             let subject = workshop.propertiesHidden ? workshop.title : workshop.title + ", am " + workshop.dateText;
             let text = workshop.propertiesHidden
