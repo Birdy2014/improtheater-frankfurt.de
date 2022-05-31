@@ -19,6 +19,7 @@ const router = express.Router();
 const routes = [
     "hygienekonzept",
     "impressum",
+    "datenschutz",
     "newsletter",
     "start",
     "subscribers",
