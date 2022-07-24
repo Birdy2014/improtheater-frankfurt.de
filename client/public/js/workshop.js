@@ -163,7 +163,7 @@ function workshop_init(container) {
             newsletterSent: container.querySelector(".edit-newsletter") === undefined
         },
         current: {
-            img: imgsrc.substring(imgsrc.lastIndexOf("name=") + 5)
+            img: imgsrc.substring(imgsrc.lastIndexOf("/upload/") + 8)
         }
     }
     workshop_updateValues(id);
