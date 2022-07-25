@@ -176,6 +176,20 @@ function workshop_init(container) {
         textareaAutoGrow(event.target);
     });
     textareaAutoGrow(edit_content);
+
+    const color_input = container.querySelector(".input-workshop-color");
+    container.querySelector(".workshop-color-set-default").addEventListener("click", () => {
+        color_input.value = "#e65656";
+    });
+
+    container.querySelector(".workshop-color-set-dominant").addEventListener("click", async () => {
+        const response = await axios.get(`/api/upload-color/${workshops[id].current.img}`);
+        color_input.value = response.data;
+    });
+
+    container.querySelector(".workshop-color-set-reset").addEventListener("click", async () => {
+        color_input.value = workshops[id].texts.color;
+    });
 }
 
 function workshop_updateValues(id) {

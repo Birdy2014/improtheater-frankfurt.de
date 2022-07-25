@@ -52,9 +52,11 @@ block routeContent
                     if loggedIn
                         .workshop-edit-field
                             dt Farbe?
-                            dd
-                                input(type="color" value=color class="input-workshop-color")
-                                | #{color}
+                            dd.workshop-color-edit-field
+                                input.input-workshop-color(type="color" value=color)
+                                a.workshop-color-set-default(href="javascript:void(0)") Standart
+                                a.workshop-color-set-dominant(href="javascript:void(0)") Dominant
+                                a.workshop-color-set-reset(href="javascript:void(0)") Reset
 
             if loggedIn
                 .workshop-right-item.workshop-edit-field(style="margin-top: 10px;")

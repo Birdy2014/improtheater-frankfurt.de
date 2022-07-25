@@ -29,6 +29,29 @@ export function get(req, res) {
     res.send(Buffer.from(file.data, "binary"));
 }
 
+export async function get_color(req, res) {
+    const name = req.params.name;
+
+    if (!name) {
+        res.status(400);
+        return;
+    }
+
+    let file = db.get("SELECT data FROM upload WHERE name = ?", name);
+
+    if (!file) {
+        res.status(404);
+        return;
+    }
+
+    const { dominant } = await sharp(file.data).stats();
+    const to_hex = number => ("00" + number.toString(16)).slice(-2);
+    const hex = `#${to_hex(dominant.r)}${to_hex(dominant.g)}${to_hex(dominant.b)}`
+
+    res.status(200);
+    res.json(hex);
+}
+
 export async function post(req, res) {
     if (!req.files || !req.files.img || !req.user) {
         res.sendStatus(400);
