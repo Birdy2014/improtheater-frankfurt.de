@@ -22,10 +22,6 @@
     text-decoration: none;
 }
 
-.workshop-item a:visited {
-    color: var(--color-text);
-}
-
 .workshops-image-container {
     position: relative;
     padding-top: 65%; /* Fixed aspect ratio */
@@ -43,25 +39,25 @@
 }
 
 .workshop-text {
-    color: var(--color-fg);
     padding: 20px;
     height: 54px;
-}
 
-.workshop-text h2 {
-    margin: 0;
-    font-size: 24px;
-    font-weight: 400;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    overflow: hidden;
-}
+    > * {
+        margin: 0;
+        font-weight: 400;
+        color: inherit;
+    }
 
-.workshop-text h4 {
-    font-size: 12px;
-    margin: 0;
-    font-weight: 400;
-    color: var(--color-text);
+    h2 {
+        font-size: 24px;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+    }
+
+    h4 {
+        font-size: 12px;
+    }
 }
 
 .workshops-draft-text {
