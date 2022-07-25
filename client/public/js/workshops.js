@@ -28,6 +28,12 @@ function editWorkshopItem(workshop) {
         if (workshop.title) item.querySelector("h2").innerHTML = workshop.title + (workshop.visible ? "<span>Entwurf</span>" : "");
         if (timeText || workshop.propertiesHidden) item.querySelector("h4").innerHTML = timeText;
         if (workshop.visible !== undefined) item.querySelector(".workshops-draft-text").innerText = workshop.visible ? "" : "Entwurf";
+        if (workshop.color) {
+            const text_container = item.querySelector(".workshop-text");
+            text_container.style["background-color"] = workshop.color;
+            if (window.workshop_calcTextColor !== undefined)
+                text_container.style.color = workshop_calcTextColor(workshop.color);
+        }
     } else {
         const template = document.getElementById("template-workshop-item");
         const fragment = template.content.cloneNode(true);
@@ -44,6 +50,11 @@ function editWorkshopItem(workshop) {
             item.querySelector("h4").innerHTML = "";
         else
             item.querySelector("h4").innerHTML = timeText || "Keine Zeit angegeben";
+
+        const text_container = item.querySelector(".workshop-text");
+        text_container.style["background-color"] = workshop.color;
+        if (window.workshop_calcTextColor !== undefined)
+            text_container.style.color = workshop_calcTextColor(workshop.color);
 
         list.prepend(item);
     }
