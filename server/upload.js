@@ -87,13 +87,15 @@ export async function post(req, res) {
 }
 
 export function del(req, res) {
-    if (!req.query.name || !req.user) {
+    const name = req.params.name || req.query.name;
+
+    if (!name || !req.user) {
         res.sendStatus(400);
         return;
     }
 
-    db.run("DELETE FROM upload WHERE name = ?", req.query.name);
-    uploads_name_cache = uploads_name_cache.filter(name => name !== req.query.name);
+    db.run("DELETE FROM upload WHERE name = ?", name);
+    uploads_name_cache = uploads_name_cache.filter(n => n !== name);
     res.sendStatus(200);
 }
 

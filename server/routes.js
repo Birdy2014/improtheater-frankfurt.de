@@ -66,7 +66,7 @@ router.get("/api/upload", route(upload.get)); // Old
 router.get("/api/upload/:name", route(upload.get));
 router.get("/api/upload-color/:name", route(upload.get_color));
 router.post("/api/upload", auth.getUser, fileUpload({ limits: { fileSize: 10 * 1024 * 1024 } }), upload.post);
-router.delete("/api/upload", auth.getUser, route(upload.del));
+router.delete("/api/upload/:name", auth.getUser, route(upload.del));
 router.post("/api/hygienekonzept", auth.getUser, route(editableWebsite.setEditableWebsiteMiddleware("hygienekonzept")));
 
 // Libraries
