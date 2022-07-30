@@ -55,7 +55,6 @@ nav {
     height: var(--menu-height);
     z-index: 10;
     transition: height .3s ease-out;
-    margin: 0 var(--margin-side);
     margin-bottom: 5px;
     background-color: var(--color-bg);
 
@@ -162,6 +161,8 @@ nav {
 
 @media screen and (max-width: 800px) {
     nav {
+        margin: 0 var(--margin-side);
+
         #main-menu {
             float: none;
             display: none;
