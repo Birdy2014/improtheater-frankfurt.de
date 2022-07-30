@@ -1,12 +1,17 @@
+#start-container {
+    display: flex;
+    flex-direction: column;
+}
+
 @media screen and (min-width: 800px) {
-    #start-text-container {
-        width: 66%;
-        float: left;
+    #start-container {
+        flex-direction: row;
+        gap: 10px;
     }
 
     #start-review-container {
         width: 33%;
-        float: right;
+        flex-shrink: 0;
     }
 }
 
@@ -15,18 +20,17 @@
 }
 
 #start-reviews {
-    position: relative;
+    display: grid;
 
     .speechbubble {
-        position: absolute;
-        top: 0;
+        grid-column: 1;
+        grid-row: 1;
         opacity: 0;
-        transition: all .5s;
-        display: none;
+        transition: opacity .5s;
     }
 
     .start-review-visible {
         opacity: 1;
-        display: block;
+        z-index: 1;
     }
 }

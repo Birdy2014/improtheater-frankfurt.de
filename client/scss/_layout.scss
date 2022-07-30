@@ -264,12 +264,6 @@ footer {
     }
 }
 
-.clearfix::after {
-  content: "";
-  clear: both;
-  display: table;
-}
-
 .linebreak {
     white-space: pre-wrap;
 }
