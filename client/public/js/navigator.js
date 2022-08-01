@@ -100,6 +100,11 @@ async function navigate(to, reload, skipPushState, preload) {
         } catch(e) {
             NProgress.done();
             console.error("Cannot navigate to '" + to + "': " + e);
+
+            // Redirect to login
+            if (e.response.status == 401 && to != "login") {
+                navigate("login", false, false, false);
+            }
             return;
         }
         if (!website.headers["content-type"].startsWith("text")) {

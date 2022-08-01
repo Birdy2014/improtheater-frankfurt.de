@@ -24,7 +24,8 @@ const routes = [
     "start",
     "subscribers",
     "uploads",
-    "workshops"
+    "workshops",
+    "login"
 ];
 
 // Redirect trailing slashes
@@ -51,8 +52,7 @@ function cors_allow_all(_, res, next) {
 
 // Backend
 router.get("/robots.txt", (req, res) => res.sendFile(path.join(utils.project_path, "/client/robots.txt")));
-router.get("/api/authhook", auth.authhook);
-router.get("/api/login", auth.getUser, (req, res) => res.redirect(req.query.route || "/"));
+router.post("/api/login", route(auth.login));
 router.post("/api/logout", route(auth.logout));
 router.post("/api/workshops", auth.getUser, route(workshops.post));
 router.delete("/api/workshops", auth.getUser, route(workshops.del));

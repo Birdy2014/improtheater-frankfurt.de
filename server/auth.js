@@ -1,140 +1,86 @@
-import axios from "axios";
-import crypto from "crypto";
+import bcrypt from "bcrypt"
+import * as db from "./db.js";
 import * as utils from "./utils.js";
 
-const loggedInRoutes = [ "/api/login", "/uploads", "/subscribers" ];
-const config = utils.config;
+const loggedInRoutes = [ "/uploads", "/subscribers" ];
 
-const users = {};
-
-export async function authhook(req, res) {
-    if (!req.query.state || !req.query.authorization_code) {
-        res.status(400);
-        res.send("Invalid request");
-        return;
-    }
-
-    let code_verifier = users[req.query.state];
-    if (!code_verifier) {
-        res.status(403);
-        res.send("Invalid state");
-        return;
-    }
-    delete users[req.query.state];
-
-    try {
-        let response = await axios.post(`${config.auth.url}/api/token`, {
-            grant_type: "authorization_code",
-            client_id: config.auth.client_id,
-            client_secret: config.auth.client_secret,
-            code: req.query.authorization_code,
-            code_verifier: code_verifier
-        });
-        res.cookie("access_token", response.data.data.access_token, { maxAge: response.data.data.expires * 1000 });
-        res.cookie("refresh_token", response.data.data.refresh_token);
-        res.clearCookie("route")
-        res.redirect(req.query.route || "/");
-    } catch(e) {
-        console.error(e);
-        res.status(500);
-        res.send("Something went wrong: \n\n" + JSON.stringify(e, null, 4));
-    }
-}
-
-async function getUserInfo(access_token) {
-    try {
-        let result = await axios.post(config.auth.url + "/api/token_info", {
-            client_id: config.auth.client_id,
-            client_secret: config.auth.client_secret,
-            access_token: access_token
-        });
-        return result.data.data;
-    } catch(e) {
-        if (e.response.data.error === "Invalid access_token") {
-            return { active: false };
-        } else {
-            throw e;
-        }
-    }
-}
+const session_expiration_time = 10 * 24 * 60 * 60;
 
 export async function getUser(req, res, next) {
-    let token = req.header("Authorization") || req.cookies.access_token;
-    let refresh_token = req.cookies.refresh_token;
+    try {
+        const session_token = req.cookies.session;
 
-    // Get user info
-    if (token) {
-        try {
-            let user = await getUserInfo(token);
+        // Get user info
+        if (session_token) {
+            const session = db.get("SELECT * FROM session WHERE token = ?", session_token);
+            if (session && session.expires > utils.getCurrentTimestamp()) {
+                req.user = db.get("SELECT * FROM user WHERE id = ?", session.user_id);
+                if (req.user) {
+                    db.run("UPDATE session SET expires = ? WHERE token = ?", utils.getCurrentTimestamp() + session_expiration_time, session_token);
 
-            if (user.active) {
-                req.user = user;
-                next();
-                return;
-            } else {
-                token = undefined;
-                res.clearCookie("access_token");
+                    next();
+                    return;
+                }
             }
-        } catch (e) {
-            console.error(e);
-            res.status(500);
-            res.send("Internal Server Error");
-            return;
         }
-    }
 
-    // Refresh access token
-    if (!token && refresh_token) {
-        try {
-            let response = await axios.post(`${config.auth.url}/api/token`, {
-                grant_type: "refresh_token",
-                client_id: config.auth.client_id,
-                refresh_token: refresh_token
-            });
-            token = response.data.data.access_token;
-            res.cookie("access_token", token, { maxAge: response.data.data.expires * 1000 });
-            req.user = await getUserInfo(token);
-            next();
-        } catch(e) {
-            token = undefined;
-            refresh_token = undefined;
-            res.clearCookie("access_token");
-            res.clearCookie("refresh_token");
-        }
-    }
-
-    // Log in
-    if (!token && !refresh_token) {
         if (!loggedInRoutes.includes(req.path)) {
             next();
             return;
         }
-        let state = utils.generateToken(10);
-        let code_verifier = utils.generateToken(10);
-        let code_challenge = crypto.createHash("sha256").update(code_verifier).digest("base64").replace(/\+/g, "_");
-        users[state] = code_verifier;
-        let route_data_uri = req.query.route ? `?route=${req.query.route}` : "";
-        res.redirect(`${config.auth.url}/authorize?client_id=${config.auth.client_id}&redirect_uri=${utils.base_url}/api/authhook${route_data_uri}&state=${state}&code_challenge=${code_challenge}&code_challenge_method=S256`);
+
+        // Log in
+        const partial = req.query.partial;
+        if (partial) {
+            // Or return 403 and let client redirect?
+            res.sendStatus(401);
+        } else {
+            res.redirect(`/login`);
+        }
+    } catch (e) {
+        console.error(e);
+        res.status(500);
+        res.send("Internal Server Error");
         return;
     }
 }
 
+export async function login(req, res) {
+    const login = req.body.login;
+    const password = req.body.password;
+
+    const user = db.get("SELECT id, password_hash FROM user WHERE username = ? OR email = ?", login, login);
+    if (!user) {
+        res.status(403);
+        res.send();
+        return;
+    }
+
+    if (await bcrypt.compare(password, user.password_hash)) {
+        // TODO: use the crypto library to generate the token
+        const session_token = utils.generateToken(20);
+        db.run("INSERT INTO session (user_id, token, expires) VALUES (?, ?, ?)", user.id, session_token, utils.getCurrentTimestamp() + session_expiration_time);
+        res.cookie("session", session_token);
+        res.status(200);
+        res.send();
+    } else {
+        res.status(403);
+        res.send();
+    }
+}
+
 export async function logout(req, res) {
-    if (!req.cookies.access_token && !req.cookies.refresh_token) {
+    const session_token = req.cookies.session;
+
+    if (!session_token) {
         res.status(400);
         res.json({ status: 400 });
         return;
     }
 
     try {
-        await axios.delete(`${config.auth.url}/api/token`, {
-            data: {
-                access_token: req.cookies.access_token,
-                refresh_token: req.cookies.refresh_token
-            }
-        });
-        res.clearCookie("access_token");
-        res.clearCookie("refresh_token");
+        db.run("DELETE FROM session WHERE token = ?", session_token);
+        res.clearCookie("session");
         res.status(200);
         res.json({ status: 200 });
     } catch(e) {

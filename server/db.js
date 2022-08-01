@@ -60,6 +60,26 @@ export function init() {
             PRIMARY KEY(name)
         )
     `);
+
+    run(`
+        CREATE TABLE IF NOT EXISTS user (
+            id TEXT NOT NULL,
+            username TEXT NOT NULL,
+            email TEXT NOT NULL,
+            password_hash TEXT NOT NULL,
+            admin INTEGER NOT NULL,
+            PRIMARY KEY(id)
+        )
+    `)
+
+    run(`
+        CREATE TABLE IF NOT EXISTS session (
+            user_id TEXT NOT NULL,
+            token TEXT NOT NULL,
+            expires INTEGER NOT NULL,
+            PRIMARY KEY(token)
+        )
+    `)
 }
 
 export function run(sql, ...params) {
