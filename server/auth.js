@@ -2,7 +2,7 @@ import bcrypt from "bcrypt"
 import * as db from "./db.js";
 import * as utils from "./utils.js";
 
-const loggedInRoutes = [ "/uploads", "/subscribers" ];
+const loggedInRoutes = [ "/uploads", "/subscribers", "/user" ];
 
 const session_expiration_time = 10 * 24 * 60 * 60;
 
@@ -87,4 +87,28 @@ export async function logout(req, res) {
         res.status(500);
         res.json({ status: 500 });
     }
+}
+
+export async function user_post(req, res) {
+    const email = req.body.email;
+    const username = req.body.username;
+    const password = req.body.password;
+
+    if (email) {
+        db.run("UPDATE user SET email = ? WHERE id = ?", email, req.user.id);
+    }
+    if (username) {
+        db.run("UPDATE user SET username = ? WHERE id = ?", username, req.user.id);
+    }
+    if (password) {
+        if (password.length < 8) {
+            res.status(400);
+            res.send("Password too short");
+            return;
+        }
+        const password_hash = await bcrypt.hash(password, 12);
+        db.run("UPDATE user SET password_hash = ? WHERE id = ?", password_hash, req.user.id);
+    }
+    res.status(200);
+    res.send();
 }

@@ -25,7 +25,8 @@ const routes = [
     "subscribers",
     "uploads",
     "workshops",
-    "login"
+    "login",
+    "user"
 ];
 
 // Redirect trailing slashes
@@ -54,6 +55,7 @@ function cors_allow_all(_, res, next) {
 router.get("/robots.txt", (req, res) => res.sendFile(path.join(utils.project_path, "/client/robots.txt")));
 router.post("/api/login", route(auth.login));
 router.post("/api/logout", route(auth.logout));
+router.post("/api/user", auth.getUser, route(auth.user_post));
 router.post("/api/workshops", auth.getUser, route(workshops.post));
 router.delete("/api/workshops", auth.getUser, route(workshops.del));
 router.post("/api/newsletter/subscribe", route(newsletter.subscribe));
@@ -177,7 +179,7 @@ router.get("/:route", auth.getUser, async (req, res) => {
         res.status(404);
         res.render("404");
     } else {
-        const render_options = getRenderOptions(req.params.route, req.user !== undefined, req.query);
+        const render_options = getRenderOptions(req.params.route, req.user, req.query);
 
         const start_time = process.hrtime();
 
@@ -198,7 +200,9 @@ router.get("/:route", auth.getUser, async (req, res) => {
 
 export default router;
 
-function getRenderOptions(route, loggedIn, query) {
+function getRenderOptions(route, user, query) {
+    const loggedIn = user !== undefined;
+
     switch(route) {
         case "workshops":
             return { loggedIn, workshops: workshops.getWorkshops(loggedIn), page: 0 };
@@ -217,6 +221,8 @@ function getRenderOptions(route, loggedIn, query) {
             return { loggedIn, marked, content: editableWebsite.getEditableWebsite("hygienekonzept") };
         case "uploads":
             return { loggedIn, uploads: upload.getAll() };
+        case "user":
+            return { loggedIn, user };
         default:
             return { loggedIn };
     }

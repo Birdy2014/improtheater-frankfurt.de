@@ -1,0 +1,12 @@
+extends ../layout.pug
+
+block routeContent
+    h1 ACCOUNTEINSTELLUNGEN
+
+    p E-Mail Adresse: #{user.email}
+    p Benutzername: #{user.username}
+
+    form#password-change-form
+        label(for="change-password") Neues Passwort:
+        input(type="password" name="change-password")
+        input(type="submit" value="Bestätigen")

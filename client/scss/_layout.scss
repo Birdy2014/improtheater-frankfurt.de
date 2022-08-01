@@ -86,7 +86,6 @@ nav {
 
     #main-menu a {
         display: inline-block;
-        text-align: center;
         color: var(--color-text);
         text-decoration: none;
         font-weight: 700;
@@ -147,6 +146,7 @@ nav {
 
     > div > a {
         padding: 10px 7.5px;
+        width: 100%;
     }
 }
 
