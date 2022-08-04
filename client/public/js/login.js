@@ -16,5 +16,27 @@ async function login(event) {
     }
 }
 
-const login_form = document.querySelector("#login-form");
-login_form.addEventListener("submit", login);
+async function request_password_reset(form) {
+    const login = form.querySelector("input[name='login']").value;
+    if (!login) {
+        alert(ALERT_ERROR, "Benutzername/E-Mail-Adresse fehlt");
+        return;
+    }
+
+    try {
+        await axios.post("/api/user/request_password_reset", { login });
+    } catch (err) {
+        if (err.response.status === 404) {
+            alert(ALERT_ERROR, "Ungültiger Benutzername oder E-Mail-Adresse");
+        } else {
+            showError(err);
+        }
+    }
+}
+
+function login_init(container) {
+    const login_form = container.querySelector("#login-form");
+    login_form.addEventListener("submit", login);
+    const password_reset_link = container.querySelector("#password-reset-link");
+    password_reset_link.addEventListener("click", event => request_password_reset(login_form));
+}

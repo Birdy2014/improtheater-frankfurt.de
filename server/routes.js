@@ -26,7 +26,8 @@ const routes = [
     "uploads",
     "workshops",
     "login",
-    "user"
+    "user",
+    "password_reset"
 ];
 
 // Redirect trailing slashes
@@ -56,6 +57,8 @@ router.get("/robots.txt", (req, res) => res.sendFile(path.join(utils.project_pat
 router.post("/api/login", route(auth.login));
 router.post("/api/logout", route(auth.logout));
 router.post("/api/user", auth.getUser, route(auth.user_post));
+router.post("/api/user/request_password_reset", route(auth.api_request_password_reset));
+router.post("/api/user/password_reset", route(auth.api_password_reset));
 router.post("/api/workshops", auth.getUser, route(workshops.post));
 router.delete("/api/workshops", auth.getUser, route(workshops.del));
 router.post("/api/newsletter/subscribe", route(newsletter.subscribe));

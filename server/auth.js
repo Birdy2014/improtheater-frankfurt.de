@@ -1,10 +1,15 @@
+import assert from "assert";
 import bcrypt from "bcrypt"
+import nodemailer from "nodemailer";
 import * as db from "./db.js";
 import * as utils from "./utils.js";
 
 const loggedInRoutes = [ "/uploads", "/subscribers", "/user" ];
 
 const session_expiration_time = 10 * 24 * 60 * 60;
+
+const email_options = utils.config.auth_email;
+const transporter = nodemailer.createTransport(email_options);
 
 export async function getUser(req, res, next) {
     try {
@@ -58,8 +63,7 @@ export async function login(req, res) {
 
     if (await bcrypt.compare(password, user.password_hash)) {
         // TODO: use the crypto library to generate the token
-        const session_token = utils.generateToken(20);
-        db.run("INSERT INTO session (user_id, token, expires) VALUES (?, ?, ?)", user.id, session_token, utils.getCurrentTimestamp() + session_expiration_time);
+        const session_token = await create_session(user.id, session_expiration_time);
         res.cookie("session", session_token);
         res.status(200);
         res.send();
@@ -111,4 +115,72 @@ export async function user_post(req, res) {
     }
     res.status(200);
     res.send();
+}
+
+export async function api_request_password_reset(req, res) {
+    const login = req.body.login;
+    if (!login) {
+        res.status(400);
+        res.send();
+        return;
+    }
+    const user = db.get("SELECT id, username, email FROM user WHERE username = ? OR email = ?", login, login);
+    if (!user) {
+        // Return 200 to hide existing accounts?
+        res.status(404);
+        res.send();
+        return;
+    }
+
+    const session_token = await create_session(user.id, 30 * 60);
+    const reset_url = `${utils.base_url}/password_reset?token=${session_token}`;
+
+    await transporter.sendMail({
+        from: email_options.from,
+        to: user.email,
+        subject: "Passwort reset",
+        text: `Hallo ${user.username}, reset url: ${reset_url}`
+    });
+}
+
+export async function api_password_reset(req, res) {
+    const token = req.body.token;
+    const new_password = req.body.password;
+
+    if (!token || !new_password) {
+        res.status(400);
+        res.send();
+        return;
+    }
+
+    const password_hash = await bcrypt.hash(new_password, 12);
+
+    const session = db.get("SELECT user_id FROM session WHERE token = ?", token);
+
+    if (!session) {
+        res.status(400);
+        res.send();
+        return;
+    }
+
+    db.run("UPDATE user SET password_hash = ? WHERE id = ?", password_hash, session.user_id);
+
+    db.run("DELETE FROM session WHERE token = ?", token);
+
+    res.status(200);
+    res.send();
+}
+
+/**
+ * @param {string} user_id
+ * @param {number} expiration_time
+ * @returns {Promise<string>} session_token
+ */
+async function create_session(user_id, expiration_time) {
+    assert.strictEqual(typeof user_id, "string");
+    assert.strictEqual(typeof expiration_time, "number");
+
+    const session_token = utils.generateToken(20);
+    db.run("INSERT INTO session (user_id, token, expires) VALUES (?, ?, ?)", user_id, session_token, utils.getCurrentTimestamp() + expiration_time);
+    return session_token;
 }
