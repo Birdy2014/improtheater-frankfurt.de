@@ -1,6 +1,7 @@
 import assert from "assert";
 import bcrypt from "bcrypt"
 import nodemailer from "nodemailer";
+import { v4 as uuid } from "uuid";
 import * as db from "./db.js";
 import * as utils from "./utils.js";
 
@@ -93,7 +94,33 @@ export async function logout(req, res) {
     }
 }
 
-export async function user_post(req, res) {
+export async function api_create_user(req, res) {
+    const email = req.body.email;
+    const username = req.body.username;
+    const password = req.body.password;
+
+    if (!email || !username || !password) {
+        res.status(400);
+        res.send();
+        return;
+    }
+
+    if (password.length < 8) {
+        res.status(400);
+        res.send("Password too short");
+        return;
+    }
+
+    const id = uuid();
+    const password_hash = await bcrypt.hash(password, 12);
+
+    db.run("INSERT INTO user (id, username, email, password_hash, admin) VALUES (?, ?, ?, ?, 0)", id, username, email, password_hash);
+
+    res.status(200);
+    res.send();
+}
+
+export async function api_change_user(req, res) {
     const email = req.body.email;
     const username = req.body.username;
     const password = req.body.password;

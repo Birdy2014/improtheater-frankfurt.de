@@ -4,7 +4,7 @@ async function change_password(event) {
     const password_field = event.target.querySelector("input[name='change-password']");
     const password = password_field.value;
     try {
-        await axios.post("/api/user", { password });
+        await axios.put("/api/user", { password });
         password_field.value = "";
         alert(ALERT_SUCCESS, "Passwort geändert");
     } catch (err) {
