@@ -58,6 +58,7 @@ router.post("/api/login", route(auth.login));
 router.post("/api/logout", route(auth.logout));
 router.post("/api/user", auth.getUser, route(auth.api_create_user));
 router.put("/api/user", auth.getUser, route(auth.api_change_user));
+router.delete("/api/user", auth.getUser, route(auth.api_delete_user));
 router.post("/api/user/request_password_reset", route(auth.api_request_password_reset));
 router.post("/api/user/password_reset", route(auth.api_password_reset));
 router.post("/api/workshops", auth.getUser, route(workshops.post));
@@ -226,7 +227,7 @@ function getRenderOptions(route, user, query) {
         case "uploads":
             return { loggedIn, uploads: upload.getAll() };
         case "user":
-            return { loggedIn, user };
+            return { loggedIn, user, users: auth.get_users() };
         default:
             return { loggedIn };
     }

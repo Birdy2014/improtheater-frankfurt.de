@@ -10,3 +10,34 @@ block routeContent
         label(for="change-password") Neues Passwort:
         input(type="password" name="change-password")
         input(type="submit" value="Bestätigen")
+
+    if user.admin
+        h2#user-list-heading Benutzerliste
+
+        .table
+            .table-row
+                .table-header(style="display: none;") id
+                .table-header Name
+                .table-header E-Mail
+                .table-header Passwort
+                .table-header Admin
+                .table-header
+                .table-header
+            #user-list
+                each u in users
+                    form
+                        .table-data.id_row(style="display: none;") #{u.id}
+                        input.table-data(autocomplete="off" type="text" name="username" placeholder=u.username)
+                        input.table-data(autocomplete="off" type="email" name="email" placeholder=u.email)
+                        input.table-data(autocomplete="off" type="password" name="password")
+                        input.table-data(autocomplete="off" type="checkbox" name="admin" checked=!!u.admin)
+                        input.table-data(type="submit" value="Bestätigen")
+                        a.table-data.user-delete-button(href="javascript:void(0)") &#10799;
+
+            form#user-create-form
+                input.table-data(autocomplete="off" type="text" name="username" required)
+                input.table-data(autocomplete="off" type="email" name="email" required)
+                input.table-data(autocomplete="off" type="password" name="password" required)
+                input.table-data(autocomplete="off" type="checkbox" name="admin")
+                input.table-data(type="submit" value="Erstellen")
+                .table-data

@@ -38,7 +38,6 @@ export async function getUser(req, res, next) {
         // Log in
         const partial = req.query.partial;
         if (partial) {
-            // Or return 403 and let client redirect?
             res.sendStatus(401);
         } else {
             res.redirect(`/login`);
@@ -95,6 +94,12 @@ export async function logout(req, res) {
 }
 
 export async function api_create_user(req, res) {
+    if (!req.user.admin) {
+        res.status(403);
+        res.send();
+        return;
+    }
+
     const email = req.body.email;
     const username = req.body.username;
     const password = req.body.password;
@@ -124,12 +129,35 @@ export async function api_change_user(req, res) {
     const email = req.body.email;
     const username = req.body.username;
     const password = req.body.password;
+    const admin = req.body.admin === true || req.body.admin === 1 ? 1 : 0;
+
+    if (!email && !username && !password && admin === undefined) {
+        res.status(400);
+        res.send();
+        return;
+    }
+
+    let id = req.body.id;
+    if (id) {
+        if (!req.user.admin) {
+            res.status(403);
+            res.send();
+            return;
+        }
+        if (!db.get("SELECT 1 FROM user WHERE id = ?", id)) {
+            res.status(404);
+            res.send();
+            return;
+        }
+    } else {
+        id = req.user.id;
+    }
 
     if (email) {
-        db.run("UPDATE user SET email = ? WHERE id = ?", email, req.user.id);
+        db.run("UPDATE user SET email = ? WHERE id = ?", email, id);
     }
     if (username) {
-        db.run("UPDATE user SET username = ? WHERE id = ?", username, req.user.id);
+        db.run("UPDATE user SET username = ? WHERE id = ?", username, id);
     }
     if (password) {
         if (password.length < 8) {
@@ -138,8 +166,30 @@ export async function api_change_user(req, res) {
             return;
         }
         const password_hash = await bcrypt.hash(password, 12);
-        db.run("UPDATE user SET password_hash = ? WHERE id = ?", password_hash, req.user.id);
+        db.run("UPDATE user SET password_hash = ? WHERE id = ?", password_hash, id);
     }
+    db.run("UPDATE user SET admin = ? WHERE id = ?", admin, id)
+    res.status(200);
+    res.send();
+}
+
+export async function api_delete_user(req, res) {
+    const id = req.body.id;
+
+    if (!id) {
+        res.status(400);
+        res.send();
+        return;
+    }
+
+    if (!req.user.admin) {
+        res.status(403);
+        res.send();
+        return;
+    }
+
+    db.run("DELETE FROM user WHERE id = ?", id);
+
     res.status(200);
     res.send();
 }
@@ -210,4 +260,8 @@ async function create_session(user_id, expiration_time) {
     const session_token = utils.generateToken(20);
     db.run("INSERT INTO session (user_id, token, expires) VALUES (?, ?, ?)", user_id, session_token, utils.getCurrentTimestamp() + expiration_time);
     return session_token;
+}
+
+export function get_users() {
+    return db.all("SELECT * FROM user");
 }
