@@ -35,14 +35,16 @@ document.onclick = e => {
     }
 
     if (element) {
-        let host = window.location.href.substring(0, window.location.href.indexOf("/", window.location.protocol.length + 2));
-        if (element.href && element.href.startsWith(host) && !element.classList.contains("forceReload")) {
-            navigate(element.href.substring(host.length));
+        const url = new URL(element.href);
+        if (url.pathname === "/login") {
+            console.log(`/login?route=${location.pathname}`);
+            navigate(`/login?route=${location.pathname}`);
             return false;
         }
 
-        if (element.href.endsWith("/api/login")) {
-            location.href = "/api/login?route=" + location.pathname;
+        let host = window.location.href.substring(0, window.location.href.indexOf("/", window.location.protocol.length + 2));
+        if (element.href && element.href.startsWith(host) && !element.classList.contains("forceReload")) {
+            navigate(element.href.substring(host.length));
             return false;
         }
         return true;

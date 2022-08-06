@@ -1,4 +1,4 @@
-async function login(event) {
+async function login(event, route) {
     event.preventDefault();
 
     const login = event.target.querySelector("input[name='login']").value;
@@ -6,7 +6,7 @@ async function login(event) {
 
     try {
         await axios.post("/api/login", { login, password });
-        location.href = "/start"; // TODO: go to last visited page if available
+        location.href = route;
     } catch (err) {
         if (err.response.status === 403) {
             alert(ALERT_ERROR, "Falscher Benutzername oder Passwort", false);
@@ -34,9 +34,12 @@ async function request_password_reset(form) {
     }
 }
 
-function login_init(container) {
+function login_init(container, query) {
+    const search_params = new URLSearchParams(query);
+    const route = search_params.get("route") || "/start";
+
     const login_form = container.querySelector("#login-form");
-    login_form.addEventListener("submit", login);
+    login_form.addEventListener("submit", event => login(event, route));
     const password_reset_link = container.querySelector("#password-reset-link");
     password_reset_link.addEventListener("click", event => request_password_reset(login_form));
 }
