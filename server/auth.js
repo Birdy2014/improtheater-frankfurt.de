@@ -286,3 +286,7 @@ async function create_session(user_id, expiration_time) {
 export function get_users() {
     return db.all("SELECT * FROM user");
 }
+
+export function clear_expired_sessions() {
+    db.run("DELETE FROM session WHERE expires < ?", utils.getCurrentTimestamp());
+}

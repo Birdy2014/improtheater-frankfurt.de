@@ -5,6 +5,7 @@ import router from "./server/routes.js";
 import * as db from "./server/db.js";
 import * as utils from "./server/utils.js";
 import * as logger from "./server/logger.js";
+import { clear_expired_sessions } from "./server/auth.js";
 
 logger.init(utils.config.logpath || utils.project_path + "/logs");
 db.init();
@@ -14,6 +15,9 @@ marked.setOptions({
     breaks: true,
     smartypants: true,
 });
+
+setInterval(clear_expired_sessions, 24 * 60 * 60 * 1000);
+clear_expired_sessions();
 
 const app = express();
 
