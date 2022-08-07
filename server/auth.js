@@ -94,7 +94,7 @@ export async function logout(req, res) {
 }
 
 export async function api_create_user(req, res) {
-    if (!req.user.admin) {
+    if (!req.user || !req.user.admin) {
         res.status(403);
         res.send();
         return;
@@ -126,6 +126,12 @@ export async function api_create_user(req, res) {
 }
 
 export async function api_change_user(req, res) {
+    if (!req.user) {
+        res.status(403);
+        res.send();
+        return;
+    }
+
     const email = req.body.email;
     const username = req.body.username;
     const password = req.body.password;
