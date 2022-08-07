@@ -129,7 +129,20 @@ export async function api_change_user(req, res) {
     const email = req.body.email;
     const username = req.body.username;
     const password = req.body.password;
-    const admin = req.body.admin === true || req.body.admin === 1 ? 1 : 0;
+
+    let admin = req.body.admin;
+    switch (admin) {
+        case true:
+        case 1:
+            admin = 1;
+            break;
+        case false:
+        case 0:
+            admin = 0;
+            break;
+        default:
+            admin = undefined;
+    }
 
     if (!email && !username && !password && admin === undefined) {
         res.status(400);
@@ -168,7 +181,9 @@ export async function api_change_user(req, res) {
         const password_hash = await bcrypt.hash(password, 12);
         db.run("UPDATE user SET password_hash = ? WHERE id = ?", password_hash, id);
     }
-    db.run("UPDATE user SET admin = ? WHERE id = ?", admin, id)
+    if (admin !== undefined) {
+        db.run("UPDATE user SET admin = ? WHERE id = ?", admin, id)
+    }
     res.status(200);
     res.send();
 }
