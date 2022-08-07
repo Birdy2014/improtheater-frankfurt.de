@@ -1,3 +1,33 @@
+async function change_email(event) {
+    event.preventDefault();
+
+    const email_field = event.target.querySelector("input[name='change-email']");
+    const email = email_field.value;
+    try {
+        await axios.put("/api/user", { email });
+        email_field.placeholder = email;
+        email_field.value = "";
+        alert(ALERT_SUCCESS, "E-Mail Adresse geändert");
+    } catch (err) {
+        showError(err);
+    }
+}
+
+async function change_username(event) {
+    event.preventDefault();
+
+    const username_field = event.target.querySelector("input[name='change-username']");
+    const username = username_field.value;
+    try {
+        await axios.put("/api/user", { username });
+        username_field.placeholder = username;
+        username_field.value = "";
+        alert(ALERT_SUCCESS, "Benutzername geändert");
+    } catch (err) {
+        showError(err);
+    }
+}
+
 async function change_password(event) {
     event.preventDefault();
 
@@ -84,6 +114,10 @@ async function delete_user_handler(event) {
 }
 
 function user_init(container) {
+    const email_change_form = container.querySelector("#email-change-form");
+    email_change_form.addEventListener("submit", change_email);
+    const username_change_form = container.querySelector("#username-change-form");
+    username_change_form.addEventListener("submit", change_username);
     const password_change_form = container.querySelector("#password-change-form");
     password_change_form.addEventListener("submit", change_password);
 

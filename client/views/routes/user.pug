@@ -3,13 +3,21 @@ extends ../layout.pug
 block routeContent
     h1 ACCOUNTEINSTELLUNGEN
 
-    p E-Mail Adresse: #{user.email}
-    p Benutzername: #{user.username}
+    #user-settings
+        form#email-change-form
+            label(for="change-email") E-Mail Adresse:
+            input(type="email" name="change-email" placeholder=user.email)
+            input(type="submit" value="Speichern")
 
-    form#password-change-form
-        label(for="change-password") Neues Passwort:
-        input(type="password" name="change-password")
-        input(type="submit" value="Bestätigen")
+        form#username-change-form
+            label(for="change-username") Benutzername:
+            input(type="text" name="change-username" placeholder=user.username)
+            input(type="submit" value="Speichern")
+
+        form#password-change-form
+            label(for="change-password") Passwort:
+            input(type="password" name="change-password")
+            input(type="submit" value="Speichern")
 
     if user.admin
         h2#user-list-heading Benutzerliste
@@ -31,7 +39,7 @@ block routeContent
                         input.table-data(autocomplete="off" type="email" name="email" placeholder=u.email)
                         input.table-data(autocomplete="off" type="password" name="password")
                         input.table-data(autocomplete="off" type="checkbox" name="admin" checked=!!u.admin)
-                        input.table-data(type="submit" value="Bestätigen")
+                        input.table-data(type="submit" value="Speichern")
                         a.table-data.user-delete-button(href="javascript:void(0)") &#10799;
 
             form#user-create-form
