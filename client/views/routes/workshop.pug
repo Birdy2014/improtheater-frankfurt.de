@@ -15,9 +15,8 @@ block routeContent
                 dl.workshop-right-item.workshop-properties(style=`background-color: ${color}; color: ${textColor}`)
                     if loggedIn
                         .workshop-edit-field
-                            span(style=`display: ${permissions.includes("hideproperties") ? "inline" : "none"}`)
-                                input.workshop-input-propertieshidden(type="checkbox" name=propertieshidden checked=propertiesHidden)
-                                label(for=propertieshidden) Infobox verstecken
+                            input.workshop-input-propertieshidden(type="checkbox" name=propertieshidden checked=propertiesHidden)
+                            label(for=propertieshidden) Infobox verstecken
                             select.workshop-input-type(name=id)
                                 each i in [1, 2, 3]
                                     option(value=i selected=(i==type))
@@ -89,7 +88,7 @@ block routeContent
             = " | "
             a(href="javascript:void(0)" onclick="deleteWorkshop()" class="edit-button") Löschen
             br
-            unless newsletterSent && !permissions.includes("resend-newsletter")
+            unless newsletterSent && !full_access
                 span.edit-newsletter
                     = "Newsletter: "
                     if newsletterSent

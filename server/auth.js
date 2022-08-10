@@ -98,6 +98,8 @@ export async function api_create_user(req, res) {
     const email = req.body.email;
     const username = req.body.username;
     const password = req.body.password;
+    const admin = req.body.admin ?? false;
+    const full_access = req.body.full_access ?? false;
 
     if (!email || !username || !password) {
         res.status(400);
@@ -114,7 +116,7 @@ export async function api_create_user(req, res) {
     const id = uuid();
     const password_hash = await bcrypt.hash(password, 12);
 
-    db.run("INSERT INTO user (id, username, email, password_hash, admin) VALUES (?, ?, ?, ?, 0)", id, username, email, password_hash);
+    db.run("INSERT INTO user (id, username, email, password_hash, admin, full_access) VALUES (?, ?, ?, ?, ?, ?)", id, username, email, password_hash, admin, full_access);
 
     res.status(200);
     res.send();
@@ -131,6 +133,7 @@ export async function api_change_user(req, res) {
     const username = req.body.username;
     const password = req.body.password;
 
+    // TODO: use booleans
     let admin = req.body.admin;
     switch (admin) {
         case true:
@@ -145,7 +148,21 @@ export async function api_change_user(req, res) {
             admin = undefined;
     }
 
-    if (!email && !username && !password && admin === undefined) {
+    let full_access = req.body.admin;
+    switch (full_access) {
+        case true:
+        case 1:
+            full_access = 1;
+            break;
+        case false:
+        case 0:
+            full_access = 0;
+            break;
+        default:
+            full_access = undefined;
+    }
+
+    if (!email && !username && !password && admin === undefined && full_access === undefined) {
         res.status(400);
         res.send();
         return;
@@ -184,6 +201,9 @@ export async function api_change_user(req, res) {
     }
     if (admin !== undefined) {
         db.run("UPDATE user SET admin = ? WHERE id = ?", admin, id)
+    }
+    if (full_access !== undefined) {
+        db.run("UPDATE user SET full_access = ? WHERE id = ?", full_access, id)
     }
     res.status(200);
     res.send();

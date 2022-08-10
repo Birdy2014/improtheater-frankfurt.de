@@ -92,7 +92,7 @@ export async function send(req, res) {
         res.sendStatus(404);
         return;
     }
-    if (workshop.newsletterSent && !req.user.permissions.includes("resend-newsletter")) {
+    if (workshop.newsletterSent && !req.user.full_access) {
         res.sendStatus(409);
         return;
     }

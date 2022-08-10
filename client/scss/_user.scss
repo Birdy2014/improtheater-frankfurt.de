@@ -16,11 +16,11 @@
 .table {
     display: grid;
 
-    grid-template-columns: [username] auto [email] auto [password] auto [admin] 14px [submit] 80px [delete] 15px;
+    grid-template-columns: [username] auto [email] auto [password] auto [admin] max-content [full_access] max-content [submit] 80px [delete] 15px;
     gap: 5px;
 
     input[type="checkbox"] {
-        margin: 0;
+        margin: auto;
     }
 
     *:not(.table-data, .table-header) {

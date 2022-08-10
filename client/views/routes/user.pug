@@ -29,6 +29,7 @@ block routeContent
                 .table-header E-Mail
                 .table-header Passwort
                 .table-header Admin
+                .table-header Voll
                 .table-header
                 .table-header
             #user-list
@@ -39,6 +40,7 @@ block routeContent
                         input.table-data(autocomplete="off" type="email" name="email" placeholder=u.email)
                         input.table-data(autocomplete="off" type="password" name="password")
                         input.table-data(autocomplete="off" type="checkbox" name="admin" checked=!!u.admin)
+                        input.table-data(autocomplete="off" type="checkbox" name="full_access" checked=!!u.full_access)
                         input.table-data(type="submit" value="Speichern")
                         a.table-data.user-delete-button(href="javascript:void(0)") &#10799;
 
@@ -47,5 +49,6 @@ block routeContent
                 input.table-data(autocomplete="off" type="email" name="email" required)
                 input.table-data(autocomplete="off" type="password" name="password" required)
                 input.table-data(autocomplete="off" type="checkbox" name="admin")
+                input.table-data(autocomplete="off" type="checkbox" name="full_access")
                 input.table-data(type="submit" value="Erstellen")
                 .table-data

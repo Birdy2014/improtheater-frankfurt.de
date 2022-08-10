@@ -68,6 +68,7 @@ export function init() {
             email TEXT NOT NULL,
             password_hash TEXT NOT NULL,
             admin INTEGER NOT NULL,
+            full_access INTEGER NOT NULL,
             PRIMARY KEY(id)
         )
     `)
