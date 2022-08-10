@@ -98,8 +98,8 @@ export async function api_create_user(req, res) {
     const email = req.body.email;
     const username = req.body.username;
     const password = req.body.password;
-    const admin = req.body.admin ?? false;
-    const full_access = req.body.full_access ?? false;
+    const admin = (req.body.admin ?? false) ? 1 : 0;
+    const full_access = (req.body.full_access ?? false) ? 1 : 0;
 
     if (!email || !username || !password) {
         res.status(400);
