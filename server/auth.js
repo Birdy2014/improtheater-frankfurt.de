@@ -82,15 +82,10 @@ export async function logout(req, res) {
         return;
     }
 
-    try {
-        db.run("DELETE FROM session WHERE token = ?", session_token);
-        res.clearCookie("session");
-        res.status(200);
-        res.json({ status: 200 });
-    } catch(e) {
-        res.status(500);
-        res.json({ status: 500 });
-    }
+    db.run("DELETE FROM session WHERE token = ?", session_token);
+    res.clearCookie("session");
+    res.status(200);
+    res.send();
 }
 
 export async function api_create_user(req, res) {
