@@ -199,10 +199,10 @@ export async function api_change_user(req, res) {
         const password_hash = await bcrypt.hash(password, 12);
         db.run("UPDATE user SET password_hash = ? WHERE id = ?", password_hash, id);
     }
-    if (admin !== undefined) {
+    if (admin !== undefined && req.user.admin) {
         db.run("UPDATE user SET admin = ? WHERE id = ?", admin, id)
     }
-    if (full_access !== undefined) {
+    if (full_access !== undefined && req.user.admin) {
         db.run("UPDATE user SET full_access = ? WHERE id = ?", full_access, id)
     }
     res.status(200);
