@@ -72,7 +72,7 @@ export async function post(req, res) {
     const name = req.files.img.name;
 
     try {
-        db.run("INSERT INTO upload (name, mimetype, size, data, user_id, time) VALUES (?, ?, ?, ?, ?, ?)", name, mimetype, size, resized_image, req.user.user_id, utils.getCurrentTimestamp());
+        db.run("INSERT INTO upload (name, mimetype, size, data, user_id, time) VALUES (?, ?, ?, ?, ?, ?)", name, mimetype, size, resized_image, req.user.id, utils.getCurrentTimestamp());
         uploads_name_cache.unshift(name);
         res.status(200);
         res.json({ name });
