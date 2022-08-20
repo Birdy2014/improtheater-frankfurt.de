@@ -2,7 +2,7 @@ import fs from "fs";
 import { promisify } from "util";
 
 const appendFile = promisify(fs.appendFile);
-export let path;
+export let log_file_path;
 
 export function init(path) {
     if (path.charAt(path.length - 1) !== "/")
@@ -15,6 +15,7 @@ export function init(path) {
     let nr = 0;
     for (; fs.existsSync(path + "_" + nr); nr++) { }
     path += "_" + nr;
+    log_file_path = path;
 }
 
 export async function error(message) {
@@ -23,9 +24,9 @@ export async function error(message) {
         replace(/\..+/, '');
 
     try {
-        await appendFile(path, `[${date}] ERROR: ${message}\n`);
+        await appendFile(log_file_path, `[${date}] ERROR: ${message}\n`);
     } catch (e) {
-        console.error("Cannot write to " + path);
+        console.error("Cannot write to " + log_file_path);
     }
     console.error(message);
 }
@@ -36,9 +37,9 @@ export async function warn(message) {
         replace(/\..+/, '');
 
     try {
-        await appendFile(path, `[${date}] WARNING: ${message}\n`);
+        await appendFile(log_file_path, `[${date}] WARNING: ${message}\n`);
     } catch (e) {
-        console.error("Cannot write to " + path);
+        console.error("Cannot write to " + log_file_path);
     }
     console.log(message);
 }
@@ -49,9 +50,9 @@ export async function info(message) {
         replace(/\..+/, '')
 
     try {
-        await appendFile(path, `[${date}] INFO: ${message}\n`);
+        await appendFile(log_file_path, `[${date}] INFO: ${message}\n`);
     } catch (e) {
-        console.error("Cannot write to " + path);
+        console.error("Cannot write to " + log_file_path);
     }
     console.log(message);
 }
