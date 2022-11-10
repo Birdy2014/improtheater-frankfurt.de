@@ -6,9 +6,6 @@ import * as utils from "./utils.js";
 import * as logger from "./logger.js";
 import * as workshops from "./workshops.js";
 
-const type_itf = 1;
-const type_improglycerin = 2;
-
 const transporter = [];
 for (const email of utils.config.email)
     transporter.push(nodemailer.createTransport(email));
@@ -115,7 +112,7 @@ export async function send(req, res) {
     res.sendStatus(200);
     // Send newsletter
     let logo = "https://improglycerin.de/wp-content/uploads/2017/04/improglycerin_logo_website_white_medium_2.jpg";
-    if (workshop.type == type_itf)
+    if (workshop.type == workshops.type_itf)
         logo = utils.base_url + "/public/img/improtheater_frankfurt_logo.png";
     let reply = /[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[a-zA-Z0-9]+/.test(workshop.email) ? workshop.email : "hallo@improglycerin.de";
     let website = utils.base_url + "/workshop/" + workshop.id;

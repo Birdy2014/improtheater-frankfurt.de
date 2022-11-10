@@ -27,7 +27,8 @@ const routes = [
     "workshops",
     "login",
     "user",
-    "password_reset"
+    "password_reset",
+    "shows"
 ];
 
 // Redirect trailing slashes
@@ -137,7 +138,7 @@ router.get("/workshop/:workshopID", auth.getUser, (req, res) => {
 
 router.get("/workshops/:page", auth.getUser, async (req, res) => {
     let page = parseInt(req.params.page);
-    let w = workshops.getWorkshops(req.user !== undefined, page);
+    let w = workshops.getWorkshops(req.user !== undefined, page, req.user !== undefined ? workshops.type_both : workshops.type_itf);
     if (!w || w.length === 0) {
         res.status(404);
         res.render("error", { status: 404, message: "Not Found" });
@@ -210,7 +211,9 @@ function getRenderOptions(route, user, query) {
 
     switch(route) {
         case "workshops":
-            return { loggedIn, workshops: workshops.getWorkshops(loggedIn), page: 0 };
+            return { loggedIn, workshops: workshops.getWorkshops(loggedIn, 0, loggedIn ? workshops.type_both : workshops.type_itf), page: 0 };
+        case "shows":
+            return { loggedIn: false, workshops: workshops.getWorkshops(loggedIn, 0, workshops.type_improglycerin), page: 0 };
         case "newsletter":
             return { loggedIn, subscriber: newsletter.getSubscriber(query.token), unsubscribe: query.unsubscribe, subscribe: query.subscribe };
         case "subscribers":

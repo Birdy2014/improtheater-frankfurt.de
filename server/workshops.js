@@ -7,6 +7,10 @@ const dateFormat = Intl.DateTimeFormat("de-DE", { weekday: "long", year: "numeri
 const timeFormat = Intl.DateTimeFormat("de-DE", { hour: "numeric", minute: "numeric" });
 const isoFormat = Intl.DateTimeFormat("sv-SE", { timeZone: "Europe/Berlin", year: "numeric", month: "numeric", day: "numeric", hour: "numeric", minute: "numeric" });
 
+export const type_itf = 1;
+export const type_improglycerin = 2;
+export const type_both = 3;
+
 export const defaultTitle = "Name des Workshops";
 export const defaultContent = "Eine Beschreibung des Workshops";
 
@@ -34,16 +38,14 @@ export function del(req, res) {
     res.json({ status: 200 });
 }
 
-export function getWorkshops(loggedIn, page) {
+export function getWorkshops(loggedIn, page = 0, type = 3) {
     const perPage = 6;
     page = parseInt(page);
-    if (!page)
-        page = 0;
     let workshops;
     if (loggedIn)
-        workshops = db.all(`SELECT * FROM workshop ORDER BY begin DESC LIMIT ?, ?`, perPage * page, perPage) || [];
+        workshops = db.all(`SELECT * FROM workshop WHERE type & ${type} ORDER BY begin DESC LIMIT ?, ?`, perPage * page, perPage) || [];
     else
-        workshops = db.all(`SELECT * FROM workshop WHERE visible = 1 ORDER BY begin DESC LIMIT ?, ?`, perPage * page, perPage) || [];
+        workshops = db.all(`SELECT * FROM workshop WHERE type & ${type} AND visible = 1 ORDER BY begin DESC LIMIT ?, ?`, perPage * page, perPage) || [];
     for (let workshop of workshops) {
         try {
             workshop.timeText = timeDateFormat.formatRange(workshop.begin * 1000, workshop.end * 1000);

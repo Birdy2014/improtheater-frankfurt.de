@@ -1,5 +1,7 @@
 extends ../layout.pug
 
+include ../includes/workshop-item.pug
+
 block routeContent
     h1 WORKSHOPS
     if loggedIn
@@ -15,17 +17,3 @@ block routeContent
 
     template#template-workshop-item
         +workshop-item(0, "", "", false, "", false, false)
-
-mixin workshop-item(workshop)
-    .workshop-item(class=workshop.outdated ? "workshops-outdated" : "", id="workshop-item-" + workshop.id)
-        a(href="/workshop/" + workshop.id)
-            .workshops-image-container
-                img(src=workshop.img || "/public/img/workshop-default.png")
-                .workshops-draft-text
-                    unless workshop.visible
-                        | Entwurf
-            .workshop-text(style=`background-color: ${workshop.color}; color: ${workshop.textColor}`)
-                h2 #{workshop.title}
-                h4
-                    unless workshop.propertiesHidden
-                        | #{workshop.timeText}
