@@ -30,9 +30,14 @@ app.use(router);
 
 // Log errors
 app.use((err, req, res, next) => {
-    logger.warn(JSON.stringify(err.stack));
+    logger.error(err.stack);
     res.status(500);
-    res.json({ status: 500, data: { message: err.message } });
+
+    if (req.accepts("json", "html") == "html") {
+        res.render("error", { status: 500, message: "Internal Server Error" });
+    } else {
+        res.json({ status: 500, data: { message: err.message } });
+    }
 });
 
 app.listen(utils.config.port || 8080);
