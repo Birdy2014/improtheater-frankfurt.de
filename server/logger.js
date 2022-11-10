@@ -4,27 +4,30 @@ import { promisify } from "util";
 const appendFile = promisify(fs.appendFile);
 export let log_file_path;
 
+function datetime() {
+    return new Date().toISOString().
+        replace(/T/, ' ').
+        replace(/\..+/, '')
+}
+
 export function init(path) {
     if (path.charAt(path.length - 1) !== "/")
         path += "/";
     if (!fs.existsSync(path))
         fs.mkdirSync(path, { recursive: true });
-    let date = (new Date()).toISOString();
-    date = date.replace(/ /g, "_");
-    path = path + date;
-    let nr = 0;
-    for (; fs.existsSync(path + "_" + nr); nr++) { }
-    path += "_" + nr;
-    log_file_path = path;
+    const date = new Date().toISOString().substring(0, 10);
+    log_file_path = path + date + '.log';
+
+    if (fs.existsSync(log_file_path)) {
+        fs.appendFileSync(log_file_path, '\n');
+    }
+
+    fs.appendFileSync(log_file_path, `[${datetime()}] Start logging\n`);
 }
 
 export async function error(message) {
-    let date = new Date().toISOString().
-        replace(/T/, ' ').
-        replace(/\..+/, '');
-
     try {
-        await appendFile(log_file_path, `[${date}] ERROR: ${message}\n`);
+        await appendFile(log_file_path, `[${datetime()}] ERROR: ${message}\n`);
     } catch (e) {
         console.error("Cannot write to " + log_file_path);
     }
@@ -32,12 +35,8 @@ export async function error(message) {
 }
 
 export async function warn(message) {
-    let date = new Date().toISOString().
-        replace(/T/, ' ').
-        replace(/\..+/, '');
-
     try {
-        await appendFile(log_file_path, `[${date}] WARNING: ${message}\n`);
+        await appendFile(log_file_path, `[${datetime()}] WARNING: ${message}\n`);
     } catch (e) {
         console.error("Cannot write to " + log_file_path);
     }
@@ -45,12 +44,8 @@ export async function warn(message) {
 }
 
 export async function info(message) {
-    let date = new Date().toISOString().
-        replace(/T/, ' ').
-        replace(/\..+/, '')
-
     try {
-        await appendFile(log_file_path, `[${date}] INFO: ${message}\n`);
+        await appendFile(log_file_path, `[${datetime()}] INFO: ${message}\n`);
     } catch (e) {
         console.error("Cannot write to " + log_file_path);
     }
