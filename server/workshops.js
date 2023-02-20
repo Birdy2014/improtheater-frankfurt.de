@@ -22,7 +22,26 @@ export function post(req, res) {
         return;
     }
 
-    let id = editWorkshop(req.body);
+    const workshop = req.body;
+
+    let error_message = undefined;
+    if (workshop.visible === 1) {
+        const current_workshop = getWorkshop(workshop.id, true);
+        const new_workshop = Object.assign(current_workshop, workshop);
+        error_message = not_ready_for_publishing_error(new_workshop);
+        if (error_message) {
+            workshop.visible = 0;
+            error_message = "Nicht veröffentlicht: " + error_message;
+        }
+    }
+
+    let id = editWorkshop(workshop);
+
+    if (error_message) {
+        res.status(400).send(error_message);
+        return;
+    }
+
     res.status(200);
     res.json({ status: 200, data: { id } });
 }
@@ -59,6 +78,23 @@ export function copy(req, res) {
     const copy_id = editWorkshop(workshop);
 
     res.status(200).json({ id: copy_id });
+}
+
+/**
+ * Returns a string with an error message if the workshop is not ready to be published.
+ *
+ * @param {Object} - workshop
+ * @returns {String|undefined}
+ */
+export function not_ready_for_publishing_error(workshop) {
+    if (workshop.title && workshop.title.startsWith(copy_prefix)) {
+        return "Der Workshop ist eine Kopie.";
+    }
+    if (workshop.title === defaultTitle || workshop.content === defaultContent) {
+        return "Der Workshop enthält Standartwerte.";
+    }
+
+    return undefined;
 }
 
 export function getWorkshops(loggedIn, page = 0, type = 3) {

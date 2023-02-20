@@ -93,10 +93,15 @@ export async function send(req, res) {
         res.sendStatus(409);
         return;
     }
-    if (workshop.title === workshops.defaultTitle || workshop.content === workshops.defaultContent) {
-        res.status(400).send("Der Workshop enthält Standartwerte");
-        return;
+
+    {
+        const error_message = workshops.not_ready_for_publishing_error(workshop)
+        if (error_message) {
+            res.status(400).send(error_message)
+            return;
+        }
     }
+
     let subscribers = [];
     if (req.body.test) {
         subscribers[0] = {

@@ -27,16 +27,29 @@ async function publishWorkshop() {
     let id = currentRoute.substring(currentRoute.indexOf("/") + 1);
     let container = document.getElementById(currentRoute);
     let button = container.getElementsByClassName("edit-publish")[0];
-    workshops[id].buttons.published = !workshops[id].buttons.published;
-    if (typeof editWorkshopItem !== "undefined")
-        editWorkshopItem({ id, visible: workshops[id].buttons.published });
-    await axios.post("/api/workshops", { id, visible: workshops[id].buttons.published ? 1 : 0 });
-    if (workshops[id].buttons.published) {
-        button.innerHTML = "Unsichtbar machen";
-        alert(ALERT_SUCCESS, "Der Workshop ist jetzt sichtbar");
-    } else {
-        button.innerHTML = "Veröffentlichen";
-        alert(ALERT_SUCCESS, "Der Workshop ist jetzt nicht mehr sichtbar");
+
+    try {
+        await axios.post("/api/workshops", { id, visible: workshops[id].buttons.published ? 0 : 1 });
+
+        workshops[id].buttons.published = !workshops[id].buttons.published;
+        if (typeof editWorkshopItem !== "undefined")
+            editWorkshopItem({ id, visible: workshops[id].buttons.published });
+
+        if (workshops[id].buttons.published) {
+            button.innerHTML = "Unsichtbar machen";
+            alert(ALERT_SUCCESS, "Der Workshop ist jetzt sichtbar");
+        } else {
+            button.innerHTML = "Veröffentlichen";
+            alert(ALERT_SUCCESS, "Der Workshop ist jetzt nicht mehr sichtbar");
+        }
+    } catch(error) {
+        if (error.response && error.response.status === 400) {
+            alert(ALERT_ERROR, error.response.data);
+            button.innerHTML = "Veröffentlichen";
+            workshops[id].buttons.published = false;
+        } else {
+            showError(error);
+        }
     }
 }
 
