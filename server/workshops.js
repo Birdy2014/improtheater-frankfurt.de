@@ -62,9 +62,6 @@ export function copy(req, res) {
     if (!req.user || !req.body.id) {
         return res.sendStatus(400);
     }
-    if (!req.user.full_access) {
-        return res.sendStatus(409);
-    }
 
     const workshop = getWorkshop(req.body.id, true);
     if (!workshop) {
