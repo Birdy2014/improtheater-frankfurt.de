@@ -144,7 +144,7 @@ router.get("/workshops/:page", auth.getUser, async (req, res) => {
         res.render("error", { status: 404, message: "Not Found" });
     } else {
         res.render("routes/workshops", {
-            route: req.params.route,
+            route: `workshops/${req.params.page}`,
             doctype: "html",
             partial: req.query.partial,
             workshops: w,
