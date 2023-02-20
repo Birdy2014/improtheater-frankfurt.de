@@ -63,6 +63,7 @@ router.post("/api/user/request_password_reset", route(auth.api_request_password_
 router.post("/api/user/password_reset", route(auth.api_password_reset));
 router.post("/api/workshops", auth.getUser, route(workshops.post));
 router.delete("/api/workshops", auth.getUser, route(workshops.del));
+router.post("/api/workshop/copy", auth.getUser, route(workshops.copy));
 router.post("/api/newsletter/subscribe", route(newsletter.subscribe));
 router.get("/api/newsletter/confirm", route(newsletter.confirm));
 router.post("/api/newsletter/unsubscribe", route(newsletter.unsubscribe));

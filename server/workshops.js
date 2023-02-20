@@ -13,6 +13,7 @@ export const type_both = 3;
 
 export const defaultTitle = "Name des Workshops";
 export const defaultContent = "Eine Beschreibung des Workshops";
+export const copy_prefix = "[KOPIE] ";
 
 export function post(req, res) {
     if (!req.user) {
@@ -36,6 +37,28 @@ export function del(req, res) {
     deleteWorkshop(req.body.id);
     res.status(200);
     res.json({ status: 200 });
+}
+
+export function copy(req, res) {
+    if (!req.user || !req.body.id) {
+        return res.sendStatus(400);
+    }
+    if (!req.user.full_access) {
+        return res.sendStatus(409);
+    }
+
+    const workshop = getWorkshop(req.body.id, true);
+    if (!workshop) {
+        return res.sendStatus(404);
+    }
+
+    workshop.id = undefined;
+    workshop.title = copy_prefix + workshop.title;
+    workshop.visible = 0;
+
+    const copy_id = editWorkshop(workshop);
+
+    res.status(200).json({ id: copy_id });
 }
 
 export function getWorkshops(loggedIn, page = 0, type = 3) {

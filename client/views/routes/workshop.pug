@@ -87,6 +87,9 @@ block routeContent
             a(href="javascript:void(0)" onclick="publishWorkshop()" class="edit-button edit-publish") #{visible ? "Unsichtbar machen" : "Veröffentlichen"}
             = " | "
             a(href="javascript:void(0)" onclick="deleteWorkshop()" class="edit-button") Löschen
+            if full_access
+                = " | "
+                a.edit-button(href="javascript:void(0)" onclick="copyWorkshop()") Kopieren
             br
             unless newsletterSent && !full_access
                 span.edit-newsletter

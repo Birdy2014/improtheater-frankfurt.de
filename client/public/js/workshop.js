@@ -50,6 +50,19 @@ async function deleteWorkshop(id) {
     await navigate("workshops", true);
 }
 
+async function copyWorkshop() {
+    if (!await confirm("Eine Kopie des Workshops erstellen?"))
+        return;
+
+    const id = currentRoute.substring(currentRoute.indexOf("/") + 1);
+    const response = await axios.post("/api/workshop/copy", { id });
+    const copy_id = response.data.id;
+
+    navigate("workshops", true, true, true);
+    await navigate(`workshop/${copy_id}`, true);
+    alert(ALERT_SUCCESS, "Workshop Kopiert");
+}
+
 function editWorkshopImage() {
     window.sessionStorage.setItem("editWorkshop", currentRoute);
     navigate("uploads");
