@@ -11,7 +11,7 @@ block routeContent
                 a(href="/workshops/" + (page - 1)) Vorwärts
             a(href="/workshops/" + (page + 1)) Zurück
 
-    #workshop-list
+    .workshop-list
         each workshop in workshops
             +workshop-item(workshop)
 

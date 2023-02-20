@@ -71,7 +71,8 @@ async function copyWorkshop() {
     const response = await axios.post("/api/workshop/copy", { id });
     const copy_id = response.data.id;
 
-    navigate("workshops", true, true, true);
+    if (window["invalidate_workshops_pages"])
+        invalidate_workshops_pages();
     await navigate(`workshop/${copy_id}`, true);
     alert(ALERT_SUCCESS, "Workshop Kopiert");
 }

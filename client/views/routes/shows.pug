@@ -10,6 +10,6 @@ html(lang="de")
     body(data-theme="light")
         #wrapper(style="margin-top: 0;")
             .container#shows
-                #workshop-list
+                .workshop-list
                     each workshop in workshops
                         +workshop-item(workshop, "_blank")
