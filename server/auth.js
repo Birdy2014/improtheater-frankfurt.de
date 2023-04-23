@@ -4,6 +4,7 @@ import nodemailer from "nodemailer";
 import { v4 as uuid } from "uuid";
 import * as db from "./db.js";
 import * as utils from "./utils.js";
+import * as logger from "./logger.js"
 
 const loggedInRoutes = [ "/uploads", "/subscribers", "/user" ];
 
@@ -68,6 +69,7 @@ export async function login(req, res) {
         res.status(200);
         res.send();
     } else {
+        logger.warn(`Failed login attempt for user '${login}' from '${req.ip}'`);
         res.status(403);
         res.send();
     }
