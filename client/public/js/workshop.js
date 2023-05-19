@@ -276,6 +276,5 @@ function workshop_break_links(container) {
 
     links.forEach(link => {
         link.innerHTML = link.innerHTML.replaceAll("/", "/<wbr>");
-        console.log(link.innerHTML)
     });
 }
