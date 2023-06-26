@@ -5,8 +5,8 @@ async function subscribers_add(event) {
         let name = document.getElementById("subscribers-add-name").value;
         let subscribedTo = document.getElementById("subscribers-add-type").value;
         await axios.post("/api/newsletter/add", { email, name, subscribedTo });
-        alert(ALERT_SUCCESS, "Abonent hinzugefügt");
-        navigate(currentRoute, true, false)
+        show_message(MESSAGE_SUCCESS, "Abonent hinzugefügt");
+        navigate(currentRoute, { reload: true, push_history: false })
     } catch(err) {
         showError(err);
     }
@@ -14,11 +14,11 @@ async function subscribers_add(event) {
 
 async function subscribers_remove(token, name) {
     try {
-        if (!await confirm(`Soll ${name} wirklich vom Newsletter abgemeldet werden?`))
+        if (!await show_confirm_message(`Soll ${name} wirklich vom Newsletter abgemeldet werden?`))
             return;
         await axios.post("/api/newsletter/unsubscribe", { token });
         document.querySelector(`#subscriber-${token}`).remove();
-        alert(ALERT_SUCCESS, `${name} wurde entfernt.`);
+        show_message(MESSAGE_SUCCESS, `${name} wurde entfernt.`);
     } catch(err) {
         showError(err);
     }
@@ -31,7 +31,7 @@ async function subscribers_change_type(event) {
         const subscribedTo = event.target.value;
         const name = row.querySelector(".subscribers-name").innerText;
         await axios.post("/api/newsletter/subscribe", { token, subscribedTo });
-        alert(ALERT_SUCCESS, `Newsletter für ${name} geändert.`);
+        show_message(MESSAGE_SUCCESS, `Newsletter für ${name} geändert.`);
     } catch(err) {
         showError(err);
     }

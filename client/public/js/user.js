@@ -7,7 +7,7 @@ async function change_email(event) {
         await axios.put("/api/user", { email });
         email_field.placeholder = email;
         email_field.value = "";
-        alert(ALERT_SUCCESS, "E-Mail Adresse geändert");
+        show_message(MESSAGE_SUCCESS, "E-Mail Adresse geändert");
     } catch (err) {
         showError(err);
     }
@@ -22,7 +22,7 @@ async function change_username(event) {
         await axios.put("/api/user", { username });
         username_field.placeholder = username;
         username_field.value = "";
-        alert(ALERT_SUCCESS, "Benutzername geändert");
+        show_message(MESSAGE_SUCCESS, "Benutzername geändert");
     } catch (err) {
         showError(err);
     }
@@ -36,7 +36,7 @@ async function change_password(event) {
     try {
         await axios.put("/api/user", { password });
         password_field.value = "";
-        alert(ALERT_SUCCESS, "Passwort geändert");
+        show_message(MESSAGE_SUCCESS, "Passwort geändert");
     } catch (err) {
         showError(err);
     }
@@ -71,7 +71,7 @@ async function change_user_handler(event) {
             email_field.value = "";
         }
         password_field.value = "";
-        alert(ALERT_SUCCESS, "Benutzer geändert");
+        show_message(MESSAGE_SUCCESS, "Benutzer geändert");
     } catch (err) {
         showError(err);
     }
@@ -95,8 +95,8 @@ async function create_user_handler(event) {
             full_access: full_access_field.checked
         });
 
-        navigate("/user", true, true, false);
-        alert(ALERT_SUCCESS, "Benutzer erstellt");
+        navigate("/user", { reload: true, push_history: false });
+        show_message(MESSAGE_SUCCESS, "Benutzer erstellt");
     } catch (err) {
         showError(err);
     }
@@ -110,8 +110,8 @@ async function delete_user_handler(event) {
     try {
         await axios.delete("/api/user", { data: { id } });
 
-        navigate("/user", true, true, false);
-        alert(ALERT_SUCCESS, "Benutzer erstellt");
+        navigate("/user", { reload: true, push_history: false });
+        show_message(MESSAGE_SUCCESS, "Benutzer erstellt");
     } catch (err) {
         showError(err);
     }

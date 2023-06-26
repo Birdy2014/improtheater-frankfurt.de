@@ -9,7 +9,7 @@ async function login(event, route) {
         location.href = route;
     } catch (err) {
         if (err.response.status === 403) {
-            alert(ALERT_ERROR, "Falscher Benutzername oder Passwort", false);
+            show_message(MESSAGE_ERROR, "Falscher Benutzername oder Passwort", false);
         } else {
             showError(err);
         }
@@ -19,7 +19,7 @@ async function login(event, route) {
 async function request_password_reset(form) {
     const login = form.querySelector("input[name='login']").value;
     if (!login) {
-        alert(ALERT_ERROR, "Benutzername/E-Mail-Adresse fehlt");
+        show_message(MESSAGE_ERROR, "Benutzername/E-Mail-Adresse fehlt");
         return;
     }
 
@@ -27,7 +27,7 @@ async function request_password_reset(form) {
         await axios.post("/api/user/request_password_reset", { login });
     } catch (err) {
         if (err.response.status === 404) {
-            alert(ALERT_ERROR, "Ungültiger Benutzername oder E-Mail-Adresse");
+            show_message(MESSAGE_ERROR, "Ungültiger Benutzername oder E-Mail-Adresse");
         } else {
             showError(err);
         }

@@ -4,18 +4,18 @@ window.onload = () => {
     var currentRoute = url.pathname + url.search;
     // set navlink active
     if (url.search)
-        navigate(currentRoute, false, false, false);
+        navigate(currentRoute);
     else
-        navigate(currentRoute, false, true, false);
+        navigate(currentRoute);
     // load scripts
     let route = url.pathname.substring(1);
     let container = document.getElementById(route);
     loadPage(container, route, url.search);
 }
 
-document.onclick = e => {
-    e = e || window.event;
-    let element = e.target || e.srcElement;
+document.onclick = event => {
+    event = event || window.event;
+    let element = event.target || event.srcElement;
     if (element.tagName !== "A") element = element.closest("a");
 
     let dropdownContent;
@@ -51,11 +51,11 @@ document.onclick = e => {
     }
 }
 
-window.onpopstate = e => {
-    navigate(document.location.pathname.substring(1), false, true);
+window.onpopstate = _ => {
+    navigate(document.location.pathname.substring(1), { push_history: false });
 }
 
-window.onscroll = e => {
+window.onscroll = _ => {
     const navbar = document.getElementsByTagName("nav")[0];
     const footer = document.querySelector("footer");
     if (window.pageYOffset > 0) {
@@ -70,11 +70,11 @@ window.onscroll = e => {
 /**
  *
  * @param {string} to - target route
- * @param {boolean} reload - download page again
- * @param {boolean} skipPushState - don't push route to browser history
- * @param {boolean} preload - only download, don't navigate
+ * @param {boolean} params.reload - download page again
+ * @param {boolean} params.push_history - don't push route to browser history
+ * @param {boolean} params.preload - only download, don't navigate
  */
-async function navigate(to, reload, skipPushState, preload) {
+async function navigate(to, params = { reload: false, push_history: true, preload: false }) {
     if (to.startsWith("/")) to = to.substring(1);
     let route = to;
     if (route.includes("?"))
@@ -89,7 +89,7 @@ async function navigate(to, reload, skipPushState, preload) {
     }
     let containers = document.getElementsByClassName("container");
     let load_promise;
-    if (targetContainer.childElementCount === 0 || reload) {
+    if (targetContainer.childElementCount === 0 || params.reload) {
         // clear container
         targetContainer.innerHTML = "";
         // download page
@@ -99,13 +99,13 @@ async function navigate(to, reload, skipPushState, preload) {
             let url = to.includes("?") ? "/" + to + "&partial=1" : "/" + to + "?partial=1";
             website = await axios.get(url);
             NProgress.done();
-        } catch(e) {
+        } catch(error) {
             NProgress.done();
-            console.error("Cannot navigate to '" + to + "': " + e);
+            console.error("Cannot navigate to '" + to + "': " + error);
 
             // Redirect to login
-            if (e.response.status == 401 && to != "login") {
-                navigate("login", false, false, false);
+            if (error.response.status == 401 && to != "login") {
+                navigate("login");
             }
             return;
         }
@@ -119,7 +119,7 @@ async function navigate(to, reload, skipPushState, preload) {
             setTimeout(() => loadPage(targetContainer, route, to.includes("?") ? to.substring(to.indexOf("?")) : "").then(resolve), 100);
         });
     }
-    if (preload) {
+    if (params.preload) {
         await load_promise;
         return;
     }
@@ -143,7 +143,7 @@ async function navigate(to, reload, skipPushState, preload) {
     // Scroll to top
     window.scrollTo(0, 0);
     // Push state
-    if (!skipPushState) {
+    if (params.push_history) {
         history.pushState({}, "", "/" + route);
     }
     await load_promise;
@@ -204,48 +204,46 @@ async function logout() {
 }
 
 // Alerts
-const ALERT_LOADING = "#alert-loading";
-const ALERT_SUCCESS = "#alert-success";
-const ALERT_ERROR = "#alert-error";
-let alert_timeout;
+const MESSAGE_SUCCESS = "#message-success";
+const MESSAGE_ERROR = "#message-error";
+let message_timeout;
 
-function alert(type, message, autohide) {
+function show_message(type, message, autohide) {
     let element = document.querySelector(type);
     if (!element)
-        throw new Error("Invalid alert type");
-    alertClose();
-    element.querySelector(".alert-text").innerHTML = message;
+        throw new Error("Invalid message type");
+    close_message();
+    element.querySelector(".message-text").innerHTML = message;
     element.style.top = "10px";
-    if (autohide || (autohide === undefined && type !== ALERT_LOADING))
-        alert_timeout = setTimeout(alertClose, 3000);
+    if (autohide || autohide === undefined)
+        message_timeout = setTimeout(close_message, 3000);
 }
 
-function alertGetOpen() {
-    let elements = document.querySelectorAll(".alert");
+function get_visible_message() {
+    let elements = document.querySelectorAll(".message");
     for (const element of elements) {
         if (element.style.top)
             return element;
     }
 }
 
-function alertClose() {
-    clearTimeout(alert_timeout);
-    let element = alertGetOpen();
-    if (!element)
+function close_message() {
+    clearTimeout(message_timeout);
+    const message_element = get_visible_message();
+    if (!message_element)
         return;
-    element.style.removeProperty("top");
-    let textElement = element.querySelector(".alert-text");
+    const close_button = message_element.querySelector(".message-close")
+    if (close_button && close_button instanceof HTMLElement)
+        close_button.click()
+    message_element.style.removeProperty("top");
+    const textElement = message_element.querySelector(".message-text");
     textElement.innerHTML = "";
     textElement.style.removeProperty("white-space");
-    if (window.rejectConfirmDialog) {
-        window.rejectConfirmDialog();
-        window.rejectConfirmDialog = undefined;
-    }
 }
 
-function alertToggleFull() {
-    let element = alertGetOpen();
-    let textElement = element.querySelector(".alert-text");
+function toggle_message_details() {
+    let element = get_visible_message();
+    const textElement = element.querySelector(".message-text");
     if (textElement.style["white-space"])
         textElement.style.removeProperty("white-space");
     else
@@ -260,24 +258,26 @@ function showError(error) {
     } else {
         errorText += error.message;
     }
-    alert(ALERT_ERROR, errorText, false);
+    show_message(MESSAGE_ERROR, errorText, false);
 }
 
-function confirm(text) {
-    return new Promise((resolve, reject) => {
-        alert("#alert-confirm", text, false);
-        window.rejectConfirmDialog = reject;
-        const alert_confirm = document.querySelector("#alert-confirm");
-        const yes = alert_confirm.querySelector(".alert-confirm-yes");
-        const no = alert_confirm.querySelector(".alert-confirm-no");
+function show_confirm_message(text) {
+    return new Promise((resolve, _) => {
+        show_message("#message-confirm", text, false);
+        const message_confirm = document.querySelector("#message-confirm");
+        const yes = message_confirm.querySelector(".message-confirm-yes");
+        const no = message_confirm.querySelector(".message-confirm-no");
+        const close = message_confirm.querySelector(".message-close");
         yes.addEventListener('click', () => {
-            window.rejectConfirmDialog = undefined;
-            alertClose();
+            close_message();
             resolve(true);
         });
         no.addEventListener('click', () => {
-            window.rejectConfirmDialog = undefined;
-            alertClose();
+            close_message();
+            resolve(false);
+        });
+        close.addEventListener('click', () => {
+            close_message();
             resolve(false);
         });
     });

@@ -6,7 +6,7 @@ async function reset_password(event, token) {
     try {
         await axios.post("/api/user/password_reset", { token, password });
         password_field.value = "";
-        alert(ALERT_SUCCESS, "Passwort geändert");
+        show_message(MESSAGE_SUCCESS, "Passwort geändert");
     } catch (err) {
         showError(err);
     }
@@ -16,7 +16,7 @@ function password_reset_init(container, query) {
     const search_params = new URLSearchParams(query);
 
     if (!search_params.has("token")) {
-        alert(ALERT_ERROR, "token fehlt :(", false);
+        show_message(MESSAGE_ERROR, "token fehlt :(", false);
         return;
     }
 

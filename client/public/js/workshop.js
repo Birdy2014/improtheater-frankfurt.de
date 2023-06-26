@@ -17,7 +17,7 @@ async function changeWorkshopValues() {
         editWorkshopItem(workshops[id].texts);
     try {
         await axios.post("/api/workshops", workshops[id].texts);
-        alert(ALERT_SUCCESS, "Daten gespeichert");
+        show_message(MESSAGE_SUCCESS, "Daten gespeichert");
     } catch(err) {
         showError(err);
     }
@@ -37,14 +37,14 @@ async function publishWorkshop() {
 
         if (workshops[id].buttons.published) {
             button.innerHTML = "Unsichtbar machen";
-            alert(ALERT_SUCCESS, "Der Workshop ist jetzt sichtbar");
+            show_message(MESSAGE_SUCCESS, "Der Workshop ist jetzt sichtbar");
         } else {
             button.innerHTML = "Veröffentlichen";
-            alert(ALERT_SUCCESS, "Der Workshop ist jetzt nicht mehr sichtbar");
+            show_message(MESSAGE_SUCCESS, "Der Workshop ist jetzt nicht mehr sichtbar");
         }
     } catch(error) {
         if (error.response && error.response.status === 400) {
-            alert(ALERT_ERROR, error.response.data);
+            show_message(MESSAGE_ERROR, error.response.data);
             button.innerHTML = "Veröffentlichen";
             workshops[id].buttons.published = false;
         } else {
@@ -54,17 +54,17 @@ async function publishWorkshop() {
 }
 
 async function deleteWorkshop(id) {
-    if (!await confirm("Soll der Newsletter wirklich gelöscht werden?"))
+    if (!await show_confirm_message("Soll der Newsletter wirklich gelöscht werden?"))
         return;
     if (!id) id = currentRoute.substring(currentRoute.indexOf("/") + 1);
     await axios.delete("/api/workshops", {
         data: { id }
     });
-    await navigate("workshops", true);
+    await navigate("workshops", { reload: true });
 }
 
 async function copyWorkshop() {
-    if (!await confirm("Eine Kopie des Workshops erstellen?"))
+    if (!await show_confirm_message("Eine Kopie des Workshops erstellen?"))
         return;
 
     const id = currentRoute.substring(currentRoute.indexOf("/") + 1);
@@ -73,8 +73,8 @@ async function copyWorkshop() {
 
     if (window["invalidate_workshops_pages"])
         invalidate_workshops_pages();
-    await navigate(`workshop/${copy_id}`, true);
-    alert(ALERT_SUCCESS, "Workshop Kopiert");
+    await navigate(`workshop/${copy_id}`, { reload: true });
+    show_message(MESSAGE_SUCCESS, "Workshop Kopiert");
 }
 
 function editWorkshopImage() {
@@ -87,19 +87,19 @@ async function sendNewsletter() {
         let id = currentRoute.substring(currentRoute.indexOf("/") + 1);
         let container = document.getElementById("workshop/" + id);
         if (workshop_changed(id)) {
-            alert(ALERT_ERROR, "Es gibt ungespeicherte Änderungen. Der Newsletter wurde nicht versendet.");
+            show_message(MESSAGE_ERROR, "Es gibt ungespeicherte Änderungen. Der Newsletter wurde nicht versendet.");
             return;
         }
-        if (!await confirm("Soll der Newsletter wirklich so versendet werden?"))
+        if (!await show_confirm_message("Soll der Newsletter wirklich so versendet werden?"))
             return;
         await axios.post("/api/newsletter/send", { workshop: id });
         workshops[id].buttons.newsletterSent = true;
         // TODO: Only do this if the user is not allowed to resend newsletters
         container.querySelectorAll(".edit-newsletter").forEach(value => value.style.display = "none");
-        alert(ALERT_SUCCESS, "Newsletter gesendet");
+        show_message(MESSAGE_SUCCESS, "Newsletter gesendet");
     } catch (e) {
         if (e.response.status === 404)
-            alert(ALERT_ERROR, "Der Workshop ist noch nicht öffentlich.", false);
+            show_message(MESSAGE_ERROR, "Der Workshop ist noch nicht öffentlich.", false);
         else
             showError(e);
     }
@@ -108,13 +108,12 @@ async function sendNewsletter() {
 async function sendTestNewsletter() {
     try {
         let id = currentRoute.substring(currentRoute.indexOf("/") + 1);
-        let container = document.getElementById("workshop/" + id);
         if (workshop_changed(id)) {
-            alert(ALERT_ERROR, "Es gibt ungespeicherte Änderungen. Der Newsletter wurde nicht versendet.");
+            show_message(MESSAGE_ERROR, "Es gibt ungespeicherte Änderungen. Der Newsletter wurde nicht versendet.");
             return;
         }
         await axios.post("/api/newsletter/send", { workshop: id, test: true });
-        alert(ALERT_SUCCESS, "Testmail gesendet");
+        show_message(MESSAGE_SUCCESS, "Testmail gesendet");
     } catch (e) {
         showError(e);
     }

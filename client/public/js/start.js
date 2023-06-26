@@ -4,7 +4,7 @@ function start_nextReview() {
     const reviews_container = document.getElementById("start-reviews");
     const speechbubbles = reviews_container.getElementsByClassName("speechbubble");
 
-    for (speechbubble of speechbubbles)
+    for (const speechbubble of speechbubbles)
         speechbubble.classList.remove("start-review-visible");
 
     speechbubbles[start_currentReview].classList.add("start-review-visible");

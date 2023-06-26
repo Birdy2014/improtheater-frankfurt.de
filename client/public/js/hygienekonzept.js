@@ -4,7 +4,7 @@ async function hygienekonzept_save() {
     try {
         let textarea = window["hygienekonzept-src"].querySelector("textarea");
         await axios.post("/api/hygienekonzept", { content: textarea.value });
-        alert(ALERT_SUCCESS, "Hygienekonzept gespeichert");
+        show_message(MESSAGE_SUCCESS, "Hygienekonzept gespeichert");
     } catch(e) {
         showError(e);
     }

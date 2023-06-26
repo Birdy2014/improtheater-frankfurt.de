@@ -19,7 +19,20 @@ else
             script(src="/public/js/navigator.js")
 
         body
-            include includes/alerts.pug
+            #message-success.message
+                span.message-text(onclick="toggle_message_details()")
+                span.message-close(onclick="close_message()") &times
+
+            #message-error.message
+                span.message-text(onclick="toggle_message_details()")
+                span.message-close(onclick="close_message()") &times
+
+            #message-confirm.message
+                span.message-text(onclick="toggle_message_details()")
+                span.message-close &times
+                button.message-confirm-yes Ja
+                button.message-confirm-no Nein
+
             nav
                 #menu
                     a(href="/start" class="navlink")

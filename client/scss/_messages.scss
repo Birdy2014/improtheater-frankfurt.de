@@ -1,0 +1,50 @@
+.message {
+    position: fixed;
+    width: calc(100% - 30px);
+    max-width: calc(var(--site-width) - 20px);
+    top: -80px;
+    left: 0;
+    right: 0;
+    z-index: 20;
+    transition: top 0.5s ease;
+    margin: 0 auto;
+    padding: 10px;
+    color: white;
+
+    button {
+        cursor: pointer;
+    }
+
+    .message-text {
+        display: inline-block;
+        width: calc(100% - 20px);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .message-close {
+        float: right;
+        font-size: 22px;
+        font-weight: bold;
+        line-height: 20px;
+        cursor: pointer;
+
+        ::hover {
+            color: black;
+        }
+    }
+}
+
+
+    #message-success {
+        background-color: green;
+    }
+
+    #message-error {
+        background-color: var(--color-fg);
+    }
+
+    #message-confirm {
+        background-color: gray;
+    }

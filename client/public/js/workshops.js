@@ -3,7 +3,7 @@ async function createWorkshop() {
         let response = await axios.post("/api/workshops");
         let id = response.data.data.id;
         invalidate_workshops_pages();
-        await navigate(`workshop/${id}`, true);
+        await navigate(`workshop/${id}`, { reload: true });
         toggleWorkshopPreview();
     } catch(e) {
         showError(e);
