@@ -148,6 +148,7 @@ function toggleWorkshopPreview() {
 
         workshop_edit_fields.forEach(element => element.style.display = "block");
         workshop_preview_fields.forEach(element => element.style.display = "none");
+        textareaAutoGrow(container.querySelector(".edit-content"));
     } else {
         workshop_updateValues(id);
 
@@ -201,7 +202,6 @@ function workshop_init(container) {
     edit_content.addEventListener("keyup", (event) => {
         textareaAutoGrow(event.target);
     });
-    textareaAutoGrow(edit_content);
 
     const color_input = container.querySelector(".input-workshop-color");
     container.querySelector(".workshop-color-set-default").addEventListener("click", () => {
