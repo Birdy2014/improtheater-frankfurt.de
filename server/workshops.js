@@ -99,9 +99,9 @@ export function getWorkshops(loggedIn, page = 0, type = 3) {
     page = parseInt(page);
     let workshops;
     if (loggedIn)
-        workshops = db.all(`SELECT * FROM workshop WHERE type & ${type} ORDER BY begin DESC LIMIT ?, ?`, perPage * page, perPage) || [];
+        workshops = db.all("SELECT * FROM workshop WHERE type & ? ORDER BY begin DESC LIMIT ?, ?", type, perPage * page, perPage) || [];
     else
-        workshops = db.all(`SELECT * FROM workshop WHERE type & ${type} AND visible = 1 ORDER BY begin DESC LIMIT ?, ?`, perPage * page, perPage) || [];
+        workshops = db.all("SELECT * FROM workshop WHERE type & ? AND visible = 1 ORDER BY begin DESC LIMIT ?, ?", type, perPage * page, perPage) || [];
     for (let workshop of workshops) {
         try {
             workshop.timeText = timeDateFormat.formatRange(workshop.begin * 1000, workshop.end * 1000);
@@ -120,21 +120,21 @@ export function getWorkshops(loggedIn, page = 0, type = 3) {
 export function getWorkshop(id, loggedIn) {
     let workshop;
     if (loggedIn) {
-        workshop = db.get(`SELECT * FROM workshop WHERE id = '${id}'`);
+        workshop = db.get("SELECT * FROM workshop WHERE id = ?", id);
         if (!workshop) return undefined;
         try {
             let beginISO = isoFormat.format(workshop.begin * 1000);
             let endISO = isoFormat.format(workshop.end * 1000);
-            workshop.dateISO = beginISO.substr(0, 10);
-            workshop.beginTimeISO = beginISO.substr(11, 5);
-            workshop.endTimeISO = endISO.substr(11, 5);
+            workshop.dateISO = beginISO.substring(0, 10);
+            workshop.beginTimeISO = beginISO.substring(11, 16);
+            workshop.endTimeISO = endISO.substring(11, 16);
         } catch (e) {
             logger.warn(JSON.stringify(e));
             workshop.beginTimeISO = "";
             workshop.endTimeISO = "";
         }
     } else {
-        workshop = db.get(`SELECT * FROM workshop WHERE id = '${id}' AND visible = 1`);
+        workshop = db.get("SELECT * FROM workshop WHERE id = ? AND visible = 1", id);
         if (!workshop) return undefined;
     }
     try {
@@ -207,7 +207,7 @@ export function editWorkshop(workshop) {
 }
 
 export function deleteWorkshop(id) {
-    db.run(`DELETE FROM workshop WHERE id = '${id}'`);
+    db.run("DELETE FROM workshop WHERE id = ?", id);
 }
 
 // Duplicate code from client/public/js/workshop.js
