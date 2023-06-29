@@ -13,7 +13,8 @@ db.init();
 marked.setOptions({
     gfm: true,
     breaks: true,
-    smartypants: true,
+    headerIds: false,
+    mangle: false,
 });
 
 setInterval(clear_expired_sessions, 24 * 60 * 60 * 1000);

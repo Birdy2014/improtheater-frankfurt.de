@@ -2,7 +2,7 @@ import express from "express";
 import path from "path";
 import fileUpload from "express-fileupload";
 import { marked } from "marked";
-import sass from "sass";
+import * as sass from "sass";
 import * as auth from "./auth.js";
 import * as workshops from "./workshops.js";
 import * as newsletter from "./newsletter.js";

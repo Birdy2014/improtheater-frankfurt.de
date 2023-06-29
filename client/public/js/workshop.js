@@ -6,7 +6,8 @@ if (window.marked) {
     marked.setOptions({
         gfm: true,
         breaks: true,
-        smartypants: true
+        headerIds: false,
+        mangle: false,
     });
 }
 

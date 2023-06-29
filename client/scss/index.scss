@@ -13,12 +13,7 @@
 @use 'workshop';
 @use 'workshops';
 
-@include Roboto.fontFace(
-    $weight: 400,
-    $fontDir: "/roboto"
-);
-
-@include Roboto.fontFace(
-    $weight: 700,
-    $fontDir: "/roboto"
+@include Roboto.faces(
+    $weights: 400 700,
+    $directory: "/roboto"
 );
