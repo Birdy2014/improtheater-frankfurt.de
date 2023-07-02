@@ -232,9 +232,6 @@ function close_message() {
     const message_element = get_visible_message();
     if (!message_element)
         return;
-    const close_button = message_element.querySelector(".message-close")
-    if (close_button && close_button instanceof HTMLElement)
-        close_button.click()
     message_element.style.removeProperty("top");
     const textElement = message_element.querySelector(".message-text");
     textElement.innerHTML = "";
@@ -262,23 +259,32 @@ function showError(error) {
 }
 
 function show_confirm_message(text) {
+    if (confirm_message_resolve === undefined)
+        init_confirm_message()
+
     return new Promise((resolve, _) => {
+        confirm_message_resolve = resolve;
         show_message("#message-confirm", text, false);
-        const message_confirm = document.querySelector("#message-confirm");
-        const yes = message_confirm.querySelector(".message-confirm-yes");
-        const no = message_confirm.querySelector(".message-confirm-no");
-        const close = message_confirm.querySelector(".message-close");
-        yes.addEventListener('click', () => {
-            close_message();
-            resolve(true);
-        });
-        no.addEventListener('click', () => {
-            close_message();
-            resolve(false);
-        });
-        close.addEventListener('click', () => {
-            close_message();
-            resolve(false);
-        });
+    });
+}
+
+let confirm_message_resolve = undefined;
+
+function init_confirm_message() {
+    const message_confirm = document.querySelector("#message-confirm");
+    const yes = message_confirm.querySelector(".message-confirm-yes");
+    const no = message_confirm.querySelector(".message-confirm-no");
+    const close = message_confirm.querySelector(".message-close");
+    yes.addEventListener('click', () => {
+        confirm_message_resolve(true);
+        close_message();
+    });
+    no.addEventListener('click', () => {
+        confirm_message_resolve(false);
+        close_message();
+    });
+    close.addEventListener('click', () => {
+        confirm_message_resolve(false);
+        close_message();
     });
 }
