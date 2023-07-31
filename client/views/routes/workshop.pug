@@ -2,6 +2,12 @@ extends ../layout.pug
 
 include ../includes/utils.pug
 
+block head
+    meta(property="og:title" content=title)
+    meta(property="og:type" content="website")
+    meta(property="og:url" content=canonical_url)
+    meta(property="og:image" content=img)
+
 block routeContent
     h1
         span.workshop-preview-field.workshop-title!= marked.parseInline(title)

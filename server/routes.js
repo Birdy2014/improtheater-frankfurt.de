@@ -126,6 +126,7 @@ router.get("/workshop/:workshopID", auth.getUser, (req, res) => {
         } else {
             res.render("routes/workshop", {
                 route: "workshop/" + req.params.workshopID,
+                canonical_url: utils.base_url + "/workshop/" + req.params.workshopID,
                 ...w,
                 textColor: newsletter.calcTextColor(w.color),
                 loggedIn: req.user !== undefined,
