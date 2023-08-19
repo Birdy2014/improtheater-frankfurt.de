@@ -69,7 +69,7 @@ export async function post(req, res) {
 
     const mimetype = req.files.img.mimetype;
     const size = resized_image.length;
-    const name = req.files.img.name;
+    const name = Buffer.from(req.files.img.name, "latin1").toString("utf-8");
 
     try {
         db.run("INSERT INTO upload (name, mimetype, size, data, user_id, time) VALUES (?, ?, ?, ?, ?, ?)", name, mimetype, size, resized_image, req.user.id, utils.getCurrentTimestamp());
