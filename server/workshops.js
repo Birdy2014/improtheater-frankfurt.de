@@ -1,6 +1,7 @@
 import * as db from "./db.js";
 import * as utils from "./utils.js";
 import * as logger from "./logger.js";
+import { invalidateUploadsCache } from "./upload.js";
 
 const timeDateFormat = Intl.DateTimeFormat("de-DE", { weekday: "long", year: "numeric", month: "long", day: "numeric", hour: "numeric", minute: "numeric" });
 const dateFormat = Intl.DateTimeFormat("de-DE", { weekday: "long", year: "numeric", month: "long", day: "numeric" });
@@ -114,6 +115,7 @@ export function getWorkshops(loggedIn, page = 0, type = 3) {
             workshop.img = `${utils.base_url}/api/upload/${workshop.img}`;
         workshop.textColor = calcTextColor(workshop.color);
     }
+    invalidateUploadsCache();
     return workshops;
 }
 
@@ -203,11 +205,14 @@ export function editWorkshop(workshop) {
     else
         db.run(`INSERT INTO workshop ${insert} ON CONFLICT(id) DO NOTHING`, params);
 
+    invalidateUploadsCache();
+
     return id;
 }
 
 export function deleteWorkshop(id) {
     db.run("DELETE FROM workshop WHERE id = ?", id);
+    invalidateUploadsCache();
 }
 
 // Duplicate code from client/public/js/workshop.js

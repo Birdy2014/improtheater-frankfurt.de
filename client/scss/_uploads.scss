@@ -1,8 +1,10 @@
 #uploads-images-list {
     width: 100%;
     overflow: auto;
-    column-count: 2;
+    display: grid;
     column-gap: 15px;
+    grid-template-columns: auto auto;
+
     margin-top: 20px;
 
     div {
@@ -14,6 +16,8 @@
         height: auto;
         width: 100%;
         cursor: pointer;
+        aspect-ratio: 16/9;
+        object-fit: cover;
     }
 
     p {

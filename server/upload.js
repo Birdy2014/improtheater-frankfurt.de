@@ -3,7 +3,7 @@ import * as db from "./db.js";
 import * as utils from "./utils.js";
 import * as logger from "./logger.js";
 
-let uploads_name_cache = []
+let uploads_name_cache = undefined;
 
 export function get(req, res) {
     const name = req.params.name || req.query.name;
@@ -73,7 +73,7 @@ export async function post(req, res) {
 
     try {
         db.run("INSERT INTO upload (name, mimetype, size, data, user_id, time) VALUES (?, ?, ?, ?, ?, ?)", name, mimetype, size, resized_image, req.user.id, utils.getCurrentTimestamp());
-        uploads_name_cache.unshift(name);
+        uploads_name_cache = undefined;
         res.status(200);
         res.json({ name });
     } catch (e) {
@@ -95,12 +95,18 @@ export function del(req, res) {
     }
 
     db.run("DELETE FROM upload WHERE name = ?", name);
-    uploads_name_cache = uploads_name_cache.filter(n => n !== name);
+    if (uploads_name_cache)
+        uploads_name_cache = uploads_name_cache.filter(n => n !== name);
     res.sendStatus(200);
 }
 
 export function getAll() {
-    if (uploads_name_cache.length === 0)
-        uploads_name_cache = db.all("SELECT name FROM upload ORDER BY time DESC").map(row => row.name);
+    if (!uploads_name_cache) {
+        uploads_name_cache = db.all("select upload.name from upload left outer join workshop on upload.name = workshop.img group by upload.name order by max(workshop.begin) desc nulls first;").map(row => row.name);
+    }
     return uploads_name_cache;
+}
+
+export function invalidateUploadsCache() {
+    uploads_name_cache = undefined;
 }
