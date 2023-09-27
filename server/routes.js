@@ -71,10 +71,10 @@ router.post("/api/newsletter/send", auth.getUser, route(newsletter.send));
 router.get("/api/newsletter/export", auth.getUser, route(newsletter.exportSubscribers));
 router.post("/api/newsletter/add", auth.getUser, route(newsletter.addSubscriber));
 router.get("/api/upload", route(upload.get)); // Old
-router.get("/api/upload/:name", route(upload.get));
-router.get("/api/upload-color/:name", route(upload.get_color));
+router.get("/api/upload/:id", route(upload.get));
+router.get("/api/upload-color/:id", route(upload.get_color));
 router.post("/api/upload", auth.getUser, fileUpload({ limits: { fileSize: 10 * 1024 * 1024 } }), upload.post);
-router.delete("/api/upload/:name", auth.getUser, route(upload.del));
+router.delete("/api/upload/:id", auth.getUser, route(upload.del));
 router.post("/api/hygienekonzept", auth.getUser, route(editableWebsite.setEditableWebsiteMiddleware("hygienekonzept")));
 
 // Libraries

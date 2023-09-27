@@ -1,25 +1,30 @@
 import sharp from "sharp";
+import { v4 as uuid } from "uuid";
 import * as db from "./db.js";
 import * as utils from "./utils.js";
 import * as logger from "./logger.js";
 
-let uploads_name_cache = undefined;
+let uploads_cache = undefined;
 
 export function get(req, res) {
-    const name = req.params.name || req.query.name;
+    const id = req.params.id || req.query.name;
 
-    if (!name) {
+    if (!id) {
         res.status(400);
         return;
     }
 
     if (req.query.token) {
-        let workshop = db.get("SELECT id FROM workshop WHERE img = ? ORDER BY begin DESC", name);
+        let workshop = db.get("SELECT id FROM workshop WHERE img = ? ORDER BY begin DESC", id);
         if (workshop)
             db.run("UPDATE subscriber SET last_viewed_newsletter = ? WHERE token = ? AND last_viewed_newsletter < ?", workshop.id, req.query.token, workshop.id);
     }
 
-    let file = db.get("SELECT data, mimetype FROM upload WHERE name = ?", name);
+    const uuid_regex = /^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/;
+
+    const file = uuid_regex.test(id)
+        ? db.get("SELECT data, mimetype FROM upload WHERE id = ?", id)
+        : db.get("SELECT data, mimetype FROM upload WHERE name = ?", id);
 
     if (!file)
         return res.sendStatus(404);
@@ -30,14 +35,14 @@ export function get(req, res) {
 }
 
 export async function get_color(req, res) {
-    const name = req.params.name;
+    const id = req.params.id;
 
-    if (!name) {
+    if (!id) {
         res.status(400);
         return;
     }
 
-    let file = db.get("SELECT data FROM upload WHERE name = ?", name);
+    let file = db.get("SELECT data FROM upload WHERE id = ?", id);
 
     if (!file) {
         res.status(404);
@@ -70,43 +75,44 @@ export async function post(req, res) {
     const mimetype = req.files.img.mimetype;
     const size = resized_image.length;
     const name = Buffer.from(req.files.img.name, "latin1").toString("utf-8");
+    const id = uuid();
 
     try {
-        db.run("INSERT INTO upload (name, mimetype, size, data, user_id, time) VALUES (?, ?, ?, ?, ?, ?)", name, mimetype, size, resized_image, req.user.id, utils.getCurrentTimestamp());
-        uploads_name_cache = undefined;
+        db.run("INSERT INTO upload (id, name, mimetype, size, data, user_id, time) VALUES (?, ?, ?, ?, ?, ?, ?)", id, name, mimetype, size, resized_image, req.user.id, utils.getCurrentTimestamp());
+        invalidateUploadsCache();
         res.status(200);
-        res.json({ name });
+        res.json({ id, name });
     } catch (e) {
         if (e.code === 'SQLITE_CONSTRAINT_PRIMARYKEY') {
             res.sendStatus(409);
         } else {
-            logger.error(`Upload error: name: '${name}', mimetype: '${mimetype}', size: '${size}'` + JSON.stringify(e));
+            logger.error(`Upload error: id: '${id}', name: '${name}', mimetype: '${mimetype}', size: '${size}'` + JSON.stringify(e));
             res.sendStatus(500);
         }
     }
 }
 
 export function del(req, res) {
-    const name = req.params.name || req.query.name;
+    const id = req.params.id;
 
-    if (!name || !req.user) {
+    if (!id || !req.user) {
         res.sendStatus(400);
         return;
     }
 
-    db.run("DELETE FROM upload WHERE name = ?", name);
-    if (uploads_name_cache)
-        uploads_name_cache = uploads_name_cache.filter(n => n !== name);
+    db.run("DELETE FROM upload WHERE id = ?", id);
+    if (uploads_cache)
+        uploads_cache = uploads_cache.filter(upload => upload.id !== id);
     res.sendStatus(200);
 }
 
 export function getAll() {
-    if (!uploads_name_cache) {
-        uploads_name_cache = db.all("select upload.name from upload left outer join workshop on upload.name = workshop.img group by upload.name order by max(workshop.begin) desc nulls first;").map(row => row.name);
+    if (!uploads_cache) {
+        uploads_cache = db.all("select upload.id, upload.name from upload left outer join workshop on upload.id = workshop.img group by upload.id order by max(workshop.begin) desc nulls first;");
     }
-    return uploads_name_cache;
+    return uploads_cache;
 }
 
 export function invalidateUploadsCache() {
-    uploads_name_cache = undefined;
+    uploads_cache = undefined;
 }

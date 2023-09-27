@@ -43,13 +43,14 @@ export function init() {
 
     run(`
         CREATE TABLE IF NOT EXISTS upload (
+            id TEXT NOT NULL,
             name TEXT NOT NULL,
             mimetype TEXT NOT NULL,
             size INTEGER NOT NULL,
             data BLOB NOT NULL,
             user_id TEXT NOT NULL,
             time INTEGER NOT NULL,
-            PRIMARY KEY(name)
+            PRIMARY KEY(id)
         )
     `);
 
