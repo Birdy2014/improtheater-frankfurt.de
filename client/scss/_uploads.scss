@@ -38,6 +38,6 @@
 
 @media only screen and (max-width: 1000px) {
     #uploads-images-list {
-        column-count: 1;
+        grid-template-columns: auto;
     }
 }
