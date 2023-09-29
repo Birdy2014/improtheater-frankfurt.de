@@ -3,12 +3,13 @@
     overflow: auto;
     display: grid;
     column-gap: 15px;
-    grid-template-columns: auto auto;
+
+    /* https://stackoverflow.com/a/61240964 */
+    grid-template-columns: repeat(2, minmax(0, 1fr));
 
     margin-top: 20px;
 
-    div {
-        position: relative;
+    .uploads-image {
         height: 500px;
     }
 
@@ -20,24 +21,31 @@
         object-fit: cover;
     }
 
-    p {
-        position: absolute;
-        left: 0;
-        bottom: 0;
-        background-color: var(--color-bg);
-        margin: 0;
-    }
+    .image-footer {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
 
-    a {
-        position: absolute;
-        right: 0;
-        bottom: 0;
-        background-color: var(--color-bg);
+        p {
+            background-color: var(--color-bg);
+            margin: 0;
+
+            /* https://stackoverflow.com/a/66689926 */
+            min-width: 0;
+
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
+        a {
+            background-color: var(--color-bg);
+        }
     }
 }
 
-@media only screen and (max-width: 1000px) {
+@media only screen and (max-width: 800px) {
     #uploads-images-list {
-        grid-template-columns: auto;
+        grid-template-columns: minmax(0, 1fr);
     }
 }
