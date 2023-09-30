@@ -6,7 +6,7 @@ block head
     meta(property="og:title" content=title)
     meta(property="og:type" content="website")
     meta(property="og:url" content=canonical_url)
-    meta(property="og:image" content=img)
+    meta(property="og:image" content=img_url)
 
 block routeContent
     h1
@@ -15,7 +15,7 @@ block routeContent
             input.workshop-input.workshop-edit-field.edit-title(type="text" autocomplete="off" value=title)
 
     div
-        img.workshop-image(src=img onclick=loggedIn ? "editWorkshopImage()" : "")
+        img.workshop-image(src=img_url onclick=loggedIn ? "editWorkshopImage()" : "")
         .workshop-right
             if loggedIn || !propertiesHidden
                 dl.workshop-right-item.workshop-properties(style=`background-color: ${color}; color: ${textColor}`)

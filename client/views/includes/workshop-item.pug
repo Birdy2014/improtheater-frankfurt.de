@@ -2,7 +2,7 @@ mixin workshop-item(workshop, link_target = "_self")
     .workshop-item(class=workshop.outdated ? "workshops-outdated" : "", id="workshop-item-" + workshop.id)
         a(href="/workshop/" + workshop.id target=link_target)
             .workshops-image-container
-                img(src=workshop.img || "/public/img/workshop-default.png")
+                img(src=workshop.img_url)
                 .workshops-draft-text
                     unless workshop.visible
                         | Entwurf

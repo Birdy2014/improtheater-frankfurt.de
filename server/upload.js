@@ -14,17 +14,16 @@ export function get(req, res) {
         return;
     }
 
-    if (req.query.token) {
-        let workshop = db.get("SELECT id FROM workshop WHERE img = ? ORDER BY begin DESC", id);
-        if (workshop)
-            db.run("UPDATE subscriber SET last_viewed_newsletter = ? WHERE token = ? AND last_viewed_newsletter < ?", workshop.id, req.query.token, workshop.id);
-    }
-
     const uuid_regex = /^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/;
 
-    const file = uuid_regex.test(id)
+    let file = uuid_regex.test(id)
         ? db.get("SELECT data, mimetype FROM upload WHERE id = ?", id)
-        : db.get("SELECT data, mimetype FROM upload WHERE name = ?", id);
+        : db.get("SELECT upload.data, upload.mimetype FROM upload JOIN workshop ON upload.id = workshop.img WHERE workshop.id = ?", id);
+
+    if (!file) {
+        // Compatibility for old newsletters using names to identify images
+        file = db.get("SELECT data, mimetype FROM upload WHERE name = ?", id);
+    }
 
     if (!file)
         return res.sendStatus(404);
@@ -32,6 +31,16 @@ export function get(req, res) {
     res.status(200);
     res.set("Content-Type", file.mimetype);
     res.send(Buffer.from(file.data, "binary"));
+
+    if (req.query.token) {
+        let workshop = db.get("SELECT id FROM workshop WHERE img = ? ORDER BY begin DESC", id);
+        if (!workshop) {
+            workshop = db.get("SELECT id FROM workshop WHERE id = ? ORDER BY begin DESC", id);
+        }
+        if (workshop) {
+            db.run("UPDATE subscriber SET last_viewed_newsletter = ? WHERE token = ? AND last_viewed_newsletter < ?", workshop.id, req.query.token, workshop.id);
+        }
+    }
 }
 
 export async function get_color(req, res) {

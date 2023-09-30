@@ -111,8 +111,7 @@ export function getWorkshops(loggedIn, page = 0, type = 3) {
             workshop.timeText = "Error: Invalid Time";
             workshop.outdated = workshop.end < utils.getCurrentTimestamp();
         }
-        if (!workshop.img.includes("/"))
-            workshop.img = `${utils.base_url}/api/upload/${workshop.img}`;
+        workshop.img_url = `${utils.base_url}/api/upload/${workshop.img}`;
         workshop.textColor = calcTextColor(workshop.color);
     }
     invalidateUploadsCache();
@@ -146,8 +145,7 @@ export function getWorkshop(id, loggedIn) {
         workshop.dateText = "Error: Invalid Time";
         workshop.timeText = "Error: Invalid Time";
     }
-    if (!workshop.img.includes("/"))
-        workshop.img = `${utils.base_url}/api/upload/${workshop.img}`;
+    workshop.img_url = `${utils.base_url}/api/upload/${workshop.img}`;
     workshop.propertiesHidden = workshop.propertiesHidden === 1;
     return workshop;
 }
@@ -165,7 +163,7 @@ export function editWorkshop(workshop) {
         location: "Ort",
         price: "Preis",
         email: "[YesTicket](https://www.yesticket.org/events/de/improglycerin/)",
-        img: "/public/img/workshop-default.png",
+        img: "00000000-0000-0000-0000-000000000000",
         propertiesHidden: 0,
         type: 1
     };

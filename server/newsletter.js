@@ -130,7 +130,7 @@ export async function send(req, res) {
             let textColor = calcTextColor(workshop.color);
             let html = pug.renderFile(utils.project_path + "/client/views/emails/newsletter.pug", {
                 title: workshop.title,
-                img: workshop.img + "?token=" + subscriber.token,
+                img: `${utils.base_url}/api/upload/${workshop.id}?token=${subscriber.token}`,
                 dateText: workshop.dateText,
                 timeText: workshop.timeText,
                 location: workshop.location,
