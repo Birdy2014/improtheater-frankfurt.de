@@ -61,6 +61,7 @@ router.put("/api/user", auth.getUser, route(auth.api_change_user));
 router.delete("/api/user", auth.getUser, route(auth.api_delete_user));
 router.post("/api/user/request_password_reset", route(auth.api_request_password_reset));
 router.post("/api/user/password_reset", route(auth.api_password_reset));
+router.get("/api/workshops", auth.getUser, route(workshops.api_get));
 router.post("/api/workshops", auth.getUser, route(workshops.post));
 router.delete("/api/workshops", auth.getUser, route(workshops.del));
 router.post("/api/workshop/copy", auth.getUser, route(workshops.copy));
@@ -155,30 +156,60 @@ router.get("/workshops/:page", auth.getUser, async (req, res) => {
     }
 });
 
-router.get("/newsletter-preview/:workshopID", auth.getUser, async (req, res) => {
-    let w = workshops.getWorkshop(req.params.workshopID, true);
-    if (!req.user || !w) {
-        res.sendStatus(400);
-    } else {
-        let logo = utils.base_url + "/public/img/improtheater_frankfurt_logo.png";
-        let website = utils.base_url + "/workshop/"+ w.id;
-        let subscriber = {
-            name: req.user.username,
-            subscribedTo: w.type
+// TODO: Put shared stuff of this and newsletter.send in one function
+router.get("/newsletter-preview", auth.getUser, async (req, res) => {
+    const workshop_ids_to_send = Array.isArray(req.query.workshops)
+        ? req.query.workshops
+        : [req.query.workshops];
+
+    const workshops_to_send = [];
+    let workshop_type = undefined;
+    for (const workshop_id of workshop_ids_to_send) {
+        const workshop = workshops.getWorkshop(workshop_id, true);
+        if (!workshop) {
+            res.sendStatus(404);
+            return;
         }
-        let textColor = newsletter.calcTextColor(w.color);
-        res.render("emails/newsletter", {
-            ...w,
-            unsubscribe: "#",
-            subscribe: "#",
-            logo,
-            subscriber,
-            marked,
-            textColor,
-            website,
-            base_url: utils.base_url
+
+        if (workshop_type === undefined) {
+            workshop_type = workshop.type;
+        } else if (workshop_type !== workshop.type) {
+            res.status(400).send("Mismatching workshop types.");
+            return;
+        }
+
+        workshops_to_send.push({
+            ...workshop,
+            textColor: newsletter.calcTextColor(workshop.color),
+            website: `${utils.base_url}/workshops/${workshop.id}`,
         });
     }
+
+    const logo = utils.base_url + "/public/img/improtheater_frankfurt_logo.png";
+    const subscriber = {
+        name: req.user.username,
+        subscribedTo: workshop_type
+    }
+
+    const subject = workshops_to_send.length === 1
+        ? (workshops_to_send[0].propertiesHidden ? workshops_to_send[0].title : workshops_to_send[0].title + ", am " + workshops_to_send[0].dateText)
+        : `${workshops_to_send.length} ${workshop_type === workshops.type_itf ? "Workshops" : "Shows"}: ${workshops_to_send.map(workshop => workshop.title).join(" / ")}`;
+
+    const weblink = workshops_to_send.length === 1
+        ? `${utils.base_url}/workshop/${workshops_to_send[0].id}`
+        : `${utils.base_url}/workshops`;
+
+    res.render("emails/newsletter", {
+        subject: subject,
+        workshops: workshops_to_send,
+        weblink,
+        unsubscribe: "#",
+        subscribe: "#",
+        logo,
+        subscriber,
+        marked,
+        base_url: utils.base_url
+    });
 });
 
 router.get("/:route", auth.getUser, async (req, res) => {

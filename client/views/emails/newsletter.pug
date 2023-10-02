@@ -3,7 +3,7 @@ include ../includes/utils.pug
 doctype html
 html
     head
-        title #{title}
+        title #{subject}
         meta(charset="UTF-8")
         meta(name="viewport" content="width=device-width, initial-scale=1.0")
         style.
@@ -65,7 +65,7 @@ html
 
     body(style="color:black; background-color: white;")
         p.
-            Falls die E-Mail nicht korrekt angezeigt wird, kannst du sie #[a(href=website) hier im Browser anschauen].
+            Falls die E-Mail nicht korrekt angezeigt wird, kannst du sie #[a(href=weblink) hier im Browser anschauen].
         #message-container(style="text-align: center; font-family: Roboto;")
             table(cellpadding="0" cellspacing="0" width="100%" style="color: inherit; background-color: inherit; border-collapse: collapse;")
                 tr
@@ -73,96 +73,100 @@ html
                     td(width="900" height="80")
                         img(src=logo style="display: block; height: 60px; margin-bottom: 20px;")
                     td
-                tr(style=`background-color: ${color};`)
-                    td
-                    td(width="900" style="text-align: center; padding: 10px;")
-                        h1(style="margin-top: 20px;")
-                            a(href=website style=`color: ${textColor};`)!= marked.parseInline(title)
-                        img(src=img style="width: 100%;")
-                    td
-                tr
-                    td
-                    td(width="900")
-                        #description-container(style=`text-align: left;`)
-                            != marked(content)
-                        unless propertiesHidden
-                            <!--[if !mso]><!-->
-                            table#properties-table-desktop(cellpadding="0" cellspacing="0" width="100%" style=`display: none; text-align: left; background-color: ${color}; color: ${textColor}; padding: 15px; margin-top: 10px; table-layout: fixed;`)
-                                thead(style=`color: ${textColor};`)
-                                    tr
-                                        th(colspan=4 style="padding-bottom: 10px;")
-                                            a(href=website style=`color: inherit;`)!= marked.parseInline(title)
-                                tbody(style=`color: ${textColor};`)
-                                    tr
-                                        th Wann?
-                                        th Wo?
-                                        th Beitrag?
-                                        th Anmelden?
-                                    tr
-                                        td
-                                            | #{dateText}
-                                            br
-                                            | #{timeText}
-                                        td
-                                            != marked.parseInline(location)
-                                        td
-                                            != marked.parseInline(price)
-                                        td
-                                            != marked.parseInline(email)
-                            table#properties-table-mobile(cellpadding="0" cellspacing="0" width="100%" style=`display: table; text-align: left; background-color: ${color}; color: ${textColor}; padding: 15px; margin-top: 10px; table-layout: fixed;`)
-                                thead(style=`color: ${textColor};`)
-                                    tr
-                                        th(style="padding-bottom: 10px;")
-                                            a(href=website style="color: inherit;")!= marked.parseInline(title)
-                                tbody(style=`color: ${textColor};`)
-                                    tr
-                                        th(style="padding-top: 5px;") Wann?
-                                    tr
-                                        td
-                                            | #{dateText}
-                                            br
-                                            | #{timeText}
-                                    tr
-                                        th(style="padding-top: 5px;") Wo?
-                                    tr
-                                        td
-                                            != marked.parseInline(location)
-                                    tr
-                                        th(style="padding-top: 5px;") Beitrag?
-                                    tr
-                                        td
-                                            != marked.parseInline(price)
-                                    tr
-                                        th(style="padding-top: 5px;") Anmelden?
-                                    tr
-                                        td
-                                            != marked.parseInline(email)
-                            <!--<![endif]-->
-                            <!--[if mso]>
-                            table(cellpadding="0" cellspacing="0" width="100%" style=`text-align: left; background-color: ${color}; color: ${textColor}; padding: 15px; margin-top: 10px; table-layout: fixed;`)
-                                thead(style=`color: ${textColor};`)
-                                    tr
-                                        th(colspan=4 style="padding-bottom: 10px;")
-                                            a(href=website style="color: inherit;")!= marked.parseInline(title)
-                                tbody(style=`color: ${textColor};`)
-                                    tr
-                                        th Wann?
-                                        th Wo?
-                                        th Beitrag?
-                                        th Anmelden?
-                                    tr
-                                        td
-                                            | #{dateText}
-                                            br
-                                            | #{timeText}
-                                        td
-                                            != marked.parseInline(location)
-                                        td
-                                            != marked.parseInline(price)
-                                        td
-                                            != marked.parseInline(email)
-                            <![endif]-->
-                    td
+                each workshop, index in workshops
+                    if index > 0
+                        tr(height="50px")
+                    tr(style=`background-color: ${workshop.color};`)
+                        td
+                        td(width="900" style="text-align: center; padding: 10px;")
+                            h1(style="margin-top: 20px;")
+                                a(href=workshop.website style=`color: ${workshop.textColor};`)!= marked.parseInline(workshop.title)
+                            img(src=workshop.img_url style="width: 100%;")
+                        td
+                    tr
+                        td
+                        td(width="900")
+                            #description-container(style=`text-align: left;`)
+                                != marked(workshop.content)
+                            unless workshop.propertiesHidden
+                                <!--[if !mso]><!-->
+                                table#properties-table-desktop(cellpadding="0" cellspacing="0" width="100%" style=`display: none; text-align: left; background-color: ${workshop.color}; color: ${workshop.textColor}; padding: 15px; margin-top: 10px; table-layout: fixed;`)
+                                    thead(style=`color: ${workshop.textColor};`)
+                                        tr
+                                            th(colspan=4 style="padding-bottom: 10px;")
+                                                a(href=workshop.website style=`color: inherit;`)!= marked.parseInline(workshop.title)
+                                    tbody(style=`color: ${workshop.textColor};`)
+                                        tr
+                                            th Wann?
+                                            th Wo?
+                                            th Beitrag?
+                                            th Anmelden?
+                                        tr
+                                            td
+                                                | #{workshop.dateText}
+                                                br
+                                                | #{workshop.timeText}
+                                            td
+                                                != marked.parseInline(workshop.location)
+                                            td
+                                                != marked.parseInline(workshop.price)
+                                            td
+                                                != marked.parseInline(workshop.email)
+                                table#properties-table-mobile(cellpadding="0" cellspacing="0" width="100%" style=`display: table; text-align: left; background-color: ${workshop.color}; color: ${workshop.textColor}; padding: 15px; margin-top: 10px; table-layout: fixed;`)
+                                    thead(style=`color: ${workshop.textColor};`)
+                                        tr
+                                            th(style="padding-bottom: 10px;")
+                                                a(href=workshop.website style="color: inherit;")!= marked.parseInline(workshop.title)
+                                    tbody(style=`color: ${workshop.textColor};`)
+                                        tr
+                                            th(style="padding-top: 5px;") Wann?
+                                        tr
+                                            td
+                                                | #{workshop.dateText}
+                                                br
+                                                | #{workshop.timeText}
+                                        tr
+                                            th(style="padding-top: 5px;") Wo?
+                                        tr
+                                            td
+                                                != marked.parseInline(workshop.location)
+                                        tr
+                                            th(style="padding-top: 5px;") Beitrag?
+                                        tr
+                                            td
+                                                != marked.parseInline(workshop.price)
+                                        tr
+                                            th(style="padding-top: 5px;") Anmelden?
+                                        tr
+                                            td
+                                                != marked.parseInline(workshop.email)
+                                <!--<![endif]-->
+                                <!--[if mso]>
+                                table(cellpadding="0" cellspacing="0" width="100%" style=`text-align: left; background-color: ${workshop.color}; color: ${workshop.textColor}; padding: 15px; margin-top: 10px; table-layout: fixed;`)
+                                    thead(style=`color: ${workshop.textColor};`)
+                                        tr
+                                            th(colspan=4 style="padding-bottom: 10px;")
+                                                a(href=workshop.website style="color: inherit;")!= marked.parseInline(workshop.title)
+                                    tbody(style=`color: ${workshop.textColor};`)
+                                        tr
+                                            th Wann?
+                                            th Wo?
+                                            th Beitrag?
+                                            th Anmelden?
+                                        tr
+                                            td
+                                                | #{workshop.dateText}
+                                                br
+                                                | #{workshop.timeText}
+                                            td
+                                                != marked.parseInline(workshop.location)
+                                            td
+                                                != marked.parseInline(workshop.price)
+                                            td
+                                                != marked.parseInline(workshop.email)
+                                <![endif]-->
+                        td
+
             #footer(style="color: black;")
                 a(href="https://improtheater-frankfurt.de/impressum" style="text-decoration: none; color: black;") Impressum
                 = " | "

@@ -11,8 +11,18 @@ if (window.marked) {
     });
 }
 
+function get_current_workshop_id() {
+    const id_string = currentRoute.substring(currentRoute.indexOf("/") + 1);
+    const id = parseInt(id_string, 10);
+    if (isNaN(id)) {
+        show_message(MESSAGE_ERROR, `Nonsense workshop id '${id_string}'`);
+        return undefined;
+    }
+    return id;
+}
+
 async function changeWorkshopValues() {
-    let id = currentRoute.substring(currentRoute.indexOf("/") + 1);
+    const id = get_current_workshop_id();
     workshop_updateValues(id);
     if (typeof editWorkshopItem !== "undefined")
         editWorkshopItem(workshops[id].texts);
@@ -25,7 +35,7 @@ async function changeWorkshopValues() {
 }
 
 async function publishWorkshop() {
-    let id = currentRoute.substring(currentRoute.indexOf("/") + 1);
+    const id = get_current_workshop_id();
     let container = document.getElementById(currentRoute);
     let button = container.getElementsByClassName("edit-publish")[0];
 
@@ -83,22 +93,92 @@ function editWorkshopImage() {
     navigate("uploads");
 }
 
+function get_marked_newsletters() {
+    const workshop_id = get_current_workshop_id();
+    const container = document.getElementById("workshop/" + workshop_id);
+    const workshop_attachment_dropdowns = container.querySelectorAll(".workshop-attachment-dropdown");
+
+    const marked_newsletters = [workshop_id];
+    for (const workshop_attachment_dropdown of workshop_attachment_dropdowns) {
+        const value = parseInt(workshop_attachment_dropdown.value);
+        if (value === 0) {
+            continue;
+        }
+        marked_newsletters.push(value);
+    }
+
+    return marked_newsletters;
+}
+
+async function create_workshop_attachment_dropdown()  {
+    const workshop_id = get_current_workshop_id();
+    const container = document.getElementById("workshop/" + workshop_id);
+    const workshop_attachments_container = container.querySelector(".workshop-attachments");
+
+    if (!workshop_attachments_container) {
+        return;
+    }
+
+    const workshops_list = [
+        { id: 0, title: "Angehängten Newsletter auswählen" },
+        ...(await axios.get("/api/workshops")).data
+    ];
+
+    const workshop_attachment_dropdown = document.createElement("select");
+    workshop_attachment_dropdown.classList.add("workshop-attachment-dropdown");
+    workshop_attachments_container.append(workshop_attachment_dropdown);
+    for (const workshop of workshops_list) {
+        const option = document.createElement("option");
+        option.value = workshop.id;
+        option.text = workshop.title;
+        workshop_attachment_dropdown.append(option);
+    }
+}
+
+function showNewsletterPreview() {
+    window.open(`/newsletter-preview?${get_marked_newsletters().map(id => `workshops=${id}`).join("&")}`, "_blank");
+}
+
 async function sendNewsletter() {
     try {
-        let id = currentRoute.substring(currentRoute.indexOf("/") + 1);
-        let container = document.getElementById("workshop/" + id);
-        if (workshop_changed(id)) {
-            show_message(MESSAGE_ERROR, "Es gibt ungespeicherte Änderungen. Der Newsletter wurde nicht versendet.");
-            return;
+        const current_workshop = get_current_workshop_id();
+
+        const marked_newsletters = get_marked_newsletters();
+        for (const marked_newsletter_id of marked_newsletters) {
+            if (workshop_changed(marked_newsletter_id)) {
+                if (marked_newsletter_id == current_workshop) {
+                    show_message(MESSAGE_ERROR, `Es gibt ungespeicherte Änderungen. Der Newsletter wurde nicht versendet.`);
+                } else {
+                    show_message(MESSAGE_ERROR, `Es gibt ungespeicherte Änderungen in Workshop ${marked_newsletter_id}. Der Newsletter wurde nicht versendet.`);
+                }
+                return;
+            }
         }
-        if (!await show_confirm_message("Soll der Newsletter wirklich so versendet werden?"))
-            return;
-        await axios.post("/api/newsletter/send", { workshop: id });
-        workshops[id].buttons.newsletterSent = true;
-        // TODO: Only do this if the user is not allowed to resend newsletters
-        container.querySelectorAll(".edit-newsletter").forEach(value => value.style.display = "none");
+
+        if (marked_newsletters.length === 1) {
+            if (!await show_confirm_message("Soll der Newsletter wirklich so versendet werden?"))
+                return;
+        } else {
+            if (!await show_confirm_message(`Soll der Newsletter mit folgenden Workshops wirklich so versendet werden?\n${marked_newsletters.join("\n")}`))
+                return;
+        }
+
+        await axios.post("/api/newsletter/send", { workshops: marked_newsletters });
+        for (const marked_newsletter_id of marked_newsletters) {
+            if (workshops[marked_newsletter_id] === undefined)
+                continue
+
+            workshops[marked_newsletter_id].buttons.newsletterSent = true;
+            const container = document.getElementById("workshop/" + marked_newsletter_id);
+            if (container) {
+                // TODO: Only do this if the user is not allowed to resend newsletters
+                container.querySelectorAll(".edit-newsletter").forEach(value => value.style.display = "none");
+            }
+        }
+        sessionStorage.removeItem("marked_newsletters");
         show_message(MESSAGE_SUCCESS, "Newsletter gesendet");
     } catch (e) {
+        console.error(e);
         if (e.response.status === 404)
             show_message(MESSAGE_ERROR, "Der Workshop ist noch nicht öffentlich.", false);
         else
@@ -108,14 +188,25 @@ async function sendNewsletter() {
 
 async function sendTestNewsletter() {
     try {
-        let id = currentRoute.substring(currentRoute.indexOf("/") + 1);
-        if (workshop_changed(id)) {
-            show_message(MESSAGE_ERROR, "Es gibt ungespeicherte Änderungen. Der Newsletter wurde nicht versendet.");
-            return;
+        const current_workshop = get_current_workshop_id();
+
+        const marked_newsletters = get_marked_newsletters();
+
+        for (const marked_newsletter_id of marked_newsletters) {
+            if (workshop_changed(marked_newsletter_id)) {
+                if (marked_newsletter_id == current_workshop) {
+                    show_message(MESSAGE_ERROR, `Es gibt ungespeicherte Änderungen. Der Newsletter wurde nicht versendet.`);
+                } else {
+                    show_message(MESSAGE_ERROR, `Es gibt ungespeicherte Änderungen in Workshop ${marked_newsletter_id}. Der Newsletter wurde nicht versendet.`);
+                }
+                return;
+            }
         }
-        await axios.post("/api/newsletter/send", { workshop: id, test: true });
+
+        await axios.post("/api/newsletter/send", { workshops: marked_newsletters, test: true });
         show_message(MESSAGE_SUCCESS, "Testmail gesendet");
     } catch (e) {
+        console.error(e);
         showError(e);
     }
 }
@@ -126,7 +217,7 @@ function textareaAutoGrow(field) {
 }
 
 function toggleWorkshopPreview() {
-    let id = currentRoute.substring(currentRoute.indexOf("/") + 1);
+    const id = get_current_workshop_id();
     let container = document.getElementById(currentRoute);
     let title_preview = container.querySelector(".workshop-title");
     let content_preview = container.querySelector(".workshop-content-preview");
@@ -217,6 +308,8 @@ function workshop_init(container) {
     container.querySelector(".workshop-color-set-reset").addEventListener("click", async () => {
         color_input.value = workshops[id].texts.color;
     });
+
+    create_workshop_attachment_dropdown();
 }
 
 function workshop_updateValues(id) {
@@ -239,8 +332,10 @@ function workshop_updateValues(id) {
 }
 
 function workshop_changed(id) {
-    if (!id) id = currentRoute.substring(currentRoute.indexOf("/") + 1);
+    if (!id) id = get_current_workshop_id();
     const container = document.getElementById("workshop/" + id);
+    if (!container)
+        return false;
     let date = container.querySelector(".input-workshop-date").value;
     let beginTime = container.querySelector(".input-workshop-time-begin").value;
     let endTime = container.querySelector(".input-workshop-time-end").value;

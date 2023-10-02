@@ -104,6 +104,8 @@ block routeContent
                         = " "
                     a.edit-button(href="javascript:void(0)" onclick="sendNewsletter()") Senden
                     = " | "
-                    a.edit-button.forceReload(href="/newsletter-preview/" + id target="_blank") Vorschau
+                    a.edit-button(href="javascript:void(0)" onclick="showNewsletterPreview()") Vorschau
                     = " | "
                     a.edit-button(href="javascript:void(0)" onclick="sendTestNewsletter()") Testmail
+            if full_access
+                .workshop-attachments

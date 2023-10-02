@@ -79,27 +79,41 @@ export function unsubscribe(req, res) {
 }
 
 export async function send(req, res) {
-    if (!req.user || !req.body.workshop) {
+    if (!req.user || !req.body.workshops) {
         res.sendStatus(400);
         return;
     }
 
-    let workshop = workshops.getWorkshop(req.body.workshop, req.body.test); // Testmail can be sent without publishing
-    if (!workshop) {
-        res.sendStatus(404);
-        return;
-    }
-    if (workshop.newsletterSent && !req.user.full_access) {
-        res.sendStatus(409);
-        return;
-    }
+    const workshops_to_send = [];
 
-    {
-        const error_message = workshops.not_ready_for_publishing_error(workshop)
-        if (error_message) {
-            res.status(400).send(error_message)
+    let workshop_type = undefined;
+    for (const workshop_id of req.body.workshops) {
+        const workshop = workshops.getWorkshop(workshop_id, req.body.test); // Testmail can be sent without publishing
+        if (!workshop) {
+            res.sendStatus(404);
             return;
         }
+        if (workshop.newsletterSent && !req.user.full_access) {
+            res.sendStatus(409);
+            return;
+        }
+
+        if (workshop_type === undefined) {
+            workshop_type = workshop.type;
+        } else if (workshop_type !== workshop.type) {
+            res.status(400).send("Mismatching workshop types.");
+        }
+
+        // FIXME: Check for duplicates
+
+        {
+            const error_message = workshops.not_ready_for_publishing_error(workshop)
+            if (error_message) {
+                res.status(400).send(error_message);
+                return;
+            }
+        }
+        workshops_to_send.push(workshop);
     }
 
     let subscribers = [];
@@ -111,58 +125,72 @@ export async function send(req, res) {
             subscribedTo: 3
         };
     } else {
-        db.run("UPDATE workshop SET newsletterSent = 1 WHERE id = ?", workshop.id);
+        for (const workshop of workshops_to_send) {
+            db.run("UPDATE workshop SET newsletterSent = 1 WHERE id = ?", workshop.id);
+        }
         subscribers = getSubscribers();
     }
     res.sendStatus(200);
+
     // Send newsletter
-    let logo = "https://improglycerin.de/wp-content/uploads/2017/04/improglycerin_logo_website_white_medium_2.jpg";
-    if (workshop.type == workshops.type_itf)
-        logo = utils.base_url + "/public/img/improtheater_frankfurt_logo.png";
-    let reply = /[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[a-zA-Z0-9]+/.test(workshop.email) ? workshop.email : "hallo@improglycerin.de";
-    let website = utils.base_url + "/workshop/" + workshop.id;
+    const logo = workshop_type === workshops.type_itf
+        ? utils.base_url + "/public/img/improtheater_frankfurt_logo.png"
+        : "https://improglycerin.de/wp-content/uploads/2017/04/improglycerin_logo_website_white_medium_2.jpg";
+
     for (let subscriber of subscribers) {
-        if (!(subscriber.subscribedTo & workshop.type))
+        if (!(subscriber.subscribedTo & workshop_type))
             continue;
+
         try {
-            let unsubscribe = utils.base_url + "/newsletter?unsubscribe=1&token=" + subscriber.token;
-            let subscribe = utils.base_url + "/newsletter?subscribe=1&token=" + subscriber.token;
-            let textColor = calcTextColor(workshop.color);
+            const unsubscribe = utils.base_url + "/newsletter?unsubscribe=1&token=" + subscriber.token;
+            const subscribe = utils.base_url + "/newsletter?subscribe=1&token=" + subscriber.token;
+            const workshops_for_subscriber = workshops_to_send.map(workshop => {
+                return {
+                    ...workshop,
+                    textColor: calcTextColor(workshop.color),
+                    website: `${utils.base_url}/workshops/${workshop.id}?token=${subscriber.token}`,
+                    img_url: `${workshop.img_url}?token=${subscriber.token}`,
+                }
+            });
+
+            const subject = workshops_for_subscriber.length === 1
+                ? (workshops_for_subscriber[0].propertiesHidden ? workshops_for_subscriber[0].title : workshops_for_subscriber[0].title + ", am " + workshops_for_subscriber[0].dateText)
+                : `${workshops_for_subscriber.length} ${workshop_type === workshops.type_itf ? "Workshops" : "Shows"}: ${workshops_for_subscriber.map(workshop => workshop.title).join(" / ")}`;
+
+            const weblink = workshops_to_send.length === 1
+                ? `${utils.base_url}/workshop/${workshops_to_send[0].id}`
+                : `${utils.base_url}/workshops`;
+
             let html = pug.renderFile(utils.project_path + "/client/views/emails/newsletter.pug", {
-                title: workshop.title,
-                img: `${utils.base_url}/api/upload/${workshop.id}?token=${subscriber.token}`,
-                dateText: workshop.dateText,
-                timeText: workshop.timeText,
-                location: workshop.location,
-                price: workshop.price,
-                email: workshop.email,
-                content: workshop.content,
-                color: workshop.color,
-                textColor: workshop.textColor,
-                propertiesHidden: workshop.propertiesHidden,
+                subject: subject,
+                workshops: workshops_for_subscriber,
+                weblink,
                 unsubscribe,
                 subscribe,
                 logo,
                 subscriber,
                 marked,
-                textColor,
-                website: website + "?token=" + subscriber.token,
                 base_url: utils.base_url
             });
-            let subject = workshop.propertiesHidden ? workshop.title : workshop.title + ", am " + workshop.dateText;
-            let text = workshop.propertiesHidden
-                ? `${workshop.title}\n\n${workshop.content}\n\nImpressum: https://improtheater-frankfurt.de/impressum\nDatenschutz: https://improglycerin.de/datenschutz\nKontakt: https://improglycerin.de/kontakt/\nAbmelden: ${unsubscribe}`
-                : `Improglycerin lädt ein zu ${workshop.title} am ${workshop.dateText}.\n\n${workshop.content}\n\nWann? ${workshop.timeText}\nWo? ${workshop.location}\nBetrag ${workshop.price}\n\nImpressum: https://improtheater-frankfurt.de/impressum\nDatenschutz: https://improglycerin.de/datenschutz\nKontakt: https://improglycerin.de/kontakt/\nAbmelden: ${unsubscribe}`;
-            await sendMail(workshop.type, {
+
+            const text =
+                workshops_for_subscriber.map(workshop =>
+                    workshop.propertiesHidden
+                    ? `${workshop.title}\n\n${workshop.content}`
+                    : `Improglycerin lädt ein zu ${workshop.title} am ${workshop.dateText}.\n\n${workshop.content}\n\nWann? ${workshop.timeText}\nWo? ${workshop.location}\nBetrag ${workshop.price}`
+                ).join("\n\n")
+                + `\n\nImpressum: https://improtheater-frankfurt.de/impressum\nDatenschutz: https://improglycerin.de/datenschutz\nKontakt: https://improglycerin.de/kontakt/\nAbmelden: ${unsubscribe}`;
+
+            await sendMail(workshop_type, {
                 to: subscriber.email,
-                replyTo: reply,
+                replyTo: "hallo@improglycerin.de",
                 subject,
                 html,
                 text
             });
         } catch (e) {
             console.log(e);
-            logger.error(`Failed to send Newsletter of workshop ${workshop.id} to ${subscriber.email}:\n ${JSON.stringify(e)}`);
+            logger.error(`Failed to send Newsletter of workshops ${workshops_to_send.map(workshop => workshop.id).join(", ")} to ${subscriber.email}:\n ${JSON.stringify(e)}`);
         }
         await utils.sleep(2000);
     }
