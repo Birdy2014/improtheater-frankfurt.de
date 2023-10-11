@@ -120,7 +120,7 @@ export function getWorkshops(loggedIn, page = 0, type = 3) {
             workshop.timeText = "Error: Invalid Time";
             workshop.outdated = workshop.end < utils.getCurrentTimestamp();
         }
-        workshop.img_url = `${utils.base_url}/api/upload/${workshop.img}`;
+        workshop.img_url = `${utils.base_url}/api/upload/${workshop.id}`;
         workshop.textColor = calcTextColor(workshop.color);
     }
     invalidateUploadsCache();
@@ -154,7 +154,7 @@ export function getWorkshop(id, loggedIn) {
         workshop.dateText = "Error: Invalid Time";
         workshop.timeText = "Error: Invalid Time";
     }
-    workshop.img_url = `${utils.base_url}/api/upload/${workshop.img}`;
+    workshop.img_url = `${utils.base_url}/api/upload/${workshop.id}`;
     workshop.propertiesHidden = workshop.propertiesHidden === 1;
     return workshop;
 }
