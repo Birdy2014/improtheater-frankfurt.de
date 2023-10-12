@@ -149,7 +149,7 @@ export async function send(req, res) {
                     ...workshop,
                     textColor: calcTextColor(workshop.color),
                     website: `${utils.base_url}/workshops/${workshop.id}?token=${subscriber.token}`,
-                    img_url: `${workshop.img_url}?token=${subscriber.token}`,
+                    img_url: `${utils.base_url}/api/upload/${workshop.id}?token=${subscriber.token}`,
                 }
             });
 

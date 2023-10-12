@@ -182,6 +182,7 @@ router.get("/newsletter-preview", auth.getUser, async (req, res) => {
             ...workshop,
             textColor: newsletter.calcTextColor(workshop.color),
             website: `${utils.base_url}/workshops/${workshop.id}`,
+            img_url: `${utils.base_url}/api/upload/${workshop.id}`,
         });
     }
 
