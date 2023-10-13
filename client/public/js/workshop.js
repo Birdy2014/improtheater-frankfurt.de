@@ -24,8 +24,8 @@ function get_current_workshop_id() {
 async function changeWorkshopValues() {
     const id = get_current_workshop_id();
     workshop_updateValues(id);
-    if (typeof editWorkshopItem !== "undefined")
-        editWorkshopItem(workshops[id].texts);
+    if (window["invalidate_workshops_pages"])
+        invalidate_workshops_pages();
     try {
         await axios.post("/api/workshops", workshops[id].texts);
         show_message(MESSAGE_SUCCESS, "Daten gespeichert");
@@ -43,8 +43,8 @@ async function publishWorkshop() {
         await axios.post("/api/workshops", { id, visible: workshops[id].buttons.published ? 0 : 1 });
 
         workshops[id].buttons.published = !workshops[id].buttons.published;
-        if (typeof editWorkshopItem !== "undefined")
-            editWorkshopItem({ id, visible: workshops[id].buttons.published });
+        if (window["invalidate_workshops_pages"])
+            invalidate_workshops_pages();
 
         if (workshops[id].buttons.published) {
             button.innerHTML = "Unsichtbar machen";
