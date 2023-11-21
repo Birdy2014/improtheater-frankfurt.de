@@ -158,6 +158,11 @@ router.get("/workshops/:page", auth.getUser, async (req, res) => {
 
 // TODO: Put shared stuff of this and newsletter.send in one function
 router.get("/newsletter-preview", auth.getUser, async (req, res) => {
+    if (!req.user) {
+        res.sendStatus(403);
+        return;
+    }
+
     const workshop_ids_to_send = Array.isArray(req.query.workshops)
         ? req.query.workshops
         : [req.query.workshops];
