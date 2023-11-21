@@ -137,6 +137,8 @@ export async function send(req, res) {
         ? utils.base_url + "/public/img/improtheater_frankfurt_logo.png"
         : "https://improglycerin.de/wp-content/uploads/2017/04/improglycerin_logo_website_white_medium_2.jpg";
 
+    logger.info(`Start sending newsletter ${workshops_to_send.map(workshop => workshop.id).join(", ")}`);
+
     for (let subscriber of subscribers) {
         if (!(subscriber.subscribedTo & workshop_type))
             continue;
@@ -188,12 +190,15 @@ export async function send(req, res) {
                 html,
                 text
             });
+            logger.info(`Sent newsletter ${workshops_to_send.map(workshop => workshop.id).join(", ")} to ${subscriber.email}`);
         } catch (e) {
             console.log(e);
-            logger.error(`Failed to send Newsletter of workshops ${workshops_to_send.map(workshop => workshop.id).join(", ")} to ${subscriber.email}:\n ${JSON.stringify(e)}`);
+            logger.error(`Failed to send Newsletter ${workshops_to_send.map(workshop => workshop.id).join(", ")} to ${subscriber.email}:\n ${JSON.stringify(e)}`);
         }
         await utils.sleep(2000);
     }
+
+    logger.info(`Sent newsletter ${workshops_to_send.map(workshop => workshop.id).join(", ")}`);
 }
 
 export function exportSubscribers(req, res) {
