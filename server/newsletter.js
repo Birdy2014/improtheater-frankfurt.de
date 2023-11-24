@@ -6,9 +6,10 @@ import * as utils from "./utils.js";
 import * as logger from "./logger.js";
 import * as workshops from "./workshops.js";
 
-const transporter = [];
-for (const email of utils.config.email)
-    transporter.push(nodemailer.createTransport(email));
+const transporter = {
+    itf: nodemailer.createTransport(utils.config.email.itf),
+    improglycerin: nodemailer.createTransport(utils.config.email.improglycerin)
+};
 
 export function subscribe(req, res) {
     // TODO: check email address, length limit name, sanitize name and email
@@ -16,7 +17,7 @@ export function subscribe(req, res) {
         if (req.body.subscribedTo)
             req.body.subscribedTo &= 3;
 
-        if (((!req.body.name || !req.body.email) && !req.body.token) || !req.body.subscribedTo || !checkNewsletterType(req.body.subscribedTo)) {
+        if (((!req.body.name || !req.body.email) && !req.body.token) || !req.body.subscribedTo || !validNewsletterType(req.body.subscribedTo)) {
             res.status(400);
             res.send();
             return;
@@ -223,7 +224,7 @@ export function addSubscriber(req, res) {
     if (!req.user)
         return res.sendStatus(403);
 
-    if (!req.body.name || !req.body.email || !req.body.subscribedTo || !checkNewsletterType(req.body.subscribedTo))
+    if (!req.body.name || !req.body.email || !req.body.subscribedTo || !validNewsletterType(req.body.subscribedTo))
         return res.sendStatus(400);
 
     try {
@@ -271,21 +272,14 @@ function removeExpiredSubscribers() {
     db.run("DELETE FROM subscriber WHERE confirmed = 0 AND timestamp < ?", expired);
 }
 
-function checkNewsletterType(subscribedTo) {
-    for (let i = 0; i < utils.config.email.length; i++) {
-        if (subscribedTo & (1 << i))
-            return true;
-    }
-    return false;
+function validNewsletterType(subscribedTo) {
+    return subscribedTo == 1 || subscribedTo == 2 || subscribedTo == 3;
 }
 
 async function sendMail(type, options) {
-    let i;
-    for (i = transporter.length; !(type & (1 << i)) && i >= 0; i--);
-    if (i < 0)
-        return false;
-    const newOptions = Object.assign({ from: utils.config.email[i].from }, options);
-    await transporter[i].sendMail(newOptions);
+    const namedType = type == 1 ? "itf" : "improglycerin";
+    const newOptions = Object.assign({ from: utils.config.email[namedType].from }, options);
+    await transporter[namedType].sendMail(newOptions);
     return true;
 }
 

@@ -10,7 +10,7 @@ const loggedInRoutes = [ "/uploads", "/subscribers", "/user" ];
 
 const session_expiration_time = 10 * 24 * 60 * 60;
 
-const email_options = utils.config.auth_email;
+const email_options = utils.config.email.auth;
 const transporter = nodemailer.createTransport(email_options);
 
 export async function getUser(req, res, next) {
