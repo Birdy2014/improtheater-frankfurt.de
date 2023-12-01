@@ -10,6 +10,9 @@
     "prod": "NODE_ENV=production npm start",
     "dev": "NODE_ENV=development npm start"
   },
+  "bin": {
+    "improtheater-frankfurt": "index.js"
+  },
   "author": "Moritz Vogel",
   "license": "",
   "dependencies": {
