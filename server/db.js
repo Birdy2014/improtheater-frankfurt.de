@@ -5,7 +5,7 @@ import * as utils from "./utils.js";
 export let db;
 
 export function init() {
-    db = new Database(utils.project_path + "/improtheater-frankfurt.db");
+    db = new Database(utils.config.dbpath || utils.project_path + "/improtheater-frankfurt.db");
 
     run(`
         CREATE TABLE IF NOT EXISTS workshop (

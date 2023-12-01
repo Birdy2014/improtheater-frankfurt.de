@@ -3,7 +3,7 @@ import path from "path";
 import fs from "fs";
 
 export const project_path = path.dirname(path.join(fileURLToPath(import.meta.url), ".."));
-const config_text = fs.readFileSync(path.join(project_path, "config.json"));
+const config_text = fs.readFileSync(process.env.ITF_CONFIG_FILE || path.join(project_path, "config.json"));
 export const config = JSON.parse(config_text);
 
 export function getCurrentTimestamp() {
@@ -37,4 +37,4 @@ export function wrapRoute(route) {
     }
 }
 
-export const base_url = process.env.NODE_ENV === 'development' ? "http://localhost:" + config.port : "https://improtheater-frankfurt.de";
+export const base_url = (config.tls ? "https://" : "http://") + config.hostname;
