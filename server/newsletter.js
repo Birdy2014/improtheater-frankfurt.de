@@ -1,14 +1,14 @@
-import nodemailer from "nodemailer";
 import pug from "pug";
 import { marked } from "marked";
 import * as db from "./db.js";
 import * as utils from "./utils.js";
 import * as logger from "./logger.js";
 import * as workshops from "./workshops.js";
+import { EMailTransporter } from "./mail.js";
 
 const transporter = {
-    itf: nodemailer.createTransport(utils.config.email.itf),
-    improglycerin: nodemailer.createTransport(utils.config.email.improglycerin)
+    itf: new EMailTransporter("itf"),
+    improglycerin: new EMailTransporter("improglycerin"),
 };
 
 export function subscribe(req, res) {
@@ -278,8 +278,7 @@ function validNewsletterType(subscribedTo) {
 
 async function sendMail(type, options) {
     const namedType = type == 1 ? "itf" : "improglycerin";
-    const newOptions = Object.assign({ from: utils.config.email[namedType].from }, options);
-    await transporter[namedType].sendMail(newOptions);
+    transporter[namedType].send(options);
     return true;
 }
 

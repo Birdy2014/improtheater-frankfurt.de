@@ -52,20 +52,44 @@
 
         config_file = pkgs.writeTextFile {
           name = "improtheater-frankfurt-config";
-          text = builtins.toJSON cfg.settings;
+          text = builtins.toJSON cfg;
         };
       in {
-        options.services.improtheater-frankfurt = {
-          enable = lib.mkEnableOption {
-            description = lib.mdDoc "Improtheater Frankfurt website";
+        options.services.improtheater-frankfurt = with lib; {
+          enable = mkEnableOption {
+            description = mdDoc "Improtheater Frankfurt website";
           };
 
-          package = lib.mkOption {
-            type = lib.types.package;
+          package = mkOption {
+            type = types.package;
             default = self.packages.${pkgs.system}.improtheater-frankfurt;
           };
 
-          settings = lib.mkOption { type = lib.types.attrs; };
+          hostname = mkOption { type = types.str; };
+          port = mkOption { type = types.int; };
+          tls = mkOption { type = types.bool; };
+          logpath = mkOption { type = types.str; };
+          dbpath = mkOption { type = types.str; };
+
+          email = mkOption {
+            type = types.attrsOf (types.submodule {
+              options = {
+                host = mkOption { type = types.str; };
+                port = mkOption { type = types.int; };
+                secure = mkOption { type = types.bool; };
+                user = mkOption { type = types.str; };
+                password = mkOption {
+                  type = types.nullOr types.str;
+                  default = null;
+                };
+                password_file = mkOption {
+                  type = types.nullOr types.str;
+                  default = null;
+                };
+                from = mkOption { type = types.str; };
+              };
+            });
+          };
         };
 
         config = lib.mkIf cfg.enable {
@@ -83,10 +107,9 @@
           services.nginx = {
             enable = true;
             virtualHosts = {
-              "${cfg.settings.hostname}" = {
-                locations."/".proxyPass = "http://${cfg.settings.hostname}:${
-                    builtins.toString cfg.settings.port
-                  }/";
+              "${cfg.hostname}" = {
+                locations."/".proxyPass =
+                  "http://${cfg.hostname}:${builtins.toString cfg.port}/";
               };
             };
           };

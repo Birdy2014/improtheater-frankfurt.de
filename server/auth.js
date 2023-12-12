@@ -1,17 +1,16 @@
 import assert from "assert";
 import bcrypt from "bcrypt"
-import nodemailer from "nodemailer";
 import { v4 as uuid } from "uuid";
 import * as db from "./db.js";
 import * as utils from "./utils.js";
 import * as logger from "./logger.js"
+import { EMailTransporter } from "./mail.js";
 
 const loggedInRoutes = [ "/uploads", "/subscribers", "/user" ];
 
 const session_expiration_time = 10 * 24 * 60 * 60;
 
-const email_options = utils.config.email.auth;
-const transporter = nodemailer.createTransport(email_options);
+const transporter = new EMailTransporter("auth");
 
 export async function getUser(req, res, next) {
     try {
@@ -250,8 +249,7 @@ export async function api_request_password_reset(req, res) {
     const session_token = await create_session(user.id, 30 * 60);
     const reset_url = `${utils.base_url}/password_reset?token=${session_token}`;
 
-    await transporter.sendMail({
-        from: email_options.from,
+    transporter.send({
         to: user.email,
         subject: "Passwort reset",
         text: `Hallo ${user.username}, reset url: ${reset_url}`
