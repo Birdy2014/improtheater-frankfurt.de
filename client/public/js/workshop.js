@@ -29,8 +29,12 @@ async function changeWorkshopValues() {
     try {
         await axios.post("/api/workshops", workshops[id].texts);
         show_message(MESSAGE_SUCCESS, "Daten gespeichert");
-    } catch(err) {
-        showError(err);
+    } catch(error) {
+        if (error.response && error.response.status === 400) {
+            show_message(MESSAGE_ERROR, error.response.data);
+        } else {
+            showError(error);
+        }
     }
 }
 

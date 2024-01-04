@@ -34,6 +34,11 @@ export function post(req, res) {
 
     const workshop = req.body;
 
+    if (db.get("select count(*) from upload where id = ?", workshop.img)["count(*)"] != 1) {
+        res.status(400).send("Nicht gespeichert: Ungültiges Bild");
+        return;
+    }
+
     let error_message = undefined;
     if (workshop.visible === 1) {
         const current_workshop = getWorkshop(workshop.id, true);
