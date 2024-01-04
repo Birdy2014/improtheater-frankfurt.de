@@ -12,7 +12,10 @@ nav {
     position: fixed;
     top: 0;
     left: 0px;
+    box-sizing: border-box;
     padding-top: var(--menu-top-padding);
+    padding-left: var(--margin-side);
+    padding-right: var(--margin-side);
     width: 100%;
     height: var(--menu-height);
     z-index: 10;
@@ -124,8 +127,6 @@ nav {
 
 @media screen and (max-width: 800px) {
     nav {
-        margin: 0 var(--margin-side);
-
         #main-menu {
             float: none;
             display: none;
