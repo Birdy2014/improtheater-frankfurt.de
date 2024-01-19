@@ -151,7 +151,7 @@ export async function send(req, res) {
                 return {
                     ...workshop,
                     textColor: calcTextColor(workshop.color),
-                    website: `${utils.base_url}/workshops/${workshop.id}?token=${subscriber.token}`,
+                    website: `${utils.base_url}/workshop/${workshop.id}?token=${subscriber.token}`,
                     img_url: `${utils.base_url}/api/upload/${workshop.id}?token=${subscriber.token}`,
                 }
             });
