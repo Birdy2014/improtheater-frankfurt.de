@@ -184,14 +184,14 @@ export async function send(req, res) {
                 ).join("\n\n")
                 + `\n\nImpressum: https://improtheater-frankfurt.de/impressum\nDatenschutz: https://improglycerin.de/datenschutz\nKontakt: https://improglycerin.de/kontakt/\nAbmelden: ${unsubscribe}`;
 
-            await sendMail(workshop_type, {
+            const smtp_response = await sendMail(workshop_type, {
                 to: subscriber.email,
                 replyTo: "hallo@improglycerin.de",
                 subject,
                 html,
                 text
             });
-            logger.info(`Sent newsletter ${workshops_to_send.map(workshop => workshop.id).join(", ")} to ${subscriber.email}`);
+            logger.info(`Sent newsletter ${workshops_to_send.map(workshop => workshop.id).join(", ")} to ${subscriber.email}. Got response '${smtp_response}'`);
         } catch (e) {
             console.log(e);
             logger.error(`Failed to send Newsletter ${workshops_to_send.map(workshop => workshop.id).join(", ")} to ${subscriber.email}:\n ${JSON.stringify(e)}`);
@@ -278,8 +278,7 @@ function validNewsletterType(subscribedTo) {
 
 async function sendMail(type, options) {
     const namedType = type == 1 ? "itf" : "improglycerin";
-    transporter[namedType].send(options);
-    return true;
+    return await transporter[namedType].send(options);
 }
 
 export function calcTextColor(backgroundColor) {

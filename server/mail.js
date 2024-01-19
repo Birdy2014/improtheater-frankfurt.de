@@ -43,7 +43,7 @@ export class EMailTransporter {
 
         this.#transporter.verify((error, _success) => {
             if (error) {
-                logger.error(`For email name "${name}":\nerror.toString()`);
+                logger.error(`For email name "${name}": ${error.toString()}`);
             } else {
                 logger.info(`email "${name}" SMTP connection working.`);
             }
@@ -58,16 +58,24 @@ export class EMailTransporter {
      * @param {string} options.subject - The subject of the email
      * @param {string|undefined} options.text - Plain text content
      * @param {string|undefined} options.html - HTML content
-     * @returns {undefined}
+     * @returns {Promise<string>} Response string of the SMTP server
      */
     send(options) {
-        this.#transporter.sendMail({
-            from: this.#from,
-            to: options.to,
-            reply_to: options.reply_to,
-            subject: options.subject,
-            text: options.text,
-            html: options.html,
-        });
+        return new Promise((resolve, reject) => {
+            this.#transporter.sendMail({
+                from: this.#from,
+                to: options.to,
+                reply_to: options.reply_to,
+                subject: options.subject,
+                text: options.text,
+                html: options.html,
+            }, (err, info) => {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        resolve(info.response);
+                    }
+                });
+        })
     }
 };
