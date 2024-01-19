@@ -1,5 +1,6 @@
 import pug from "pug";
 import { marked } from "marked";
+import { Mutex } from "async-mutex";
 import * as db from "./db.js";
 import * as utils from "./utils.js";
 import * as logger from "./logger.js";
@@ -10,6 +11,8 @@ const transporter = {
     itf: new EMailTransporter("itf"),
     improglycerin: new EMailTransporter("improglycerin"),
 };
+
+const mail_mutex = new Mutex();
 
 export function subscribe(req, res) {
     // TODO: check email address, length limit name, sanitize name and email
@@ -196,7 +199,6 @@ export async function send(req, res) {
             console.log(e);
             logger.error(`Failed to send Newsletter ${workshops_to_send.map(workshop => workshop.id).join(", ")} to ${subscriber.email}:\n ${JSON.stringify(e)}`);
         }
-        await utils.sleep(2000);
     }
 
     logger.info(`Sent newsletter ${workshops_to_send.map(workshop => workshop.id).join(", ")}`);
@@ -278,7 +280,11 @@ function validNewsletterType(subscribedTo) {
 
 async function sendMail(type, options) {
     const namedType = type == 1 ? "itf" : "improglycerin";
-    return await transporter[namedType].send(options);
+    await mail_mutex.acquire();
+    const smtp_response = await transporter[namedType].send(options);
+    await utils.sleep(2000);
+    mail_mutex.release();
+    return smtp_response;
 }
 
 export function calcTextColor(backgroundColor) {
