@@ -112,11 +112,19 @@ export function not_ready_for_publishing_error(workshop) {
 export function getWorkshops(loggedIn, page = 0, type = 3) {
     const perPage = 6;
     page = parseInt(page);
-    let workshops;
-    if (loggedIn)
-        workshops = db.all("SELECT * FROM workshop WHERE type & ? ORDER BY begin DESC LIMIT ?, ?", type, perPage * page, perPage) || [];
-    else
-        workshops = db.all("SELECT * FROM workshop WHERE type & ? AND visible = 1 ORDER BY begin DESC LIMIT ?, ?", type, perPage * page, perPage) || [];
+    const currentTime = utils.getCurrentTimestamp();
+    const { future, past } =
+        (db.all(
+            "SELECT * FROM workshop WHERE type & $type AND ((NOT $publicOnly) OR visible = 1) ORDER BY begin DESC LIMIT $offset, $count",
+            { type, publicOnly: !loggedIn ? 1 : 0, offset: perPage * page, count: perPage }
+        ) || [])
+        .reduce((accumulator, workshop) => {
+            if (workshop.end > currentTime)
+                return { future: [workshop, ...accumulator.future], past: accumulator.past };
+            return { future: accumulator.future, past: [...accumulator.past, workshop] };
+        }, { future: [], past: [] });
+    const workshops = [...future, ...past];
+
     for (let workshop of workshops) {
         try {
             workshop.timeText = timeDateFormat.formatRange(workshop.begin * 1000, workshop.end * 1000);
