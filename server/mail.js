@@ -54,7 +54,7 @@ export class EMailTransporter {
      * Sends an email
      * @param {Object} options
      * @param {string} options.to - The recipient of the email
-     * @param {string|undefined} options.reply_to - The reply address
+     * @param {string|undefined} options.replyTo - The reply address
      * @param {string} options.subject - The subject of the email
      * @param {string|undefined} options.text - Plain text content
      * @param {string|undefined} options.html - HTML content
@@ -65,7 +65,7 @@ export class EMailTransporter {
             this.#transporter.sendMail({
                 from: this.#from,
                 to: options.to,
-                reply_to: options.reply_to,
+                replyTo: options.replyTo,
                 subject: options.subject,
                 text: options.text,
                 html: options.html,

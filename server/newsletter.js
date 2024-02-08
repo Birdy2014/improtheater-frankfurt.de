@@ -255,6 +255,7 @@ function sendConfirmMail(subscriber) {
     });
     sendMail(subscriber.subscribedTo, {
         to: subscriber.email,
+        replyTo: "hallo@improglycerin.de",
         subject: "Improtheater Frankfurt Newsletterbestätigung",
         html: html,
         text: `Liebe/r ${subscriber.name},\nvielen Dank für die Bestellung unseres Newsletters, in dem Du zukünftig über unsere Workshops, unsere Jams und unsere Shows informiert wirst.\nBitte bestätige durch Klick auf diesen Link, dass Du unseren tollen Newsletter erhalten möchtest: ${link}`
