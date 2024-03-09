@@ -139,6 +139,11 @@ router.get("/workshop/:workshopID", auth.getUser, (req, res) => {
 });
 
 router.get("/workshops/:page", auth.getUser, async (req, res) => {
+    if (!req.user) {
+        res.sendStatus(401);
+        return;
+    }
+
     let page = parseInt(req.params.page);
     let w = workshops.getWorkshops(req.user !== undefined, page, req.user !== undefined ? workshops.type_both : workshops.type_itf);
     if (!w || w.length === 0) {
