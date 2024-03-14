@@ -166,10 +166,12 @@ function toggleMenu(hideMenu) {
 
     function hide() {
         main_menu.style.removeProperty("display");
+        window.wrapper.style.filter = "";
     }
 
     function show() {
         main_menu.style.display = "block";
+        window.wrapper.style.filter = "brightness(50%)";
     }
 }
 
