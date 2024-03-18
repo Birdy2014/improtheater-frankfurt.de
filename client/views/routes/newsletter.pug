@@ -12,12 +12,12 @@ block routeContent
                 h1 Von welchem Newsletter möchtest du dich abmelden?
                 form#newsletter-unsubscribe-form
                     if subscriber.subscribedTo & 1
-                        input(type="checkbox" name="unsubscribe-itf" id="input-newsletter-0")
-                        label(for="unsubscribe-itf") Improtheater Frankfurt Newsletter (wöchentlich &mdash; Workshops)
+                        input(type="checkbox" id="input-newsletter-0")
+                        label(for="input-newsletter-0") Improtheater Frankfurt Newsletter (wöchentlich &mdash; Workshops)
                         br
                     if subscriber.subscribedTo & 2
-                        input(type="checkbox" name="unsubscribe-improglycerin" id="input-newsletter-1")
-                        label(for="unsubscribe-improglycerin") Improglycerin Newsletter (ca. zehn mal im Jahr &mdash; Shows)
+                        input(type="checkbox" id="input-newsletter-1")
+                        label(for="input-newsletter-1") Improglycerin Newsletter (ca. zehn mal im Jahr &mdash; Shows)
                         br
                     input(type="submit" value="Bestätigen")
             #newsletter-unsubscribe-success(style="display: none;")
@@ -85,11 +85,11 @@ block routeContent
 
                 form#newsletter-form
                     #newsletter-form-checkbox-container
-                        input(type="checkbox" name="subscribe-itf" id="input-newsletter-0")
-                        label(for="subscribe-itf") Workshops
+                        input(type="checkbox" id="input-newsletter-0")
+                        label(for="input-newsletter-0") Workshops
                         br
-                        input(type="checkbox" name="subscribe-improglycerin" id="input-newsletter-1")
-                        label(for="subscribe-improglycerin") Shows
+                        input(type="checkbox" id="input-newsletter-1")
+                        label(for="input-newsletter-1") Shows
                         br
                     #newsletter-form-text-container
                         input(type="email" class="input-newsletter-text" id="input-newsletter-email" placeholder="E-Mail-Adresse" required)
