@@ -12,7 +12,7 @@
           version = "1.0.0";
 
           src = ./.;
-          npmDepsHash = "sha256-rvu6+NRj5VtvKCejAVii8gU7ADC5hmnNKZ2Gsx1NzyA=";
+          npmDepsHash = "sha256-dKrCtKaA7BBtfJtx3JwZtmmNRvBAViyd8FgJqh4pnIo=";
 
           nativeBuildInputs = with pkgs; [
             # for bcrypt
