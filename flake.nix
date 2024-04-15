@@ -19,7 +19,6 @@
             nodePackages.node-pre-gyp
 
             # for sharp
-            nodePackages.node-gyp
             pkg-config
           ];
 
@@ -29,7 +28,7 @@
               vips
             ];
 
-          nodejs = pkgs.nodejs_18;
+          nodejs = pkgs.nodejs_20;
 
           dontNpmBuild = true;
 
