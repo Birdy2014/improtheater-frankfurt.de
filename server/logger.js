@@ -11,6 +11,9 @@ function datetime() {
 }
 
 export function init(path) {
+    if (!path)
+        return;
+
     if (path.charAt(path.length - 1) !== "/")
         path += "/";
     if (!fs.existsSync(path))
@@ -26,28 +29,28 @@ export function init(path) {
 }
 
 export async function error(message) {
-    try {
-        await appendFile(log_file_path, `[${datetime()}] ERROR: ${message}\n`);
-    } catch (e) {
-        console.error("Cannot write to " + log_file_path);
-    }
-    console.error(message);
+    log("ERROR", message)
 }
 
 export async function warn(message) {
-    try {
-        await appendFile(log_file_path, `[${datetime()}] WARNING: ${message}\n`);
-    } catch (e) {
-        console.error("Cannot write to " + log_file_path);
-    }
-    console.log(message);
+    log("WARNING", message)
 }
 
 export async function info(message) {
+    log("INFO", message)
+}
+
+async function log(prefix, message) {
+    if (message instanceof Error)
+        message = message.stack
+
+    const final_message = `${prefix}: ${message}`;
+
     try {
-        await appendFile(log_file_path, `[${datetime()}] INFO: ${message}\n`);
+        if (log_file_path)
+            await appendFile(log_file_path, `[${datetime()}] ${final_message}\n`);
     } catch (e) {
         console.error("Cannot write to " + log_file_path);
     }
-    console.log(message);
+    console.log(final_message);
 }

@@ -95,7 +95,7 @@ export async function post(req, res) {
         if (e.code === 'SQLITE_CONSTRAINT_PRIMARYKEY') {
             res.sendStatus(409);
         } else {
-            logger.error(`Upload error: id: '${id}', name: '${name}', mimetype: '${mimetype}', size: '${size}'` + JSON.stringify(e));
+            logger.error(`Upload error: id: '${id}', name: '${name}', mimetype: '${mimetype}', size: '${size}'\n${e.stack}`);
             res.sendStatus(500);
         }
     }

@@ -50,7 +50,7 @@ export function subscribe(req, res) {
         } else {
             res.status(500);
             res.send();
-            console.log(e+ "\n");
+            logger.error(e);
         }
     }
 }
@@ -196,8 +196,7 @@ export async function send(req, res) {
             });
             logger.info(`Sent newsletter ${workshops_to_send.map(workshop => workshop.id).join(", ")} to ${subscriber.email}. Got response '${smtp_response}'`);
         } catch (e) {
-            console.log(e);
-            logger.error(`Failed to send Newsletter ${workshops_to_send.map(workshop => workshop.id).join(", ")} to ${subscriber.email}:\n ${JSON.stringify(e)}`);
+            logger.error(`Failed to send Newsletter ${workshops_to_send.map(workshop => workshop.id).join(", ")} to ${subscriber.email}:\n ${e.stack}`);
         }
     }
 

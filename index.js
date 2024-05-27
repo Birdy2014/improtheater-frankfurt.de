@@ -7,7 +7,7 @@ import * as utils from "./server/utils.js";
 import * as logger from "./server/logger.js";
 import { clear_expired_sessions } from "./server/auth.js";
 
-logger.init(utils.config.logpath || utils.project_path + "/logs");
+logger.init(utils.config.logpath);
 db.init();
 
 marked.setOptions({

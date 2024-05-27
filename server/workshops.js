@@ -152,7 +152,7 @@ export function getWorkshop(id, loggedIn) {
             workshop.beginTimeISO = beginISO.substring(11, 16);
             workshop.endTimeISO = endISO.substring(11, 16);
         } catch (e) {
-            logger.warn(JSON.stringify(e));
+            logger.warn(e);
             workshop.beginTimeISO = "";
             workshop.endTimeISO = "";
         }
