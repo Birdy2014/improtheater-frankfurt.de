@@ -62,7 +62,6 @@ export async function login(req, res) {
     }
 
     if (await bcrypt.compare(password, user.password_hash)) {
-        // TODO: use the crypto library to generate the token
         const session_token = await create_session(user.id, session_expiration_time);
         res.cookie("session", session_token);
         res.status(200);
@@ -293,7 +292,7 @@ async function create_session(user_id, expiration_time) {
     assert.strictEqual(typeof user_id, "string");
     assert.strictEqual(typeof expiration_time, "number");
 
-    const session_token = utils.generateToken(20);
+    const session_token = crypto.randomBytes(20).toString("hex");
     db.run("INSERT INTO session (user_id, token, expires) VALUES (?, ?, ?)", user_id, session_token, utils.getCurrentTimestamp() + expiration_time);
     return session_token;
 }
