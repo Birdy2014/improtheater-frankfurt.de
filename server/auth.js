@@ -247,7 +247,7 @@ export async function api_request_password_reset(req, res) {
     }
 
     const session_token = await create_session(user.id, 30 * 60);
-    const reset_url = `${utils.base_url}/password_reset?token=${session_token}`;
+    const reset_url = `${utils.config.base_url}/password_reset?token=${session_token}`;
 
     transporter.send({
         to: user.email,

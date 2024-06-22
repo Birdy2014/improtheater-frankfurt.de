@@ -138,7 +138,7 @@ export async function send(req, res) {
 
     // Send newsletter
     const logo = workshop_type === workshops.type_itf
-        ? utils.base_url + "/public/img/improtheater_frankfurt_logo.png"
+        ? utils.config.base_url + "/public/img/improtheater_frankfurt_logo.png"
         : "https://improglycerin.de/wp-content/uploads/2017/04/improglycerin_logo_website_white_medium_2.jpg";
 
     logger.info(`Start sending newsletter ${workshops_to_send.map(workshop => workshop.id).join(", ")}`);
@@ -148,14 +148,14 @@ export async function send(req, res) {
             continue;
 
         try {
-            const unsubscribe = utils.base_url + "/newsletter?unsubscribe=1&token=" + subscriber.token;
-            const subscribe = utils.base_url + "/newsletter?subscribe=1&token=" + subscriber.token;
+            const unsubscribe = utils.config.base_url + "/newsletter?unsubscribe=1&token=" + subscriber.token;
+            const subscribe = utils.config.base_url + "/newsletter?subscribe=1&token=" + subscriber.token;
             const workshops_for_subscriber = workshops_to_send.map(workshop => {
                 return {
                     ...workshop,
                     textColor: calcTextColor(workshop.color),
-                    website: `${utils.base_url}/workshop/${workshop.id}?token=${subscriber.token}`,
-                    img_url: `${utils.base_url}/api/upload/${workshop.id}?token=${subscriber.token}`,
+                    website: `${utils.config.base_url}/workshop/${workshop.id}?token=${subscriber.token}`,
+                    img_url: `${utils.config.base_url}/api/upload/${workshop.id}?token=${subscriber.token}`,
                 }
             });
 
@@ -164,8 +164,8 @@ export async function send(req, res) {
                 : `${workshops_for_subscriber.length} ${workshop_type === workshops.type_itf ? "Workshops" : "Shows"}: ${workshops_for_subscriber.map(workshop => workshop.title).join(" / ")}`;
 
             const weblink = workshops_to_send.length === 1
-                ? `${utils.base_url}/workshop/${workshops_to_send[0].id}`
-                : `${utils.base_url}/workshops`;
+                ? `${utils.config.base_url}/workshop/${workshops_to_send[0].id}`
+                : `${utils.config.base_url}/workshops`;
 
             let html = pug.renderFile(utils.project_path + "/client/views/emails/newsletter.pug", {
                 subject: subject,
@@ -176,7 +176,7 @@ export async function send(req, res) {
                 logo,
                 subscriber,
                 marked,
-                base_url: utils.base_url
+                base_url: utils.config.base_url
             });
 
             const text =
@@ -244,8 +244,8 @@ export function addSubscriber(req, res) {
 }
 
 function sendConfirmMail(subscriber) {
-    let link = utils.base_url + "/api/newsletter/confirm?token=" + subscriber.token;
-    let subscribe = utils.base_url + "/newsletter?subscribe=1&token=" + subscriber.token;
+    let link = utils.config.base_url + "/api/newsletter/confirm?token=" + subscriber.token;
+    let subscribe = utils.config.base_url + "/newsletter?subscribe=1&token=" + subscriber.token;
     let html = pug.renderFile(utils.project_path + "/client/views/emails/confirm.pug", {
         name: subscriber.name,
         link,

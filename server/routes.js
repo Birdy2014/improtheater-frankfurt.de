@@ -127,7 +127,7 @@ router.get("/workshop/:workshopID", auth.getUser, (req, res) => {
         } else {
             res.render("routes/workshop", {
                 route: "workshop/" + req.params.workshopID,
-                canonical_url: utils.base_url + "/workshop/" + req.params.workshopID,
+                canonical_url: utils.config.base_url + "/workshop/" + req.params.workshopID,
                 ...w,
                 textColor: newsletter.calcTextColor(w.color),
                 loggedIn: req.user !== undefined,
@@ -191,12 +191,12 @@ router.get("/newsletter-preview", auth.getUser, async (req, res) => {
         workshops_to_send.push({
             ...workshop,
             textColor: newsletter.calcTextColor(workshop.color),
-            website: `${utils.base_url}/workshops/${workshop.id}`,
-            img_url: `${utils.base_url}/api/upload/${workshop.id}`,
+            website: `${utils.config.base_url}/workshops/${workshop.id}`,
+            img_url: `${utils.config.base_url}/api/upload/${workshop.id}`,
         });
     }
 
-    const logo = utils.base_url + "/public/img/improtheater_frankfurt_logo.png";
+    const logo = utils.config.base_url + "/public/img/improtheater_frankfurt_logo.png";
     const subscriber = {
         name: req.user.username,
         subscribedTo: workshop_type
@@ -207,8 +207,8 @@ router.get("/newsletter-preview", auth.getUser, async (req, res) => {
         : `${workshops_to_send.length} ${workshop_type === workshops.type_itf ? "Workshops" : "Shows"}: ${workshops_to_send.map(workshop => workshop.title).join(" / ")}`;
 
     const weblink = workshops_to_send.length === 1
-        ? `${utils.base_url}/workshop/${workshops_to_send[0].id}`
-        : `${utils.base_url}/workshops`;
+        ? `${utils.config.base_url}/workshop/${workshops_to_send[0].id}`
+        : `${utils.config.base_url}/workshops`;
 
     res.render("emails/newsletter", {
         subject: subject,
@@ -219,7 +219,7 @@ router.get("/newsletter-preview", auth.getUser, async (req, res) => {
         logo,
         subscriber,
         marked,
-        base_url: utils.base_url
+        base_url: utils.config.base_url
     });
 });
 

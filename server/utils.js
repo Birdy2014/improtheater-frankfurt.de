@@ -36,5 +36,3 @@ export function wrapRoute(route) {
         }
     }
 }
-
-export const base_url = (config.tls ? "https://" : "http://") + config.hostname;
