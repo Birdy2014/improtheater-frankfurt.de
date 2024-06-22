@@ -1,5 +1,5 @@
 import sharp from "sharp";
-import { v4 as uuid } from "uuid";
+import crypto from "crypto";
 import * as db from "./db.js";
 import * as utils from "./utils.js";
 import * as logger from "./logger.js";
@@ -84,7 +84,7 @@ export async function post(req, res) {
     const mimetype = req.files.img.mimetype;
     const size = resized_image.length;
     const name = Buffer.from(req.files.img.name, "latin1").toString("utf-8");
-    const id = uuid();
+    const id = crypto.randomUUID();
 
     try {
         db.run("INSERT INTO upload (id, name, mimetype, size, data, user_id, time) VALUES (?, ?, ?, ?, ?, ?, ?)", id, name, mimetype, size, resized_image, req.user.id, utils.getCurrentTimestamp());

@@ -1,6 +1,6 @@
 import assert from "assert";
 import bcrypt from "bcrypt"
-import { v4 as uuid } from "uuid";
+import crypto from "crypto";
 import * as db from "./db.js";
 import * as utils from "./utils.js";
 import * as logger from "./logger.js"
@@ -114,7 +114,7 @@ export async function api_create_user(req, res) {
         return;
     }
 
-    const id = uuid();
+    const id = crypto.randomUUID();
     const password_hash = await bcrypt.hash(password, 12);
 
     db.run("INSERT INTO user (id, username, email, password_hash, admin, full_access) VALUES (?, ?, ?, ?, ?, ?)", id, username, email, password_hash, admin, full_access);
