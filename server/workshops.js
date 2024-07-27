@@ -83,9 +83,12 @@ export function copy(req, res) {
         return res.sendStatus(404);
     }
 
+    const timestamp = utils.getCurrentTimestamp();
     workshop.id = undefined;
     workshop.title = copy_prefix + workshop.title;
     workshop.visible = 0;
+    workshop.begin = timestamp;
+    workshop.end = timestamp;
 
     const copy_id = editWorkshop(workshop);
 
