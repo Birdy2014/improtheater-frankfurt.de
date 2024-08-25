@@ -10,11 +10,8 @@ import { clear_expired_sessions } from "./server/auth.js";
 logger.init(utils.config.logpath);
 db.init();
 
-marked.setOptions({
-    gfm: true,
+marked.use({
     breaks: true,
-    headerIds: false,
-    mangle: false,
 });
 
 setInterval(clear_expired_sessions, 24 * 60 * 60 * 1000);

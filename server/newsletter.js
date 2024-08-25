@@ -1,5 +1,5 @@
 import pug from "pug";
-import { marked } from "marked";
+import { Marked } from "marked";
 import { Mutex } from "async-mutex";
 import * as db from "./db.js";
 import * as utils from "./utils.js";
@@ -13,6 +13,30 @@ const transporter = {
 };
 
 const mail_mutex = new Mutex();
+
+function get_marked_options(style) {
+    return {
+        breaks: true,
+        renderer: {
+            link({ href, title, tokens }) {
+                const text = this.parser.parseInline(tokens);
+                try {
+                    href = encodeURI(href).replace(/%25/g, "%");
+                } catch {
+                    return text;
+                }
+                let out = `<a href="${href}"`;
+                if (title) {
+                  out += ` title="${title}"`;
+                }
+                out += `style="${style}">${text}</a>`;
+                return out;
+            }
+        }
+    }
+}
+
+const marked = new Marked(get_marked_options("text-decoration: underline; color: inherit;"));
 
 export function subscribe(req, res) {
     // TODO: check email address, length limit name, sanitize name and email
@@ -176,6 +200,7 @@ export async function send(req, res) {
                 logo,
                 subscriber,
                 marked,
+                marked,
                 base_url: utils.config.base_url
             });
 
@@ -201,6 +226,69 @@ export async function send(req, res) {
     }
 
     logger.info(`Sent newsletter ${workshops_to_send.map(workshop => workshop.id).join(", ")}`);
+}
+
+// TODO: Put shared stuff of this and newsletter.send in one function
+export async function preview(req, res) {
+    if (!req.user) {
+        res.sendStatus(403);
+        return;
+    }
+
+    const workshop_ids_to_send = Array.isArray(req.query.workshops)
+        ? req.query.workshops
+        : [req.query.workshops];
+
+    const workshops_to_send = [];
+    let workshop_type = undefined;
+    for (const workshop_id of workshop_ids_to_send) {
+        const workshop = workshops.getWorkshop(workshop_id, true);
+        if (!workshop) {
+            res.sendStatus(404);
+            return;
+        }
+
+        if (workshop_type === undefined) {
+            workshop_type = workshop.type;
+        } else if (workshop_type !== workshop.type) {
+            res.status(400).send("Mismatching workshop types.");
+            return;
+        }
+
+        workshops_to_send.push({
+            ...workshop,
+            textColor: calcTextColor(workshop.color),
+            website: `${utils.config.base_url}/workshops/${workshop.id}`,
+            img_url: `${utils.config.base_url}/api/upload/${workshop.id}`,
+        });
+    }
+
+    const logo = utils.config.base_url + "/public/img/improtheater_frankfurt_logo.png";
+    const subscriber = {
+        name: req.user.username,
+        subscribedTo: workshop_type
+    }
+
+    const subject = workshops_to_send.length === 1
+        ? (workshops_to_send[0].propertiesHidden ? workshops_to_send[0].title : workshops_to_send[0].title + ", am " + workshops_to_send[0].dateText)
+        : `${workshops_to_send.length} ${workshop_type === workshops.type_itf ? "Workshops" : "Shows"}: ${workshops_to_send.map(workshop => workshop.title).join(" / ")}`;
+
+    const weblink = workshops_to_send.length === 1
+        ? `${utils.config.base_url}/workshop/${workshops_to_send[0].id}`
+        : `${utils.config.base_url}/workshops`;
+
+    res.render("emails/newsletter", {
+        subject: subject,
+        workshops: workshops_to_send,
+        weblink,
+        unsubscribe: "#",
+        subscribe: "#",
+        logo,
+        subscriber,
+        marked,
+        marked,
+        base_url: utils.config.base_url
+    });
 }
 
 export function exportSubscribers(req, res) {
