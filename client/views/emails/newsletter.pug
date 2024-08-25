@@ -20,31 +20,6 @@ html
                 text-decoration: underline;
             }
 
-            /*
-            properties are set to mobile by inline styles - for Gmail (IMAP)
-            they get set to desktop here - for Thunderbird
-            */
-            #properties-table-desktop {
-                display: table !important;
-            }
-
-            #properties-table-mobile {
-                display: none !important;
-            }
-
-            /*
-            properties are set to mobile by media query - for all clients that support media queries and style blocks
-            */
-            @media screen and (max-width: 750px) {
-                #properties-table-desktop {
-                    display: none !important;
-                }
-
-                #properties-table-mobile {
-                    display: table !important;
-                }
-            }
-
         style.
             @font-face {
                 font-family: "Roboto";
@@ -70,7 +45,7 @@ html
             table(cellpadding="0" cellspacing="0" width="100%" style="color: inherit; background-color: inherit; border-collapse: collapse;")
                 tr
                     td
-                    td(width="900" height="80")
+                    td(width="750" height="80")
                         img(src=logo style="display: block; height: 60px; margin-bottom: 20px;")
                     td
                 each workshop, index in workshops
@@ -78,41 +53,18 @@ html
                         tr(height="50px")
                     tr(style=`background-color: ${workshop.color};`)
                         td
-                        td(width="900" style="text-align: center; padding: 10px;")
+                        td(width="750" style="text-align: center; padding: 10px;")
                             h1(style="margin-top: 20px;")
                                 a(href=workshop.website style=`color: ${workshop.textColor};`)!= marked.parseInline(workshop.title)
                             img(src=workshop.img_url style="width: 100%;")
                         td
                     tr
                         td
-                        td(width="900")
+                        td(width="750")
                             #description-container(style=`text-align: left;`)
                                 != marked(workshop.content)
                             unless workshop.propertiesHidden
-                                <!--[if !mso]><!-->
-                                table#properties-table-desktop(cellpadding="0" cellspacing="0" width="100%" style=`display: none; text-align: left; background-color: ${workshop.color}; color: ${workshop.textColor}; padding: 15px; margin-top: 10px; table-layout: fixed;`)
-                                    thead(style=`color: ${workshop.textColor};`)
-                                        tr
-                                            th(colspan=4 style="padding-bottom: 10px;")
-                                                a(href=workshop.website style=`color: inherit;`)!= marked.parseInline(workshop.title)
-                                    tbody(style=`color: ${workshop.textColor};`)
-                                        tr
-                                            th Wann?
-                                            th Wo?
-                                            th Beitrag?
-                                            th Anmelden?
-                                        tr
-                                            td
-                                                | #{workshop.dateText}
-                                                br
-                                                | #{workshop.timeText}
-                                            td
-                                                != marked.parseInline(workshop.location)
-                                            td
-                                                != marked.parseInline(workshop.price)
-                                            td
-                                                != marked.parseInline(workshop.email)
-                                table#properties-table-mobile(cellpadding="0" cellspacing="0" width="100%" style=`display: table; text-align: left; background-color: ${workshop.color}; color: ${workshop.textColor}; padding: 15px; margin-top: 10px; table-layout: fixed;`)
+                                table(cellpadding="0" cellspacing="0" width="100%" style=`display: table; text-align: left; background-color: ${workshop.color}; color: ${workshop.textColor}; padding: 15px; margin-top: 10px; table-layout: fixed;`)
                                     thead(style=`color: ${workshop.textColor};`)
                                         tr
                                             th(style="padding-bottom: 10px;")
@@ -140,31 +92,6 @@ html
                                         tr
                                             td
                                                 != marked.parseInline(workshop.email)
-                                <!--<![endif]-->
-                                <!--[if mso]>
-                                table(cellpadding="0" cellspacing="0" width="100%" style=`text-align: left; background-color: ${workshop.color}; color: ${workshop.textColor}; padding: 15px; margin-top: 10px; table-layout: fixed;`)
-                                    thead(style=`color: ${workshop.textColor};`)
-                                        tr
-                                            th(colspan=4 style="padding-bottom: 10px;")
-                                                a(href=workshop.website style="color: inherit;")!= marked.parseInline(workshop.title)
-                                    tbody(style=`color: ${workshop.textColor};`)
-                                        tr
-                                            th Wann?
-                                            th Wo?
-                                            th Beitrag?
-                                            th Anmelden?
-                                        tr
-                                            td
-                                                | #{workshop.dateText}
-                                                br
-                                                | #{workshop.timeText}
-                                            td
-                                                != marked.parseInline(workshop.location)
-                                            td
-                                                != marked.parseInline(workshop.price)
-                                            td
-                                                != marked.parseInline(workshop.email)
-                                <![endif]-->
                         td
 
             #footer(style="color: black;")
