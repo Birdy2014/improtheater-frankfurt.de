@@ -26,6 +26,7 @@ app.set("views", utils.project_path + "/client/views");
 app.set("view engine", "pug");
 app.use(express.json());
 app.use(cookieParser());
+app.set("trust proxy", true);
 
 app.use(router);
 
