@@ -29,70 +29,79 @@ html
                 unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
             }
 
+        <!--[if mso]>
+            style.
+                td, span, h1 {
+                    font-family: Helvetica !important;
+                };
+        <![endif]-->
+
     body(style="color:black; background-color: white;")
         p.
             Falls die E-Mail nicht korrekt angezeigt wird, kannst du sie #[a(href=weblink) hier im Browser anschauen].
-        #message-container(style="text-align: center; font-family: Roboto;")
-            table(cellpadding="0" cellspacing="0" width="100%" style="color: inherit; background-color: inherit; border-collapse: collapse;")
+
+        table(cellpadding="0" cellspacing="0" width="100%" style="color: inherit; background-color: inherit; border-collapse: collapse;")
+            tr
+                td
+                td(width="750" height="80")
+                    img(src=logo style="display: block; height: 60px; margin-bottom: 20px;")
+                td
+            each workshop, index in workshops
+                if index > 0
+                    tr(height="50px")
+                tr(style=`background-color: ${workshop.color};`)
+                    td
+                    td(width="750" style="text-align: center; padding: 10px;")
+                        h1(style="margin-top: 20px; text-align: center; font-family: Roboto, Helvetica; font-size: 32px;")
+                            a(href=workshop.website style=`color: ${workshop.textColor}; text-decoration: none;`)!= marked.parseInline(workshop.title)
+                        img(src=workshop.img_url style="width: 100%;")
+                    td
                 tr
                     td
-                    td(width="750" height="80")
-                        img(src=logo style="display: block; height: 60px; margin-bottom: 20px;")
+                    td(width="750")
+                        span(style=`display: block; padding: 10px; font-family: Roboto, Helvetica; font-size: 18px; line-height: 1.5;`)
+                            != marked.parse(workshop.content)
+                        unless workshop.propertiesHidden
+                            table(border="0" cellpadding="0" cellspacing="0" width="100%" style=`display: table; background-color: ${workshop.color}; color: ${workshop.textColor}; padding: 15px; margin-top: 10px; table-layout: fixed;`)
+                                thead(style=`color: ${workshop.textColor};`)
+                                    tr
+                                        td(style="padding-bottom: 10px; font-weight: 700; font-family: Roboto, Helvetica; font-size: 18px;")
+                                            a(href=workshop.website style="color: inherit; text-decoration: none;")!= marked.parseInline(workshop.title)
+                                tbody(style=`color: ${workshop.textColor};`)
+                                    tr
+                                        td(style="padding-top: 5px; font-weight: 700; font-family: Roboto, Helvetica; font-size: 18px;") Wann?
+                                    tr
+                                        td(style="font-family: Roboto, Helvetica; font-size: 18px;")
+                                            | #{workshop.dateText}
+                                            br
+                                            | #{workshop.timeText}
+                                    tr
+                                        td(style="padding-top: 5px; font-weight: 700; font-family: Roboto, Helvetica; font-size: 18px;") Wo?
+                                    tr
+                                        td(style="font-family: Roboto, Helvetica; font-size: 18px;")
+                                            != marked.parseInline(workshop.location)
+                                    tr
+                                        td(style="padding-top: 5px; font-weight: 700; font-family: Roboto, Helvetica; font-size: 18px;") Beitrag?
+                                    tr
+                                        td
+                                            != marked.parseInline(workshop.price)
+                                    tr
+                                        td(style="padding-top: 5px; font-weight: 700; font-family: Roboto, Helvetica; font-size: 18px;") Anmelden?
+                                    tr
+                                        td(style="font-family: Roboto, Helvetica; font-size: 18px;")
+                                            != marked.parseInline(workshop.email)
                     td
-                each workshop, index in workshops
-                    if index > 0
-                        tr(height="50px")
-                    tr(style=`background-color: ${workshop.color};`)
-                        td
-                        td(width="750" style="text-align: center; padding: 10px;")
-                            h1(style="margin-top: 20px;")
-                                a(href=workshop.website style=`color: ${workshop.textColor}; text-decoration: none;`)!= marked.parseInline(workshop.title)
-                            img(src=workshop.img_url style="width: 100%;")
-                        td
-                    tr
-                        td
-                        td(width="750")
-                            #description-container(style=`text-align: left;`)
-                                != marked.parse(workshop.content)
-                            unless workshop.propertiesHidden
-                                table(cellpadding="0" cellspacing="0" width="100%" style=`display: table; text-align: left; background-color: ${workshop.color}; color: ${workshop.textColor}; padding: 15px; margin-top: 10px; table-layout: fixed;`)
-                                    thead(style=`color: ${workshop.textColor};`)
-                                        tr
-                                            th(style="padding-bottom: 10px;")
-                                                a(href=workshop.website style="color: inherit; text-decoration: none;")!= marked.parseInline(workshop.title)
-                                    tbody(style=`color: ${workshop.textColor};`)
-                                        tr
-                                            th(style="padding-top: 5px;") Wann?
-                                        tr
-                                            td
-                                                | #{workshop.dateText}
-                                                br
-                                                | #{workshop.timeText}
-                                        tr
-                                            th(style="padding-top: 5px;") Wo?
-                                        tr
-                                            td
-                                                != marked.parseInline(workshop.location)
-                                        tr
-                                            th(style="padding-top: 5px;") Beitrag?
-                                        tr
-                                            td
-                                                != marked.parseInline(workshop.price)
-                                        tr
-                                            th(style="padding-top: 5px;") Anmelden?
-                                        tr
-                                            td
-                                                != marked.parseInline(workshop.email)
-                        td
 
-            #footer(style="color: black;")
-                a(href="https://improtheater-frankfurt.de/impressum" style="text-decoration: none; color: black;") Impressum
-                = " | "
-                a(href="https://improtheater-frankfurt.de/datenschutz" style="text-decoration: none; color: black;") Datenschutz
-                = " | "
-                a(href="https://improglycerin.de/kontakt/" style="text-decoration: none; color: black;") Kontakt
-                = " | "
-                if subscriber.subscribedTo == 1 || subscriber.subscribedTo == 2
-                    a(href=subscribe style="text-decoration: none; color: black;") #[+newsletterName(~subscriber.subscribedTo)] abonnieren
+            tr(style="color: black; text-align: center;")
+                td
+                td(style="padding: 10px; font-family: Roboto, Helvetica; font-size: 18px;")
+                    a(href="https://improtheater-frankfurt.de/impressum" style="text-decoration: none; color: black;") Impressum
                     = " | "
-                a(href=unsubscribe style="text-decoration: none; color: black;") Abmelden
+                    a(href="https://improtheater-frankfurt.de/datenschutz" style="text-decoration: none; color: black;") Datenschutz
+                    = " | "
+                    a(href="https://improglycerin.de/kontakt/" style="text-decoration: none; color: black;") Kontakt
+                    = " | "
+                    if subscriber.subscribedTo == 1 || subscriber.subscribedTo == 2
+                        a(href=subscribe style="text-decoration: none; color: black;") #[+newsletterName(~subscriber.subscribedTo)] abonnieren
+                        = " | "
+                    a(href=unsubscribe style="text-decoration: none; color: black;") Abmelden

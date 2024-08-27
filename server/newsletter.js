@@ -29,7 +29,7 @@ function get_marked_options(style) {
                 if (title) {
                   out += ` title="${title}"`;
                 }
-                out += `style="${style}">${text}</a>`;
+                out += ` style="${style}">${text}</a>`;
                 return out;
             }
         }
