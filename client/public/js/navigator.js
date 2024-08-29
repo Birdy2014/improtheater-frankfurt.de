@@ -74,7 +74,13 @@ window.onscroll = _ => {
  * @param {boolean} params.push_history - don't push route to browser history
  * @param {boolean} params.preload - only download, don't navigate
  */
-async function navigate(to, params = { reload: false, push_history: true, preload: false }) {
+async function navigate(to, params = { }) {
+    params = Object.assign({
+        reload: false,
+        push_history: true,
+        preload: false
+    }, params);
+
     if (to.startsWith("/")) to = to.substring(1);
     let route = to;
     if (route.includes("?"))
