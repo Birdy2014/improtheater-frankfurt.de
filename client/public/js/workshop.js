@@ -75,6 +75,8 @@ async function deleteWorkshop(id) {
     await axios.delete("/api/workshops", {
         data: { id }
     });
+    if (window["invalidate_workshops_pages"])
+        invalidate_workshops_pages();
     await navigate("workshops", { reload: true });
 }
 
