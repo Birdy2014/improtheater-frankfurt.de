@@ -56,14 +56,6 @@ class Database {
         `);
 
         this.run(`
-            CREATE TABLE IF NOT EXISTS editableWebsite (
-                name TEXT NOT NULL,
-                content TEXT,
-                PRIMARY KEY(name)
-            )
-        `);
-
-        this.run(`
             CREATE TABLE IF NOT EXISTS user (
                 id TEXT NOT NULL,
                 username TEXT NOT NULL,

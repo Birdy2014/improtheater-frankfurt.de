@@ -7,7 +7,6 @@ import * as auth from "./auth.js";
 import * as workshops from "./workshops.js";
 import * as newsletter from "./newsletter.js";
 import * as upload from "./upload.js";
-import * as editableWebsite from "./editableWebsite.js";
 import * as utils from "./utils.js";
 import * as logger from "./logger.js";
 
@@ -76,7 +75,6 @@ router.get("/api/upload/:id", route(upload.get));
 router.get("/api/upload-color/:id", route(upload.get_color));
 router.post("/api/upload", auth.getUser, fileUpload({ limits: { fileSize: 10 * 1024 * 1024 } }), upload.post);
 router.delete("/api/upload/:id", auth.getUser, route(upload.del));
-router.post("/api/hygienekonzept", auth.getUser, route(editableWebsite.setEditableWebsiteMiddleware("hygienekonzept")));
 
 // Libraries
 router.get("/lib/nprogress.js", (req, res) => res.sendFile(path.join(utils.project_path, "/node_modules/nprogress/nprogress.js")));
@@ -208,8 +206,6 @@ function getRenderOptions(route, user, query) {
                     subscriber.last_viewed_newsletter_date = format.format(subscriber.last_viewed_newsletter * 1000);
             }
             return { loggedIn, subscribers };
-        case "hygienekonzept":
-            return { loggedIn, marked, content: editableWebsite.getEditableWebsite("hygienekonzept") };
         case "uploads":
             return { loggedIn, uploads: upload.getAll() };
         case "user":
