@@ -6,8 +6,6 @@ import * as utils from "./server/utils.js";
 import * as logger from "./server/logger.js";
 import { clear_expired_sessions } from "./server/auth.js";
 
-logger.init(utils.config.logpath);
-
 marked.use({
     breaks: true,
 });
@@ -27,7 +25,7 @@ app.use(router);
 
 // Log errors
 app.use((err, req, res, next) => {
-    logger.error(err.stack);
+    logger.error(err);
     res.status(500);
 
     if (req.accepts("json", "html") == "html") {
