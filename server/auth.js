@@ -1,7 +1,7 @@
 import assert from "assert";
 import bcrypt from "bcrypt"
 import crypto from "crypto";
-import * as db from "./db.js";
+import db from "./db.js";
 import * as utils from "./utils.js";
 import * as logger from "./logger.js"
 import { EMailTransporter } from "./mail.js";

@@ -1,7 +1,7 @@
 import pug from "pug";
 import { Marked } from "marked";
 import { Mutex } from "async-mutex";
-import * as db from "./db.js";
+import db from "./db.js";
 import * as utils from "./utils.js";
 import * as logger from "./logger.js";
 import * as workshops from "./workshops.js";

@@ -2,13 +2,11 @@ import express from "express";
 import cookieParser from "cookie-parser";
 import { marked } from "marked";
 import router from "./server/routes.js";
-import * as db from "./server/db.js";
 import * as utils from "./server/utils.js";
 import * as logger from "./server/logger.js";
 import { clear_expired_sessions } from "./server/auth.js";
 
 logger.init(utils.config.logpath);
-db.init();
 
 marked.use({
     breaks: true,

@@ -1,4 +1,4 @@
-import * as db from "./db.js";
+import db from "./db.js";
 import * as utils from "./utils.js";
 import * as logger from "./logger.js";
 import { invalidateUploadsCache } from "./upload.js";
