@@ -109,8 +109,7 @@ router.get("/index.html", (req, res) => {
 router.get("/workshop/:workshopID", auth.getUser, (req, res) => {
     let w = workshops.getWorkshop(req.params.workshopID, req.user !== undefined);
     if (!w) {
-        res.status(404);
-        res.render("error", { status: 404, message: "Not Found" });
+        res.status(404).render("error", { status: 404, message: "Not Found" });
     } else {
         if (req.query.partial) {
             res.render("routes/workshop", {
@@ -145,8 +144,7 @@ router.get("/workshops/:page", auth.getUser, async (req, res) => {
     let page = parseInt(req.params.page);
     let w = workshops.getWorkshops(req.user !== undefined, page, req.user !== undefined ? workshops.type_both : workshops.type_itf);
     if (!w || w.length === 0) {
-        res.status(404);
-        res.render("error", { status: 404, message: "Not Found" });
+        res.status(404).render("error", { status: 404, message: "Not Found" });
     } else {
         res.render("routes/workshops", {
             route: `workshops/${req.params.page}`,
@@ -163,8 +161,7 @@ router.get("/newsletter-preview", auth.getUser, newsletter.preview);
 
 router.get("/:route", auth.getUser, async (req, res) => {
     if (!routes.includes(req.params.route)) {
-        res.status(404);
-        res.render("error", { status: 404, message: "Not Found" });
+        res.status(404).render("error", { status: 404, message: "Not Found" });
     } else {
         const render_options = getRenderOptions(req.params.route, req.user, req.query);
 

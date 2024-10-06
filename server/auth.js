@@ -13,40 +13,33 @@ const session_expiration_time = 10 * 24 * 60 * 60;
 const transporter = new EMailTransporter("auth");
 
 export async function getUser(req, res, next) {
-    try {
-        const session_token = req.cookies.session;
+    const session_token = req.cookies.session;
 
-        // Get user info
-        if (session_token) {
-            const session = db.get("SELECT * FROM session WHERE token = ?", session_token);
-            if (session && session.expires > utils.getCurrentTimestamp()) {
-                req.user = db.get("SELECT * FROM user WHERE id = ?", session.user_id);
-                if (req.user) {
-                    db.run("UPDATE session SET expires = ? WHERE token = ?", utils.getCurrentTimestamp() + session_expiration_time, session_token);
+    // Get user info
+    if (session_token) {
+        const session = db.get("SELECT * FROM session WHERE token = ?", session_token);
+        if (session && session.expires > utils.getCurrentTimestamp()) {
+            req.user = db.get("SELECT * FROM user WHERE id = ?", session.user_id);
+            if (req.user) {
+                db.run("UPDATE session SET expires = ? WHERE token = ?", utils.getCurrentTimestamp() + session_expiration_time, session_token);
 
-                    next();
-                    return;
-                }
+                next();
+                return;
             }
         }
+    }
 
-        if (!loggedInRoutes.includes(req.path)) {
-            next();
-            return;
-        }
-
-        // Log in
-        const partial = req.query.partial;
-        if (partial) {
-            res.sendStatus(401);
-        } else {
-            res.redirect(`/login`);
-        }
-    } catch (e) {
-        console.error(e);
-        res.status(500);
-        res.send("Internal Server Error");
+    if (!loggedInRoutes.includes(req.path)) {
+        next();
         return;
+    }
+
+    // Log in
+    const partial = req.query.partial;
+    if (partial) {
+        res.sendStatus(401);
+    } else {
+        res.redirect(`/login`);
     }
 }
 
@@ -56,20 +49,17 @@ export async function login(req, res) {
 
     const user = db.get("SELECT id, password_hash FROM user WHERE username = ? OR email = ?", login, login);
     if (!user) {
-        res.status(403);
-        res.send();
+        res.sendStatus(403);
         return;
     }
 
     if (await bcrypt.compare(password, user.password_hash)) {
         const session_token = await create_session(user.id, session_expiration_time);
         res.cookie("session", session_token);
-        res.status(200);
-        res.send();
+        res.sendStatus(200);
     } else {
         logger.warn(`Failed login attempt for user '${login}' from '${req.ip}'`);
-        res.status(403);
-        res.send();
+        res.sendStatus(403);
     }
 }
 
@@ -77,21 +67,18 @@ export async function logout(req, res) {
     const session_token = req.cookies.session;
 
     if (!session_token) {
-        res.status(400);
-        res.json({ status: 400 });
+        res.sendStatus(400);
         return;
     }
 
     db.run("DELETE FROM session WHERE token = ?", session_token);
     res.clearCookie("session");
-    res.status(200);
-    res.send();
+    res.sendStatus(200);
 }
 
 export async function api_create_user(req, res) {
     if (!req.user || !req.user.admin) {
-        res.status(403);
-        res.send();
+        res.sendStatus(403);
         return;
     }
 
@@ -102,14 +89,12 @@ export async function api_create_user(req, res) {
     const full_access = (req.body.full_access ?? false) ? 1 : 0;
 
     if (!email || !username || !password) {
-        res.status(400);
-        res.send();
+        res.sendStatus(400);
         return;
     }
 
     if (password.length < 8) {
-        res.status(400);
-        res.send("Password too short");
+        res.status(400).send("Password too short");
         return;
     }
 
@@ -118,14 +103,12 @@ export async function api_create_user(req, res) {
 
     db.run("INSERT INTO user (id, username, email, password_hash, admin, full_access) VALUES (?, ?, ?, ?, ?, ?)", id, username, email, password_hash, admin, full_access);
 
-    res.status(200);
-    res.send();
+    res.sendStatus(200);
 }
 
 export async function api_change_user(req, res) {
     if (!req.user) {
-        res.status(403);
-        res.send();
+        res.sendStatus(403);
         return;
     }
 
@@ -163,21 +146,18 @@ export async function api_change_user(req, res) {
     }
 
     if (!email && !username && !password && admin === undefined && full_access === undefined) {
-        res.status(400);
-        res.send();
+        res.sendStatus(400);
         return;
     }
 
     let id = req.body.id;
     if (id) {
         if (!req.user.admin) {
-            res.status(403);
-            res.send();
+            res.sendStatus(403);
             return;
         }
         if (!db.get("SELECT 1 FROM user WHERE id = ?", id)) {
-            res.status(404);
-            res.send();
+            res.sendStatus(404);
             return;
         }
     } else {
@@ -192,8 +172,7 @@ export async function api_change_user(req, res) {
     }
     if (password) {
         if (password.length < 8) {
-            res.status(400);
-            res.send("Password too short");
+            res.status(400).send("Password too short");
             return;
         }
         const password_hash = await bcrypt.hash(password, 12);
@@ -205,43 +184,37 @@ export async function api_change_user(req, res) {
     if (full_access !== undefined && req.user.admin) {
         db.run("UPDATE user SET full_access = ? WHERE id = ?", full_access, id)
     }
-    res.status(200);
-    res.send();
+    res.sendStatus(200);
 }
 
 export async function api_delete_user(req, res) {
     const id = req.body.id;
 
     if (!id) {
-        res.status(400);
-        res.send();
+        res.sendStatus(400);
         return;
     }
 
     if (!req.user.admin) {
-        res.status(403);
-        res.send();
+        res.sendStatus(403);
         return;
     }
 
     db.run("DELETE FROM user WHERE id = ?", id);
 
-    res.status(200);
-    res.send();
+    res.sendStatus(200);
 }
 
 export async function api_request_password_reset(req, res) {
     const login = req.body.login;
     if (!login) {
-        res.status(400);
-        res.send();
+        res.sendStatus(400);
         return;
     }
     const user = db.get("SELECT id, username, email FROM user WHERE username = ? OR email = ?", login, login);
     if (!user) {
         // Return 200 to hide existing accounts?
-        res.status(404);
-        res.send();
+        res.sendStatus(404);
         return;
     }
 
@@ -260,8 +233,7 @@ export async function api_password_reset(req, res) {
     const new_password = req.body.password;
 
     if (!token || !new_password) {
-        res.status(400);
-        res.send();
+        res.sendStatus(400);
         return;
     }
 
@@ -270,8 +242,7 @@ export async function api_password_reset(req, res) {
     const session = db.get("SELECT user_id FROM session WHERE token = ?", token);
 
     if (!session) {
-        res.status(400);
-        res.send();
+        res.sendStatus(400);
         return;
     }
 
@@ -279,8 +250,7 @@ export async function api_password_reset(req, res) {
 
     db.run("DELETE FROM session WHERE token = ?", token);
 
-    res.status(200);
-    res.send();
+    res.sendStatus(200);
 }
 
 /**

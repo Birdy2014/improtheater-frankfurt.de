@@ -45,8 +45,7 @@ export function subscribe(req, res) {
             req.body.subscribedTo &= 3;
 
         if (((!req.body.name || !req.body.email) && !req.body.token) || !req.body.subscribedTo || !validNewsletterType(req.body.subscribedTo)) {
-            res.status(400);
-            res.send();
+            res.sendStatus(400);
             return;
         }
 
@@ -65,17 +64,13 @@ export function subscribe(req, res) {
         let timestamp = utils.getCurrentTimestamp();
         db.run("INSERT INTO subscriber (name, email, token, timestamp, subscribedTo) VALUES (?, ?, ?, ?, ?)", req.body.name, req.body.email, token, timestamp, req.body.subscribedTo);
         sendConfirmMail({ name: req.body.name, email: req.body.email, token, subscribedTo: req.body.subscribedTo });
-        res.status(200);
-        res.send();
+        res.sendStatus(200);
     } catch(e) {
         if (e.errno === 19) {
-            res.status(409);
-            res.send();
-        } else {
-            res.status(500);
-            res.send();
-            logger.error(e);
+            res.sendStatus(409);
+            return;
         }
+        throw e;
     }
 }
 
@@ -130,6 +125,7 @@ export async function send(req, res) {
             workshop_type = workshop.type;
         } else if (workshop_type !== workshop.type) {
             res.status(400).send("Mismatching workshop types.");
+            return;
         }
 
         // FIXME: Check for duplicates
@@ -325,9 +321,9 @@ export function addSubscriber(req, res) {
     } catch(e) {
         if (e.errno === 19) {
             res.sendStatus(409);
-        } else {
-            res.sendStatus(500);
+            return;
         }
+        throw e;
     }
 }
 
