@@ -116,7 +116,7 @@ router.get("/workshop/:workshopID", auth.getUser, (req, res) => {
                 partial: true,
                 doctype: "html",
                 ...w,
-                textColor: newsletter.calcTextColor(w.color),
+                textColor: workshops.calcTextColor(w.color),
                 loggedIn: req.user !== undefined,
                 marked,
                 full_access: req.user?.full_access || false
@@ -126,7 +126,7 @@ router.get("/workshop/:workshopID", auth.getUser, (req, res) => {
                 route: "workshop/" + req.params.workshopID,
                 canonical_url: utils.config.base_url + "/workshop/" + req.params.workshopID,
                 ...w,
-                textColor: newsletter.calcTextColor(w.color),
+                textColor: workshops.calcTextColor(w.color),
                 loggedIn: req.user !== undefined,
                 marked,
                 full_access: req.user?.full_access || false

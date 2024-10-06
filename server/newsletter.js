@@ -173,7 +173,7 @@ export async function send(req, res) {
             const workshops_for_subscriber = workshops_to_send.map(workshop => {
                 return {
                     ...workshop,
-                    textColor: calcTextColor(workshop.color),
+                    textColor: workshops.calcTextColor(workshop.color),
                     website: `${utils.config.base_url}/workshop/${workshop.id}?token=${subscriber.token}`,
                     img_url: `${utils.config.base_url}/api/upload/${workshop.id}?token=${subscriber.token}`,
                 }
@@ -253,7 +253,7 @@ export async function preview(req, res) {
 
         workshops_to_send.push({
             ...workshop,
-            textColor: calcTextColor(workshop.color),
+            textColor: workshops.calcTextColor(workshop.color),
             website: `${utils.config.base_url}/workshops/${workshop.id}`,
             img_url: `${utils.config.base_url}/api/upload/${workshop.id}`,
         });
@@ -369,15 +369,4 @@ async function sendMail(type, options) {
     await utils.sleep(2000);
     mail_mutex.release();
     return smtp_response;
-}
-
-export function calcTextColor(backgroundColor) {
-    const r = parseInt(backgroundColor.substr(1, 2), 16);
-    const g = parseInt(backgroundColor.substr(3, 2), 16);
-    const b = parseInt(backgroundColor.substr(5, 2), 16);
-    const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-    if (luminance > 0.5)
-        return "#000000";
-    else
-        return "#ffffff";
 }
