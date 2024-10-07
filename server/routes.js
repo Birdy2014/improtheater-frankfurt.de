@@ -108,78 +108,78 @@ router.get("/index.html", (req, res) => {
 router.get("/workshop/:workshopID", auth.getUser, (req, res) => {
     let w = workshops.getWorkshop(req.params.workshopID, req.user !== undefined);
     if (!w) {
-        res.status(404).render("error", { status: 404, message: "Not Found" });
+        throw new utils.HTTPError(404);
+    }
+
+    if (req.query.partial) {
+        res.render("routes/workshop", {
+            partial: true,
+            doctype: "html",
+            ...w,
+            textColor: workshops.calcTextColor(w.color),
+            loggedIn: req.user !== undefined,
+            marked,
+            full_access: req.user?.full_access || false
+        });
     } else {
-        if (req.query.partial) {
-            res.render("routes/workshop", {
-                partial: true,
-                doctype: "html",
-                ...w,
-                textColor: workshops.calcTextColor(w.color),
-                loggedIn: req.user !== undefined,
-                marked,
-                full_access: req.user?.full_access || false
-            });
-        } else {
-            res.render("routes/workshop", {
-                route: "workshop/" + req.params.workshopID,
-                canonical_url: utils.config.base_url + "/workshop/" + req.params.workshopID,
-                ...w,
-                textColor: workshops.calcTextColor(w.color),
-                loggedIn: req.user !== undefined,
-                marked,
-                full_access: req.user?.full_access || false
-            });
-        }
+        res.render("routes/workshop", {
+            route: "workshop/" + req.params.workshopID,
+            canonical_url: utils.config.base_url + "/workshop/" + req.params.workshopID,
+            ...w,
+            textColor: workshops.calcTextColor(w.color),
+            loggedIn: req.user !== undefined,
+            marked,
+            full_access: req.user?.full_access || false
+        });
     }
 });
 
-router.get("/workshops/:page", auth.getUser, async (req, res) => {
+router.get("/workshops/:page", auth.getUser, route(async (req, res) => {
     if (!req.user) {
-        res.sendStatus(401);
-        return;
+        throw new utils.HTTPError(401);
     }
 
     let page = parseInt(req.params.page);
     let w = workshops.getWorkshops(req.user !== undefined, page, req.user !== undefined ? workshops.type_both : workshops.type_itf);
     if (!w || w.length === 0) {
-        res.status(404).render("error", { status: 404, message: "Not Found" });
-    } else {
-        res.render("routes/workshops", {
-            route: `workshops/${req.params.page}`,
-            doctype: "html",
-            partial: req.query.partial,
-            workshops: w,
-            loggedIn: req.user !== undefined,
-            page
-        });
+        throw new utils.HTTPError(404);
     }
-});
+
+    res.render("routes/workshops", {
+        route: `workshops/${req.params.page}`,
+        doctype: "html",
+        partial: req.query.partial,
+        workshops: w,
+        loggedIn: req.user !== undefined,
+        page
+    });
+}));
 
 router.get("/newsletter-preview", auth.getUser, newsletter.preview);
 
-router.get("/:route", auth.getUser, async (req, res) => {
+router.get("/:route", auth.getUser, route(async (req, res) => {
     if (!routes.includes(req.params.route)) {
-        res.status(404).render("error", { status: 404, message: "Not Found" });
-    } else {
-        const render_options = getRenderOptions(req.params.route, req.user, req.query);
-
-        const start_time = process.hrtime();
-
-        if (req.query.partial) {
-            res.render("routes/" + req.params.route, { partial: true, doctype: "html", ...render_options });
-        } else {
-            res.render("routes/" + req.params.route, {
-                route: req.params.route,
-                ...render_options
-            });
-        }
-
-        const duration = process.hrtime(start_time);
-        if (duration[0] >= 1)
-            logger.warn(`rendering of route '${req.params.route}' took ${duration[0]}s ${duration[1] / 1000000}ms`);
+        throw new utils.HTTPError(404);
     }
-});
+
+    const render_options = getRenderOptions(req.params.route, req.user, req.query);
+
+    const start_time = process.hrtime();
+
+    if (req.query.partial) {
+        res.render("routes/" + req.params.route, { partial: true, doctype: "html", ...render_options });
+    } else {
+        res.render("routes/" + req.params.route, {
+            route: req.params.route,
+            ...render_options
+        });
+    }
+
+    const duration = process.hrtime(start_time);
+    if (duration[0] >= 1) {
+        logger.warn(`rendering of route '${req.params.route}' took ${duration[0]}s ${duration[1] / 1000000}ms`);
+    }
+}));
 
 export default router;
 

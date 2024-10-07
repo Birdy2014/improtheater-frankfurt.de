@@ -37,7 +37,7 @@ export async function getUser(req, res, next) {
     // Log in
     const partial = req.query.partial;
     if (partial) {
-        res.sendStatus(401);
+        throw new utils.HTTPError(401);
     } else {
         res.redirect(`/login`);
     }
@@ -49,26 +49,24 @@ export async function login(req, res) {
 
     const user = db.get("SELECT id, password_hash FROM user WHERE username = ? OR email = ?", login, login);
     if (!user) {
-        res.sendStatus(403);
-        return;
+        throw new utils.HTTPError(403);
     }
 
-    if (await bcrypt.compare(password, user.password_hash)) {
-        const session_token = await create_session(user.id, session_expiration_time);
-        res.cookie("session", session_token);
-        res.sendStatus(200);
-    } else {
+    if (!await bcrypt.compare(password, user.password_hash)) {
         logger.warn(`Failed login attempt for user '${login}' from '${req.ip}'`);
-        res.sendStatus(403);
+        throw new utils.HTTPError(403);
     }
+
+    const session_token = await create_session(user.id, session_expiration_time);
+    res.cookie("session", session_token);
+    res.sendStatus(200);
 }
 
 export async function logout(req, res) {
     const session_token = req.cookies.session;
 
     if (!session_token) {
-        res.sendStatus(400);
-        return;
+        throw new utils.HTTPError(400);
     }
 
     db.run("DELETE FROM session WHERE token = ?", session_token);
@@ -78,8 +76,7 @@ export async function logout(req, res) {
 
 export async function api_create_user(req, res) {
     if (!req.user || !req.user.admin) {
-        res.sendStatus(403);
-        return;
+        throw new utils.HTTPError(403);
     }
 
     const email = req.body.email;
@@ -89,13 +86,11 @@ export async function api_create_user(req, res) {
     const full_access = (req.body.full_access ?? false) ? 1 : 0;
 
     if (!email || !username || !password) {
-        res.sendStatus(400);
-        return;
+        throw new utils.HTTPError(400);
     }
 
     if (password.length < 8) {
-        res.status(400).send("Password too short");
-        return;
+        throw new utils.HTTPError(400, "Password too short");
     }
 
     const id = crypto.randomUUID();
@@ -108,8 +103,7 @@ export async function api_create_user(req, res) {
 
 export async function api_change_user(req, res) {
     if (!req.user) {
-        res.sendStatus(403);
-        return;
+        throw new utils.HTTPError(403);
     }
 
     const email = req.body.email;
@@ -146,19 +140,16 @@ export async function api_change_user(req, res) {
     }
 
     if (!email && !username && !password && admin === undefined && full_access === undefined) {
-        res.sendStatus(400);
-        return;
+        throw new utils.HTTPError(400);
     }
 
     let id = req.body.id;
     if (id) {
         if (!req.user.admin) {
-            res.sendStatus(403);
-            return;
+            throw new utils.HTTPError(403);
         }
         if (!db.get("SELECT 1 FROM user WHERE id = ?", id)) {
-            res.sendStatus(404);
-            return;
+            throw new utils.HTTPError(404);
         }
     } else {
         id = req.user.id;
@@ -172,8 +163,7 @@ export async function api_change_user(req, res) {
     }
     if (password) {
         if (password.length < 8) {
-            res.status(400).send("Password too short");
-            return;
+            throw new utils.HTTPError(400, "Password too short");
         }
         const password_hash = await bcrypt.hash(password, 12);
         db.run("UPDATE user SET password_hash = ? WHERE id = ?", password_hash, id);
@@ -191,13 +181,11 @@ export async function api_delete_user(req, res) {
     const id = req.body.id;
 
     if (!id) {
-        res.sendStatus(400);
-        return;
+        throw new utils.HTTPError(400);
     }
 
     if (!req.user.admin) {
-        res.sendStatus(403);
-        return;
+        throw new utils.HTTPError(403);
     }
 
     db.run("DELETE FROM user WHERE id = ?", id);
@@ -208,14 +196,12 @@ export async function api_delete_user(req, res) {
 export async function api_request_password_reset(req, res) {
     const login = req.body.login;
     if (!login) {
-        res.sendStatus(400);
-        return;
+        throw new utils.HTTPError(400);
     }
     const user = db.get("SELECT id, username, email FROM user WHERE username = ? OR email = ?", login, login);
     if (!user) {
         // Return 200 to hide existing accounts?
-        res.sendStatus(404);
-        return;
+        throw new utils.HTTPError(404);
     }
 
     const session_token = await create_session(user.id, 30 * 60);
@@ -233,8 +219,7 @@ export async function api_password_reset(req, res) {
     const new_password = req.body.password;
 
     if (!token || !new_password) {
-        res.sendStatus(400);
-        return;
+        throw new utils.HTTPError(400);
     }
 
     const password_hash = await bcrypt.hash(new_password, 12);
@@ -242,8 +227,7 @@ export async function api_password_reset(req, res) {
     const session = db.get("SELECT user_id FROM session WHERE token = ?", token);
 
     if (!session) {
-        res.sendStatus(400);
-        return;
+        throw new utils.HTTPError(400);
     }
 
     db.run("UPDATE user SET password_hash = ? WHERE id = ?", password_hash, session.user_id);

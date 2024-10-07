@@ -10,8 +10,7 @@ export function get(req, res) {
     const id = req.params.id || req.query.name;
 
     if (!id) {
-        res.status(400);
-        return;
+        throw new utils.HTTPError(400);
     }
 
     const uuid_regex = /^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/;
@@ -25,8 +24,9 @@ export function get(req, res) {
         file = db.get("SELECT data, mimetype FROM upload WHERE name = ?", id);
     }
 
-    if (!file)
-        return res.sendStatus(404);
+    if (!file) {
+        throw new utils.HTTPError(404);
+    }
 
     res.status(200);
     res.set("Content-Type", file.mimetype);
@@ -47,15 +47,13 @@ export async function get_color(req, res) {
     const id = req.params.id;
 
     if (!id) {
-        res.status(400);
-        return;
+        throw new utils.HTTPError(400);
     }
 
     let file = db.get("SELECT data FROM upload WHERE id = ?", id);
 
     if (!file) {
-        res.status(404);
-        return;
+        throw new utils.HTTPError(404);
     }
 
     const { dominant } = await sharp(file.data).stats();
@@ -68,13 +66,11 @@ export async function get_color(req, res) {
 
 export async function post(req, res) {
     if (!req.files || !req.files.img || !req.user) {
-        res.sendStatus(400);
-        return;
+        throw new utils.HTTPError(400);
     }
 
     if (req.files.img.truncated) {
-        res.sendStatus(413);
-        return;
+        throw new utils.HTTPError(413);
     }
 
     const resized_image = await sharp(req.files.img.data)
@@ -93,8 +89,7 @@ export async function post(req, res) {
         res.json({ id, name });
     } catch (e) {
         if (e.code === 'SQLITE_CONSTRAINT_PRIMARYKEY') {
-            res.sendStatus(409);
-            return;
+            throw new utils.HTTPError(409);
         }
         logger.error(`Upload error: id: '${id}', name: '${name}', mimetype: '${mimetype}', size: '${size}'`);
         throw e
@@ -105,8 +100,7 @@ export function del(req, res) {
     const id = req.params.id;
 
     if (!id || !req.user) {
-        res.sendStatus(400);
-        return;
+        throw new utils.HTTPError(400);
     }
 
     db.run("DELETE FROM upload WHERE id = ?", id);

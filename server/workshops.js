@@ -27,16 +27,13 @@ export function api_get(req, res) {
 
 export function post(req, res) {
     if (!req.user) {
-        res.status(400);
-        res.json({ status: 400 });
-        return;
+        throw new utils.HTTPError(400);
     }
 
     const workshop = req.body;
 
     if (workshop.img && db.get("select count(*) from upload where id = ?", workshop.img)["count(*)"] != 1) {
-        res.status(400).send("Nicht gespeichert: Ungültiges Bild");
-        return;
+        throw new utils.HTTPError(400, "Nicht gespeichert: Ungültiges Bild");
     }
 
     let error_message = undefined;
@@ -53,34 +50,29 @@ export function post(req, res) {
     let id = editWorkshop(workshop);
 
     if (error_message) {
-        res.status(400).send(error_message);
-        return;
+        throw new utils.HTTPError(400, error_message);
     }
 
-    res.status(200);
-    res.json({ status: 200, data: { id } });
+    res.status(200).json({ id });
 }
 
 export function del(req, res) {
     if (!req.user || !req.body.id) {
-        res.status(400);
-        res.json({ status: 400 });
-        return;
+        throw new utils.HTTPError(400);
     }
 
     deleteWorkshop(req.body.id);
-    res.status(200);
-    res.json({ status: 200 });
+    res.sendStatus(200);
 }
 
 export function copy(req, res) {
     if (!req.user || !req.body.id) {
-        return res.sendStatus(400);
+        throw new utils.HTTPError(400);
     }
 
     const workshop = getWorkshop(req.body.id, true);
     if (!workshop) {
-        return res.sendStatus(404);
+        throw new utils.HTTPError(404);
     }
 
     const timestamp = utils.getCurrentTimestamp();

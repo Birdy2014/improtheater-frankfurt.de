@@ -1,3 +1,4 @@
+import * as logger from "./logger.js";
 import { fileURLToPath } from "url";
 import path from "path";
 import fs from "fs";
@@ -34,5 +35,28 @@ export function wrapRoute(route) {
         } catch(err) {
             next(err);
         }
+    }
+}
+
+function statusMessage(status) {
+    switch (status) {
+        case 400: return "Bad Request";
+        case 401: return "Unauthorized";
+        case 403: return "Forbidden";
+        case 404: return "Not Found";
+        case 409: return "Conflict";
+        case 413: return "Payload Too Large";
+    };
+    logger.warn(`Missing default status message for code '{status}'`);
+    return "";
+}
+
+export class HTTPError extends Error {
+    status;
+
+    constructor(status, message) {
+        super(message || statusMessage(status));
+        this.name = "HTTPError";
+        this.status = status;
     }
 }

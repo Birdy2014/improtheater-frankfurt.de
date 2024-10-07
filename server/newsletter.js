@@ -45,8 +45,7 @@ export function subscribe(req, res) {
             req.body.subscribedTo &= 3;
 
         if (((!req.body.name || !req.body.email) && !req.body.token) || !req.body.subscribedTo || !validNewsletterType(req.body.subscribedTo)) {
-            res.sendStatus(400);
-            return;
+            throw new utils.HTTPError(400);
         }
 
         // User is already subscribed
@@ -67,8 +66,7 @@ export function subscribe(req, res) {
         res.sendStatus(200);
     } catch(e) {
         if (e.errno === 19) {
-            res.sendStatus(409);
-            return;
+            throw new utils.HTTPError(409);
         }
         throw e;
     }
@@ -84,12 +82,14 @@ export function confirm(req, res) {
 }
 
 export function unsubscribe(req, res) {
-    if (!req.body.token)
-        return res.sendStatus(400);
+    if (!req.body.token) {
+        throw new utils.HTTPError(400);
+    }
 
     let subscriber = getSubscriber(req.body.token);
-    if (!subscriber)
-        return res.sendStatus(404);
+    if (!subscriber) {
+        throw new utils.HTTPError(404);
+    }
 
     const unsubscribeFrom = req.body.type || 0xFF
 
@@ -103,8 +103,7 @@ export function unsubscribe(req, res) {
 
 export async function send(req, res) {
     if (!req.user || !req.body.workshops) {
-        res.sendStatus(400);
-        return;
+        throw new utils.HTTPError(400);
     }
 
     const workshops_to_send = [];
@@ -113,19 +112,16 @@ export async function send(req, res) {
     for (const workshop_id of req.body.workshops) {
         const workshop = workshops.getWorkshop(workshop_id, req.body.test); // Testmail can be sent without publishing
         if (!workshop) {
-            res.sendStatus(404);
-            return;
+            throw new utils.HTTPError(404);
         }
         if (workshop.newsletterSent && !req.user.full_access) {
-            res.sendStatus(409);
-            return;
+            throw new utils.HTTPError(409);
         }
 
         if (workshop_type === undefined) {
             workshop_type = workshop.type;
         } else if (workshop_type !== workshop.type) {
-            res.status(400).send("Mismatching workshop types.");
-            return;
+            throw new utils.HTTPError(400, "Mismatching workshop types.");
         }
 
         // FIXME: Check for duplicates
@@ -133,8 +129,7 @@ export async function send(req, res) {
         {
             const error_message = workshops.not_ready_for_publishing_error(workshop)
             if (error_message) {
-                res.status(400).send(error_message);
-                return;
+                throw new utils.HTTPError(400, error_message);
             }
         }
         workshops_to_send.push(workshop);
@@ -227,8 +222,7 @@ export async function send(req, res) {
 // TODO: Put shared stuff of this and newsletter.send in one function
 export async function preview(req, res) {
     if (!req.user) {
-        res.sendStatus(403);
-        return;
+        throw new utils.HTTPError(403);
     }
 
     const workshop_ids_to_send = Array.isArray(req.query.workshops)
@@ -240,15 +234,13 @@ export async function preview(req, res) {
     for (const workshop_id of workshop_ids_to_send) {
         const workshop = workshops.getWorkshop(workshop_id, true);
         if (!workshop) {
-            res.sendStatus(404);
-            return;
+            throw new utils.HTTPError(404);
         }
 
         if (workshop_type === undefined) {
             workshop_type = workshop.type;
         } else if (workshop_type !== workshop.type) {
-            res.status(400).send("Mismatching workshop types.");
-            return;
+            throw new utils.HTTPError(400, "Mismatching workshop types.");
         }
 
         workshops_to_send.push({
@@ -288,8 +280,9 @@ export async function preview(req, res) {
 }
 
 export function exportSubscribers(req, res) {
-    if (!req.user)
-        return res.sendStatus(403);
+    if (!req.user) {
+        throw new utils.HTTPError(403);
+    }
 
     let subscribers = getSubscribers();
     let csv = "email,name,firstname,lastname,subscribedate\r\n";
@@ -301,16 +294,17 @@ export function exportSubscribers(req, res) {
         time = time.substring(0, time.lastIndexOf(":"));
         csv += `${subscriber.email},${subscriber.name},${firstname},${lastname},${time}\r\n`;
     }
-    res.status(200);
-    res.send(csv);
+    res.status(200).send(csv);
 }
 
 export function addSubscriber(req, res) {
-    if (!req.user)
-        return res.sendStatus(403);
+    if (!req.user) {
+        throw new utils.HTTPError(403);
+    }
 
-    if (!req.body.name || !req.body.email || !req.body.subscribedTo || !validNewsletterType(req.body.subscribedTo))
-        return res.sendStatus(400);
+    if (!req.body.name || !req.body.email || !req.body.subscribedTo || !validNewsletterType(req.body.subscribedTo)) {
+        throw new utils.HTTPError(400);
+    }
 
     try {
         removeExpiredSubscribers();
@@ -320,8 +314,7 @@ export function addSubscriber(req, res) {
         res.sendStatus(200);
     } catch(e) {
         if (e.errno === 19) {
-            res.sendStatus(409);
-            return;
+            throw new HTTPError(409);
         }
         throw e;
     }

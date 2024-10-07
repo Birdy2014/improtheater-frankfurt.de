@@ -25,13 +25,22 @@ app.use(router);
 
 // Log errors
 app.use((err, req, res, next) => {
-    logger.error(err);
-    res.status(500);
+    let status;
+    let message;
+    if (err instanceof utils.HTTPError) {
+        status = err.status;
+        message = err.message;
+    } else {
+        logger.error(err);
+        status = 500;
+        message = "Internal Server Error";
+    }
+    res.status(status);
 
     if (req.accepts("json", "html") == "html") {
-        res.render("error", { status: 500, message: "Internal Server Error" });
+        res.render("error", { status, message });
     } else {
-        res.json({ status: 500, data: { message: err.message } });
+        res.send(message);
     }
 });
 
