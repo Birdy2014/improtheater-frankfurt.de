@@ -106,7 +106,7 @@ export function not_ready_for_publishing_error(workshop) {
         return "Der Workshop ist eine Kopie.";
     }
     if (workshop.title === defaultTitle || workshop.content === defaultContent) {
-        return "Der Workshop enthält Standartwerte.";
+        return "Der Workshop enthält Standardwerte.";
     }
 
     return undefined;
