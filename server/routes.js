@@ -16,7 +16,6 @@ const router = express.Router();
 
 // Get all routes
 const routes = [
-    "hygienekonzept",
     "impressum",
     "datenschutz",
     "newsletter",
