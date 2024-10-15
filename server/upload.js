@@ -33,10 +33,10 @@ export function get(req, res) {
     res.send(Buffer.from(file.data, "binary"));
 
     if (req.query.token) {
-        let workshop = db.get("SELECT id FROM workshop WHERE img = ? ORDER BY begin DESC", id);
-        if (!workshop) {
-            workshop = db.get("SELECT id FROM workshop WHERE id = ? ORDER BY begin DESC", id);
-        }
+        const workshop = uuid_regex.test(id)
+            ? db.get("SELECT id FROM workshop WHERE img = ? ORDER BY begin DESC", id)
+            : db.get("SELECT id FROM workshop WHERE id = ? ORDER BY begin DESC", id);
+
         if (workshop) {
             db.run("UPDATE subscriber SET last_viewed_newsletter = ? WHERE token = ? AND last_viewed_newsletter < ?", workshop.id, req.query.token, workshop.id);
         }
