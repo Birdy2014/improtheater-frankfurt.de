@@ -75,9 +75,10 @@ export async function post(req, res) {
 
     const resized_image = await sharp(req.files.img.data)
         .resize(900, 400, { fit: 'inside' })
+        .toFormat("webp")
         .toBuffer()
 
-    const mimetype = req.files.img.mimetype;
+    const mimetype = "image/webp";
     const size = resized_image.length;
     const name = Buffer.from(req.files.img.name, "latin1").toString("utf-8");
     const id = crypto.randomUUID();
