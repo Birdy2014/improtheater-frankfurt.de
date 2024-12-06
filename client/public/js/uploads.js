@@ -49,12 +49,17 @@ function addImage(image_id, name, prepend) {
     image_delete_element.onclick = () => deleteImage(image_id);
     image_delete_element.innerText = "LÖSCHEN";
 
+    const image_footer_element = document.createElement("div");
+    image_footer_element.classList = "image-footer";
+    image_footer_element.appendChild(image_name_element);
+    image_footer_element.appendChild(image_delete_element);
+
     const image_container_element = document.createElement("div");
     image_container_element.id = "uploads-image-" + image_id;
+    image_container_element.classList = "uploads-image";
     image_container_element.style.height = "auto";
     image_container_element.appendChild(image);
-    image_container_element.appendChild(image_name_element);
-    image_container_element.appendChild(image_delete_element);
+    image_container_element.appendChild(image_footer_element);
 
     const images_list = document.getElementById("uploads-images-list");
     if (prepend)
