@@ -64,6 +64,8 @@ export async function get_color(req, res) {
     res.json(hex);
 }
 
+const file_extension_regex = RegExp("^(.*)\.([a-zA-Z]{3}|[a-zA-Z]{4})$");
+
 export async function post(req, res) {
     if (!req.files || !req.files.img || !req.user) {
         throw new utils.HTTPError(400);
@@ -75,12 +77,12 @@ export async function post(req, res) {
 
     const resized_image = await sharp(req.files.img.data)
         .resize(900, 400, { fit: 'inside' })
-        .toFormat("webp")
+        .toFormat("jpeg")
         .toBuffer()
 
-    const mimetype = "image/webp";
+    const mimetype = "image/jpeg";
     const size = resized_image.length;
-    const name = Buffer.from(req.files.img.name, "latin1").toString("utf-8");
+    const name = Buffer.from(req.files.img.name, "latin1").toString("utf-8").replace(file_extension_regex, "$1");
     const id = crypto.randomUUID();
 
     try {
