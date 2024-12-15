@@ -95,6 +95,10 @@ async function copyWorkshop() {
 }
 
 function editWorkshopImage() {
+    const id = get_current_workshop_id();
+    if (workshops[id].buttons.previewToggled) {
+        return;
+    }
     window.sessionStorage.setItem("editWorkshop", currentRoute);
     navigate("uploads");
 }
@@ -234,6 +238,7 @@ function toggleWorkshopPreview() {
     let time_preview = container.querySelector(".workshop-time");
     let properties = container.querySelector(".workshop-properties");
     let preview_button = container.querySelector(".edit-preview");
+    let image = container.querySelector(".workshop-image");
 
     let workshop_edit_fields = container.querySelectorAll(".workshop-edit-field");
     let workshop_preview_fields = container.querySelectorAll(".workshop-preview-field");
@@ -243,6 +248,7 @@ function toggleWorkshopPreview() {
         properties.style.backgroundColor = null;
         properties.style.color = null;
         preview_button.innerHTML = "Bearbeiten beenden";
+        image.style.cursor = "pointer";
 
         workshop_edit_fields.forEach(element => element.style.display = "block");
         workshop_preview_fields.forEach(element => element.style.display = "none");
@@ -262,6 +268,7 @@ function toggleWorkshopPreview() {
         properties.style.backgroundColor = workshops[id].texts.color;
         properties.style.color = workshop_calcTextColor(workshops[id].texts.color);
         preview_button.innerHTML = "Bearbeiten";
+        image.style.cursor = "default";
 
         workshop_edit_fields.forEach(element => element.style.display = "none");
         workshop_preview_fields.forEach(element => element.style.display = "block");
