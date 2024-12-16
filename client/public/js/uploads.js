@@ -7,7 +7,7 @@ async function upload() {
         const { id, name } = response.data;
         addImage(id, name, true);
         show_message(MESSAGE_SUCCESS, "Hochgeladen!");
-        selectImage(name);
+        selectImage(id);
     } catch (e) {
         if (e.response.status === 409) {
             show_message(MESSAGE_ERROR, "Es existiert bereits ein Bild mit dem gleichen Namen.", false);
