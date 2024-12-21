@@ -41,7 +41,7 @@ router.use(function (req, res, next) {
 
 // Set security headers
 router.use((_, res, next) => {
-    res.set("Content-Security-Policy", "default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; frame-ancestors https://improglycerin.de;");
+    res.set("Content-Security-Policy", "default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; img-src 'self' https://improglycerin.de; frame-ancestors https://improglycerin.de;");
     next();
 })
 
