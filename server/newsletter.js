@@ -2,6 +2,7 @@ import assert from "assert";
 import pug from "pug";
 import { Marked } from "marked";
 import { Mutex } from "async-mutex";
+import { SqliteError } from "better-sqlite3";
 import db from "./db.js";
 import * as utils from "./utils.js";
 import * as logger from "./logger.js";
@@ -66,7 +67,7 @@ export function subscribe(req, res) {
         sendConfirmMail({ name: req.body.name, email: req.body.email, token, subscribedTo: req.body.subscribedTo });
         res.sendStatus(200);
     } catch(e) {
-        if (e.errno === 19) {
+        if (e instanceof SqliteError && e.code === "SQLITE_CONSTRAINT_PRIMARYKEY") {
             throw new utils.HTTPError(409);
         }
         throw e;
@@ -295,7 +296,7 @@ export function addSubscriber(req, res) {
         db.run("INSERT INTO subscriber (name, email, token, timestamp, confirmed, subscribedTo) VALUES (?, ?, ?, ?, 1, ?)", req.body.name, req.body.email, token, timestamp, req.body.subscribedTo);
         res.sendStatus(200);
     } catch(e) {
-        if (e.errno === 19) {
+        if (e instanceof SqliteError && e.code === "SQLITE_CONSTRAINT_PRIMARYKEY") {
             throw new HTTPError(409);
         }
         throw e;
