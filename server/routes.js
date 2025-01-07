@@ -10,8 +10,6 @@ import * as upload from "./upload.js";
 import * as utils from "./utils.js";
 import * as logger from "./logger.js";
 
-const route = utils.wrapRoute;
-
 const router = express.Router();
 
 // Get all routes
@@ -51,42 +49,42 @@ function cors_allow_all(_, res, next) {
 }
 
 // Backend
-router.get("/robots.txt", (req, res) => res.sendFile(path.join(utils.project_path, "/client/robots.txt")));
-router.post("/api/login", route(auth.login));
-router.post("/api/logout", route(auth.logout));
-router.post("/api/user", auth.getUser, route(auth.api_create_user));
-router.put("/api/user", auth.getUser, route(auth.api_change_user));
-router.delete("/api/user", auth.getUser, route(auth.api_delete_user));
-router.post("/api/user/request_password_reset", route(auth.api_request_password_reset));
-router.post("/api/user/password_reset", route(auth.api_password_reset));
-router.get("/api/workshops", auth.getUser, route(workshops.api_get));
-router.post("/api/workshops", auth.getUser, route(workshops.post));
-router.delete("/api/workshops", auth.getUser, route(workshops.del));
-router.post("/api/workshop/copy", auth.getUser, route(workshops.copy));
-router.post("/api/newsletter/subscribe", route(newsletter.subscribe));
-router.get("/api/newsletter/confirm", route(newsletter.confirm));
-router.post("/api/newsletter/unsubscribe", route(newsletter.unsubscribe));
-router.post("/api/newsletter/send", auth.getUser, route(newsletter.send));
-router.get("/api/newsletter/export", auth.getUser, route(newsletter.exportSubscribers));
-router.post("/api/newsletter/add", auth.getUser, route(newsletter.addSubscriber));
-router.get("/api/upload", route(upload.get)); // Old
-router.get("/api/upload/:id", route(upload.get));
-router.get("/api/upload-color/:id", route(upload.get_color));
+router.get("/robots.txt", (_, res) => res.sendFile(path.join(utils.project_path, "/client/robots.txt")));
+router.post("/api/login", auth.login);
+router.post("/api/logout", auth.logout);
+router.post("/api/user", auth.getUser, auth.api_create_user);
+router.put("/api/user", auth.getUser, auth.api_change_user);
+router.delete("/api/user", auth.getUser, auth.api_delete_user);
+router.post("/api/user/request_password_reset", auth.api_request_password_reset);
+router.post("/api/user/password_reset", auth.api_password_reset);
+router.get("/api/workshops", auth.getUser, workshops.api_get);
+router.post("/api/workshops", auth.getUser, workshops.post);
+router.delete("/api/workshops", auth.getUser, workshops.del);
+router.post("/api/workshop/copy", auth.getUser, workshops.copy);
+router.post("/api/newsletter/subscribe", newsletter.subscribe);
+router.get("/api/newsletter/confirm", newsletter.confirm);
+router.post("/api/newsletter/unsubscribe", newsletter.unsubscribe);
+router.post("/api/newsletter/send", auth.getUser, newsletter.send);
+router.get("/api/newsletter/export", auth.getUser, newsletter.exportSubscribers);
+router.post("/api/newsletter/add", auth.getUser, newsletter.addSubscriber);
+router.get("/api/upload", upload.get); // Old
+router.get("/api/upload/:id", upload.get);
+router.get("/api/upload-color/:id", upload.get_color);
 router.post("/api/upload", auth.getUser, fileUpload({ limits: { fileSize: 10 * 1024 * 1024 } }), upload.post);
-router.delete("/api/upload/:id", auth.getUser, route(upload.del));
+router.delete("/api/upload/:id", auth.getUser, upload.del);
 
 // Libraries
-router.get("/lib/nprogress.js", (req, res) => res.sendFile(path.join(utils.project_path, "/node_modules/nprogress/nprogress.js")));
-router.get("/lib/nprogress.css", (req, res) => res.sendFile(path.join(utils.project_path, "/node_modules/nprogress/nprogress.css")));
-router.get("/lib/axios.min.js", (req, res) => res.sendFile(path.join(utils.project_path, "/node_modules/axios/dist/axios.min.js")));
-router.get("/lib/marked.min.js", (req, res) => res.sendFile(path.join(utils.project_path, "/node_modules/marked/marked.min.js")));
+router.get("/lib/nprogress.js", (_, res) => res.sendFile(path.join(utils.project_path, "/node_modules/nprogress/nprogress.js")));
+router.get("/lib/nprogress.css", (_, res) => res.sendFile(path.join(utils.project_path, "/node_modules/nprogress/nprogress.css")));
+router.get("/lib/axios.min.js", (_, res) => res.sendFile(path.join(utils.project_path, "/node_modules/axios/dist/axios.min.js")));
+router.get("/lib/marked.min.js", (_, res) => res.sendFile(path.join(utils.project_path, "/node_modules/marked/marked.min.js")));
 
 // Thunderbird needs CORS to be enabled to load fonts
 router.use("/roboto", cors_allow_all, express.static(path.join(utils.project_path, "/node_modules/@fontsource/roboto/files")));
 
 router.use("/public", express.static(path.join(utils.project_path, "/client/public")));
 const css = sass.compile(path.join(utils.project_path, "/client/scss/index.scss")).css;
-router.use("/index.css", (req, res) => {
+router.use("/index.css", (_, res) => {
     res.contentType("text/css");
     if (process.env.NODE_ENV === "development") {
         res.send(sass.compile(path.join(utils.project_path, "/client/scss/index.scss")).css);
@@ -96,12 +94,12 @@ router.use("/index.css", (req, res) => {
 });
 
 // Frontend
-router.get("/", (req, res) => {
+router.get("/", (_, res) => {
     res.redirect("/start")
 });
 
 // Workaround for apache
-router.get("/index.html", (req, res) => {
+router.get("/index.html", (_, res) => {
     res.redirect("/start");
 });
 
@@ -134,7 +132,7 @@ router.get("/workshop/:workshopID", auth.getUser, (req, res) => {
     }
 });
 
-router.get("/workshops/:page", auth.getUser, route(async (req, res) => {
+router.get("/workshops/:page", auth.getUser, async (req, res) => {
     if (!req.user) {
         throw new utils.HTTPError(401);
     }
@@ -153,11 +151,11 @@ router.get("/workshops/:page", auth.getUser, route(async (req, res) => {
         loggedIn: req.user !== undefined,
         page
     });
-}));
+});
 
 router.get("/newsletter-preview", auth.getUser, newsletter.preview);
 
-router.get("/:route", auth.getUser, route(async (req, res) => {
+router.get("/:route", auth.getUser, async (req, res) => {
     if (!routes.includes(req.params.route)) {
         throw new utils.HTTPError(404);
     }
@@ -179,7 +177,7 @@ router.get("/:route", auth.getUser, route(async (req, res) => {
     if (duration[0] >= 1) {
         logger.warn(`rendering of route '${req.params.route}' took ${duration[0]}s ${duration[1] / 1000000}ms`);
     }
-}));
+});
 
 export default router;
 

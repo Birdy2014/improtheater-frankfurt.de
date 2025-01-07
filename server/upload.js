@@ -28,9 +28,9 @@ export function get(req, res) {
         throw new utils.HTTPError(404);
     }
 
-    res.status(200);
-    res.set("Content-Type", file.mimetype);
-    res.send(Buffer.from(file.data, "binary"));
+    res.status(200)
+        .set("Content-Type", file.mimetype)
+        .send(Buffer.from(file.data, "binary"));
 
     if (req.query.token) {
         const workshop = uuid_regex.test(id)
@@ -60,8 +60,7 @@ export async function get_color(req, res) {
     const to_hex = number => ("00" + number.toString(16)).slice(-2);
     const hex = `#${to_hex(dominant.r)}${to_hex(dominant.g)}${to_hex(dominant.b)}`
 
-    res.status(200);
-    res.json(hex);
+    res.status(200).json(hex);
 }
 
 const file_extension_regex = RegExp("^(.*)\.([a-zA-Z]{3}|[a-zA-Z]{4})$");
@@ -88,8 +87,7 @@ export async function post(req, res) {
     try {
         db.run("INSERT INTO upload (id, name, mimetype, size, data, user_id, time) VALUES (?, ?, ?, ?, ?, ?, ?)", id, name, mimetype, size, resized_image, req.user.id, utils.getCurrentTimestamp());
         invalidateUploadsCache();
-        res.status(200);
-        res.json({ id, name });
+        res.status(200).json({ id, name });
     } catch (e) {
         if (e.code === 'SQLITE_CONSTRAINT_PRIMARYKEY') {
             throw new utils.HTTPError(409);

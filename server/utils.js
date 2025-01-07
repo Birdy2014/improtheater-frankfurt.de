@@ -28,16 +28,6 @@ export function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-export function wrapRoute(route) {
-    return async (req, res, next) => {
-        try {
-            await route(req, res, next);
-        } catch(err) {
-            next(err);
-        }
-    }
-}
-
 function statusMessage(status) {
     switch (status) {
         case 400: return "Bad Request";
