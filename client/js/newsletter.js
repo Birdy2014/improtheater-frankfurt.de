@@ -31,7 +31,7 @@ async function subscribe(event) {
     }
 }
 
-function newsletter_checkValidity() {
+function check_validity() {
     const checkbox_id_prefix = "input-newsletter-";
     let checkboxes = document.querySelectorAll("input[type='checkbox']");
     let valid = false;
@@ -60,7 +60,7 @@ async function unsubscribe(event) {
             return;
         }
         // Send request
-        const token = document.getElementById("newsletter-unsubscribe-token").innerText;
+        const token = document.getElementById("newsletter-subscriber-token").innerText;
         await axios.post("/api/newsletter/unsubscribe", { token, type });
         document.getElementById("newsletter-unsubscribe").style.display = "none";
         document.getElementById("newsletter-unsubscribe-success").style.removeProperty("display");
@@ -75,27 +75,35 @@ async function unsubscribe(event) {
     }
 }
 
-async function newsletter_subscribe_other(token) {
+async function subscribe_additional() {
     try {
+        const token = document.getElementById("newsletter-subscriber-token").innerText;
         await axios.post("/api/newsletter/subscribe", { token, subscribedTo: 3 });
-        document.getElementById("newsletter-subscribe-other").style.display = "none";
-        document.getElementById("newsletter-subscribe-other-success").style.removeProperty("display");
+        document.getElementById("newsletter-subscribe-additional").style.display = "none";
+        document.getElementById("newsletter-subscribe-additional-success").style.removeProperty("display");
     } catch(e) {
-        document.getElementById("newsletter-subscribe-other").style.display = "none";
-        document.getElementById("newsletter-subscribe-other-error").style.removeProperty("display");
+        document.getElementById("newsletter-subscribe-additional").style.display = "none";
+        document.getElementById("newsletter-subscribe-additional-error").style.removeProperty("display");
     }
 }
 
-const subscribe_form = document.getElementById("newsletter-form");
-if (subscribe_form) {
-    subscribe_form.addEventListener("submit", subscribe);
-    subscribe_form.addEventListener("change", newsletter_checkValidity);
-    newsletter_checkValidity();
-}
+window.newsletter_init = () => {
+    const subscribe_form = document.getElementById("newsletter-form");
+    if (subscribe_form) {
+        subscribe_form.addEventListener("submit", subscribe);
+        subscribe_form.addEventListener("change", check_validity);
+        check_validity();
+    }
 
-const unsubscribe_form = document.getElementById("newsletter-unsubscribe-form");
-if (unsubscribe_form) {
-    unsubscribe_form.addEventListener("submit", unsubscribe);
-    unsubscribe_form.addEventListener("change", newsletter_checkValidity);
-    newsletter_checkValidity();
+    const unsubscribe_form = document.getElementById("newsletter-unsubscribe-form");
+    if (unsubscribe_form) {
+        unsubscribe_form.addEventListener("submit", unsubscribe);
+        unsubscribe_form.addEventListener("change", check_validity);
+        check_validity();
+    }
+
+    const confirm_subscribe_additional = document.getElementById("input-newsletter-subscribe-additional-confirm");
+    if (confirm_subscribe_additional) {
+        confirm_subscribe_additional.addEventListener("click", _ => subscribe_additional());
+    }
 }

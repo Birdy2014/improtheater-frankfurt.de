@@ -10,12 +10,16 @@ window.onload = () => {
     // load scripts
     let route = url.pathname.substring(1);
     let container = document.getElementById(route);
-    loadPage(container, route, url.search);
+    initRoute(route, container, url.search);
+
+    document.querySelectorAll(".message-text").forEach(element => element.addEventListener("click", _ => toggle_message_details()));
+    document.querySelectorAll(".message-close").forEach(element => element.addEventListener("click", _ => close_message()));
+    document.getElementById("menu-toggle-button").addEventListener("click", _ => toggleMenu());
+    document.getElementById("logout-button")?.addEventListener("click", _ => logout());
 }
 
 document.onclick = event => {
-    event = event || window.event;
-    let element = event.target || event.srcElement;
+    let element = event.target;
     if (element.tagName !== "A") element = element.closest("a");
 
     let dropdownContent;
@@ -58,7 +62,7 @@ window.onpopstate = _ => {
 window.onscroll = _ => {
     const navbar = document.getElementsByTagName("nav")[0];
     const footer = document.querySelector("footer");
-    if (window.pageYOffset > 0) {
+    if (window.scrollY > 0) {
         navbar.classList.add("nav-sticky");
         footer.style.marginBottom = "25px";
     } else {
@@ -74,7 +78,7 @@ window.onscroll = _ => {
  * @param {boolean} params.push_history - don't push route to browser history
  * @param {boolean} params.preload - only download, don't navigate
  */
-async function navigate(to, params = { }) {
+export async function navigate(to, params = { }) {
     params = Object.assign({
         reload: false,
         push_history: true,
@@ -94,7 +98,6 @@ async function navigate(to, params = { }) {
         document.getElementById("wrapper").appendChild(targetContainer);
     }
     let containers = document.getElementsByClassName("container");
-    let load_promise;
     if (targetContainer.childElementCount === 0 || params.reload) {
         // clear container
         targetContainer.innerHTML = "";
@@ -121,12 +124,9 @@ async function navigate(to, params = { }) {
         }
         targetContainer.innerHTML = website.data;
 
-        load_promise = new Promise(resolve => {
-            setTimeout(() => loadPage(targetContainer, route, to.includes("?") ? to.substring(to.indexOf("?")) : "").then(resolve), 100);
-        });
+        initRoute(route, targetContainer, to.includes("?") ? to.substring(to.indexOf("?")) : "");
     }
     if (params.preload) {
-        await load_promise;
         return;
     }
     // set link anctive
@@ -152,7 +152,6 @@ async function navigate(to, params = { }) {
     if (params.push_history) {
         history.pushState({}, "", "/" + route);
     }
-    await load_promise;
 }
 
 function toggleMenu(hideMenu) {
@@ -182,26 +181,8 @@ function toggleMenu(hideMenu) {
 }
 
 // Initial page load scripts
-function loadPage(parent, page, query) {
-    return new Promise(resolve => {
-        if (page.includes("/")) page = page.substring(0, page.indexOf("/"));
-        if (!document.getElementById("script-" + page)) {
-            let script = document.createElement("script");
-            script.id = "script-" + page;
-            script.src = "/public/js/" + page + ".js";
-            script.onload = () => {
-                initRoute(page, parent, query);
-                resolve();
-            }
-            document.head.append(script);
-        } else {
-            initRoute(page, parent, query);
-            resolve();
-        }
-    });
-}
-
 function initRoute(route, container, query) {
+    if (route.includes("/")) route = route.substring(0, route.indexOf("/"));
     if (window[route + "_init"])
         window[route + "_init"](container, query);
 }
@@ -212,11 +193,11 @@ async function logout() {
 }
 
 // Alerts
-const MESSAGE_SUCCESS = "#message-success";
-const MESSAGE_ERROR = "#message-error";
+export const MESSAGE_SUCCESS = "#message-success";
+export const MESSAGE_ERROR = "#message-error";
 let message_timeout;
 
-function show_message(type, message, autohide) {
+export function show_message(type, message, autohide) {
     let element = document.querySelector(type);
     if (!element)
         throw new Error("Invalid message type");
@@ -255,7 +236,7 @@ function toggle_message_details() {
         textElement.style["white-space"] = "normal";
 }
 
-function showError(error) {
+export function show_error(error) {
     let errorText = "Ein Fehler ist aufgetreten: ";
     if (error.response) {
         errorText += "Status: " + JSON.stringify(error.response.status, null, 4) + "; ";
@@ -266,7 +247,7 @@ function showError(error) {
     show_message(MESSAGE_ERROR, errorText, false);
 }
 
-function show_confirm_message(text) {
+export function show_confirm_message(text) {
     if (confirm_message_resolve === undefined)
         init_confirm_message()
 

@@ -3,6 +3,7 @@ import path from "path";
 import fileUpload from "express-fileupload";
 import { marked } from "marked";
 import * as sass from "sass";
+import * as esbuild from "esbuild";
 import * as auth from "./auth.js";
 import * as workshops from "./workshops.js";
 import * as newsletter from "./newsletter.js";
@@ -90,6 +91,25 @@ router.use("/index.css", (_, res) => {
         res.send(sass.compile(path.join(utils.project_path, "/client/scss/index.scss")).css);
     } else {
         res.send(css);
+    }
+});
+
+const esbuild_context_js = await esbuild.context({
+    entryPoints: [ path.join(utils.project_path, "/client/js/index.js") ],
+    bundle: true,
+    write: false,
+    outdir: path.join(utils.project_path, "dist"),
+});
+let esbuild_result;
+router.use("/index.js", async (_, res) => {
+    if (esbuild_result === undefined || process.env.NODE_ENV === "development") {
+        esbuild_result = await esbuild_context_js.rebuild();
+    }
+    for (const file of esbuild_result.outputFiles) {
+        if (file.path.endsWith("index.js")) {
+            res.contentType("application/javascript").send(file.text);
+            return;
+        }
     }
 });
 

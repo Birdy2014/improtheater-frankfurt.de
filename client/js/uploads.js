@@ -1,3 +1,5 @@
+import { show_confirm_message, show_message, MESSAGE_SUCCESS, MESSAGE_ERROR, show_error, navigate } from "./navigator.js";
+
 async function upload() {
     let file = document.getElementById("input-uploads-image").files[0];
     let formData = new FormData();
@@ -12,7 +14,7 @@ async function upload() {
         if (e.response.status === 409) {
             show_message(MESSAGE_ERROR, "Es existiert bereits ein Bild mit dem gleichen Namen.", false);
         } else {
-            showError(e);
+            show_error(e);
         }
     }
 }
@@ -68,13 +70,8 @@ function addImage(image_id, name, prepend) {
         images_list.appendChild(image_container_element);
 }
 
-function uploads_init() {
-    const lazyloadImages = document.querySelectorAll(".lazy");
-
-   for (const image of lazyloadImages) {
-        image.src = image.dataset.src;
-        image.addEventListener("load", () => {
-            image.parentElement.style.height = "auto";
-        });
-    }
+window.uploads_init = () => {
+    document.querySelectorAll(".uploads-image").forEach(element => element.addEventListener("click", _ => selectImage(element.dataset.id)));
+    document.querySelectorAll(".image-footer > a").forEach(element => element.addEventListener("click", _ => deleteImage(element.dataset.id)));
+    document.getElementById("input-upload-button").addEventListener("click", _ => upload());
 }

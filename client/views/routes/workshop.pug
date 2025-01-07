@@ -15,7 +15,7 @@ block routeContent
             input.workshop-input.workshop-edit-field.edit-title(type="text" autocomplete="off" value=title)
 
     div
-        img.workshop-image(src=img_url onclick=loggedIn ? "editWorkshopImage()" : "")
+        img.workshop-image(src=img_url)
         .workshop-right
             if loggedIn || !propertiesHidden
                 dl.workshop-right-item.workshop-properties(style=`background-color: ${color}; color: ${textColor}`)
@@ -86,15 +86,15 @@ block routeContent
     if loggedIn
         .workshop-options
             = "Workshop: "
-            a(href="javascript:void(0)" onclick="changeWorkshopValues()" class="edit-button edit-save") Speichern
+            a.edit-button.edit-save(href="javascript:void(0)") Speichern
             = " | "
-            a(href="javascript:void(0)" onclick="toggleWorkshopPreview()" class="edit-button edit-preview") Bearbeiten
+            a.edit-button.edit-edit(href="javascript:void(0)") Bearbeiten
             = " | "
-            a(href="javascript:void(0)" onclick="publishWorkshop()" class="edit-button edit-publish") #{visible ? "Unsichtbar machen" : "Veröffentlichen"}
+            a.edit-button.edit-publish(href="javascript:void(0)") #{visible ? "Unsichtbar machen" : "Veröffentlichen"}
             = " | "
-            a(href="javascript:void(0)" onclick="deleteWorkshop()" class="edit-button") Löschen
+            a.edit-button.edit-delete(href="javascript:void(0)") Löschen
             = " | "
-            a.edit-button(href="javascript:void(0)" onclick="copyWorkshop()") Kopieren
+            a.edit-button.edit-copy(href="javascript:void(0)") Kopieren
             br
             unless newsletterSent && !full_access
                 span.edit-newsletter
@@ -102,10 +102,10 @@ block routeContent
                     if newsletterSent
                         strong.newsletter-sent BEREITS VERSENDET
                         = " "
-                    a.edit-button(href="javascript:void(0)" onclick="sendNewsletter()") Senden
+                    a.edit-button.edit-send(href="javascript:void(0)") Senden
                     = " | "
-                    a.edit-button(href="javascript:void(0)" onclick="showNewsletterPreview()") Vorschau
+                    a.edit-button.edit-preview(href="javascript:void(0)") Vorschau
                     = " | "
-                    a.edit-button(href="javascript:void(0)" onclick="sendTestNewsletter()") Testmail
+                    a.edit-button.edit-send-test(href="javascript:void(0)") Testmail
             if full_access
                 .workshop-attachments

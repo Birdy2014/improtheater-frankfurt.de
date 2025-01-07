@@ -1,3 +1,5 @@
+import { show_confirm_message, show_message, MESSAGE_SUCCESS, MESSAGE_ERROR, show_error, navigate } from "./navigator.js";
+
 const workshops = {};
 const dateFormat = Intl.DateTimeFormat("de-DE", { weekday: "long", year: "numeric", month: "long", day: "numeric" });
 const timeFormat = Intl.DateTimeFormat("de-DE", { hour: "numeric", minute: "numeric" });
@@ -9,6 +11,26 @@ if (window.marked) {
         headerIds: false,
         mangle: false,
     });
+}
+
+async function createWorkshop() {
+    try {
+        let response = await axios.post("/api/workshops");
+        let id = response.data.id;
+        invalidate_workshops_pages();
+        await navigate(`workshop/${id}`, { reload: true });
+        toggleWorkshopPreview();
+    } catch(e) {
+        show_error(e);
+    }
+}
+
+function invalidate_workshops_pages() {
+    document.querySelectorAll(".container[id^='workshops']").forEach(container => container.remove());
+}
+
+window.workshops_init = (container) => {
+    container.querySelector("#workshops-add")?.addEventListener("click", _ => createWorkshop());
 }
 
 function get_current_workshop_id() {
@@ -24,8 +46,7 @@ function get_current_workshop_id() {
 async function changeWorkshopValues() {
     const id = get_current_workshop_id();
     workshop_updateValues(id);
-    if (window["invalidate_workshops_pages"])
-        invalidate_workshops_pages();
+    invalidate_workshops_pages();
     try {
         await axios.post("/api/workshops", workshops[id].texts);
         show_message(MESSAGE_SUCCESS, "Daten gespeichert");
@@ -33,7 +54,7 @@ async function changeWorkshopValues() {
         if (error.response && error.response.status === 400) {
             show_message(MESSAGE_ERROR, error.response.data);
         } else {
-            showError(error);
+            show_error(error);
         }
     }
 }
@@ -47,8 +68,7 @@ async function publishWorkshop() {
         await axios.post("/api/workshops", { id, visible: workshops[id].buttons.published ? 0 : 1 });
 
         workshops[id].buttons.published = !workshops[id].buttons.published;
-        if (window["invalidate_workshops_pages"])
-            invalidate_workshops_pages();
+        invalidate_workshops_pages();
 
         if (workshops[id].buttons.published) {
             button.innerHTML = "Unsichtbar machen";
@@ -63,7 +83,7 @@ async function publishWorkshop() {
             button.innerHTML = "Veröffentlichen";
             workshops[id].buttons.published = false;
         } else {
-            showError(error);
+            show_error(error);
         }
     }
 }
@@ -75,8 +95,7 @@ async function deleteWorkshop(id) {
     await axios.delete("/api/workshops", {
         data: { id }
     });
-    if (window["invalidate_workshops_pages"])
-        invalidate_workshops_pages();
+    invalidate_workshops_pages();
     await navigate("workshops", { reload: true });
 }
 
@@ -88,8 +107,7 @@ async function copyWorkshop() {
     const response = await axios.post("/api/workshop/copy", { id });
     const copy_id = response.data.id;
 
-    if (window["invalidate_workshops_pages"])
-        invalidate_workshops_pages();
+    invalidate_workshops_pages();
     await navigate(`workshop/${copy_id}`, { reload: true });
     show_message(MESSAGE_SUCCESS, "Workshop Kopiert");
 }
@@ -192,7 +210,7 @@ async function sendNewsletter() {
         if (e.response.status === 404)
             show_message(MESSAGE_ERROR, "Der Workshop ist noch nicht öffentlich.", false);
         else
-            showError(e);
+            show_error(e);
     }
 }
 
@@ -217,7 +235,7 @@ async function sendTestNewsletter() {
         show_message(MESSAGE_SUCCESS, "Testmail gesendet");
     } catch (e) {
         console.error(e);
-        showError(e);
+        show_error(e);
     }
 }
 
@@ -276,7 +294,7 @@ function toggleWorkshopPreview() {
     workshops[id].buttons.previewToggled = !workshops[id].buttons.previewToggled;
 }
 
-function workshop_init(container) {
+window.workshop_init = (container) => {
     workshop_break_links(container);
 
     if (!container.querySelector(".edit-publish"))
@@ -299,6 +317,16 @@ function workshop_init(container) {
         }
     }
     workshop_updateValues(id);
+
+    container.querySelector(".workshop-image").addEventListener("click", _ => editWorkshopImage());
+    container.querySelector(".edit-save").addEventListener("click", _ => changeWorkshopValues());
+    container.querySelector(".edit-edit").addEventListener("click", _ => toggleWorkshopPreview());
+    container.querySelector(".edit-publish").addEventListener("click", _ => publishWorkshop());
+    container.querySelector(".edit-delete").addEventListener("click", _ => deleteWorkshop());
+    container.querySelector(".edit-copy").addEventListener("click", _ => copyWorkshop());
+    container.querySelector(".edit-send").addEventListener("click", _ => sendNewsletter());
+    container.querySelector(".edit-preview").addEventListener("click", _ => showNewsletterPreview());
+    container.querySelector(".edit-send-test").addEventListener("click", _ => sendTestNewsletter());
 
     const properties = container.querySelector(".workshop-properties");
     properties.style.display = workshops[id].texts.propertiesHidden ? "none" : null;

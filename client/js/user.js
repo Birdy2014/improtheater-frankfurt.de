@@ -1,3 +1,5 @@
+import { show_message, MESSAGE_SUCCESS, show_error, navigate } from "./navigator.js";
+
 async function change_email(event) {
     event.preventDefault();
 
@@ -9,7 +11,7 @@ async function change_email(event) {
         email_field.value = "";
         show_message(MESSAGE_SUCCESS, "E-Mail Adresse geändert");
     } catch (err) {
-        showError(err);
+        show_error(err);
     }
 }
 
@@ -24,7 +26,7 @@ async function change_username(event) {
         username_field.value = "";
         show_message(MESSAGE_SUCCESS, "Benutzername geändert");
     } catch (err) {
-        showError(err);
+        show_error(err);
     }
 }
 
@@ -38,7 +40,7 @@ async function change_password(event) {
         password_field.value = "";
         show_message(MESSAGE_SUCCESS, "Passwort geändert");
     } catch (err) {
-        showError(err);
+        show_error(err);
     }
 }
 
@@ -73,7 +75,7 @@ async function change_user_handler(event) {
         password_field.value = "";
         show_message(MESSAGE_SUCCESS, "Benutzer geändert");
     } catch (err) {
-        showError(err);
+        show_error(err);
     }
 }
 
@@ -98,7 +100,7 @@ async function create_user_handler(event) {
         navigate("/user", { reload: true, push_history: false });
         show_message(MESSAGE_SUCCESS, "Benutzer erstellt");
     } catch (err) {
-        showError(err);
+        show_error(err);
     }
 }
 
@@ -113,11 +115,11 @@ async function delete_user_handler(event) {
         navigate("/user", { reload: true, push_history: false });
         show_message(MESSAGE_SUCCESS, "Benutzer erstellt");
     } catch (err) {
-        showError(err);
+        show_error(err);
     }
 }
 
-function user_init(container) {
+window.user_init = (container) => {
     const email_change_form = container.querySelector("#email-change-form");
     email_change_form.addEventListener("submit", change_email);
     const username_change_form = container.querySelector("#username-change-form");

@@ -16,21 +16,21 @@ else
             script(src="/lib/nprogress.js")
             if loggedIn
                 script(src="/lib/marked.min.js")
-            script(src="/public/js/navigator.js")
+            script(src="/index.js")
             block head
 
         body
             #message-success.message
-                span.message-text(onclick="toggle_message_details()")
-                span.message-close(onclick="close_message()") &times
+                span.message-text
+                span.message-close &times;
 
             #message-error.message
-                span.message-text(onclick="toggle_message_details()")
-                span.message-close(onclick="close_message()") &times
+                span.message-text
+                span.message-close &times;
 
             #message-confirm.message
-                span.message-text(onclick="toggle_message_details()")
-                span.message-close &times
+                span.message-text
+                span.message-close &times;
                 button.message-confirm-yes Ja
                 button.message-confirm-no Nein
 
@@ -52,7 +52,7 @@ else
                                     a.navlink(href="/uploads") BILDER
                                     a.navlink(href="/subscribers") ABONNENTEN
                                     a.navlink(href="/user") ACCOUNTEINSTELLUNGEN
-                    a(href="javascript:void(0);" class="icon" onclick="toggleMenu()")
+                    a.icon#menu-toggle-button(href="javascript:void(0);")
                         .icon-nav-bars
                         .icon-nav-bars
                         .icon-nav-bars
@@ -69,6 +69,6 @@ else
                     a(href="/impressum") IMPRESSUM
                     | &nbsp;|&nbsp;
                     if loggedIn
-                        a(href="javascript:void(0)" onclick="logout()" class="forceReload") LOGOUT
+                        a#logout-button(href="javascript:void(0)" class="forceReload") LOGOUT
                     else
                         a(href="/login") GLYCILOGIN

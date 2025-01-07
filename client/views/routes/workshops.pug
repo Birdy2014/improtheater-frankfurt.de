@@ -5,7 +5,7 @@ include ../includes/workshop-item.pug
 block routeContent
     h1 WORKSHOPS
     if loggedIn
-        a(id="workshops-add" href="javascript:void(0)" onclick="createWorkshop()") HINZUFÜGEN
+        a#workshops-add(href="javascript:void(0)") HINZUFÜGEN
         .workshops-navigation
             if page > 0
                 a(href="/workshops/" + (page - 1)) Vorwärts

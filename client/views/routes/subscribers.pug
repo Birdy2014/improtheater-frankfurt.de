@@ -32,7 +32,7 @@ block routeContent
                             else
                                 | Kein newsletter
                         td.subscribers-delete
-                            a.icon-delete(onclick=`subscribers_remove('${s.token}', '${s.name}')`)
+                            a.icon-delete(href="javascript:void(0);" data-token=s.token data-name=s.name)
                     - i++
                 else
                     span Niemand ist am Newsletter angemeldet

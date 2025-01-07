@@ -1,3 +1,5 @@
+import { navigate, show_error, show_confirm_message, show_message, MESSAGE_SUCCESS } from "./navigator.js";
+
 async function subscribers_add(event) {
     event.preventDefault();
     try {
@@ -8,7 +10,7 @@ async function subscribers_add(event) {
         show_message(MESSAGE_SUCCESS, "Abonent hinzugefügt");
         navigate(currentRoute, { reload: true, push_history: false })
     } catch(err) {
-        showError(err);
+        show_error(err);
     }
 }
 
@@ -20,7 +22,7 @@ async function subscribers_remove(token, name) {
         document.querySelector(`#subscriber-${token}`).remove();
         show_message(MESSAGE_SUCCESS, `${name} wurde entfernt.`);
     } catch(err) {
-        showError(err);
+        show_error(err);
     }
 }
 
@@ -33,15 +35,19 @@ async function subscribers_change_type(event) {
         await axios.post("/api/newsletter/subscribe", { token, subscribedTo });
         show_message(MESSAGE_SUCCESS, `Newsletter für ${name} geändert.`);
     } catch(err) {
-        showError(err);
+        show_error(err);
     }
 }
 
-function subscribers_init(container) {
+window.subscribers_init = (container) => {
     const form = container.querySelector("#subscribers-add");
     form.addEventListener("submit", subscribers_add);
 
     for (const select of container.querySelectorAll(".subscribers-subscribedTo")) {
         select.addEventListener("change", subscribers_change_type);
     }
+
+    container.querySelectorAll(".subscribers-delete > a").forEach(element => element.addEventListener("click", _ => {
+        subscribers_remove(element.dataset.token, element.dataset.name);
+    }));
 }

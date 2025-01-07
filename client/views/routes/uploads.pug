@@ -4,12 +4,12 @@ block routeContent
     h1 BILDER
 
     input(type="file" name="img" value="Bild auswählen" id="input-uploads-image" accept="image/*")
-    input(type="button" value="Hochladen" onclick="upload()")
+    input#input-upload-button(type="button" value="Hochladen")
 
     #uploads-images-list
         for upload in uploads
-            .uploads-image(id="uploads-image-" + upload.id onclick="selectImage('" + upload.id + "')")
-                img.lazy(data-src=`/api/upload/${upload.id}` loading="lazy")
+            .uploads-image(id=`uploads-image-${upload.id}` data-id=upload.id)
+                img(src=`/api/upload/${upload.id}` loading="lazy")
                 .image-footer
                     p #{upload.name}
-                    a(href="javascript:void(0)" onclick="deleteImage('" + upload.id + "')") LÖSCHEN
+                    a(href="javascript:void(0)" data-id=upload.id) LÖSCHEN

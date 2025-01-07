@@ -1,3 +1,5 @@
+import { show_message, MESSAGE_SUCCESS, MESSAGE_ERROR, show_error } from "./navigator.js";
+
 async function reset_password(event, token) {
     event.preventDefault();
 
@@ -8,11 +10,11 @@ async function reset_password(event, token) {
         password_field.value = "";
         show_message(MESSAGE_SUCCESS, "Passwort geändert");
     } catch (err) {
-        showError(err);
+        show_error(err);
     }
 }
 
-function password_reset_init(container, query) {
+window.password_reset_init = (container, query) => {
     const search_params = new URLSearchParams(query);
 
     if (!search_params.has("token")) {

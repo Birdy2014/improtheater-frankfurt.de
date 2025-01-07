@@ -6,8 +6,8 @@ block routeContent
     img(src="/public/img/banner-newsletter.jpg" class="banner")
 
     #newsletter-text-container
+        span#newsletter-subscriber-token #{subscriber.token}
         if unsubscribe && subscriber
-            span#newsletter-unsubscribe-token #{subscriber.token}
             #newsletter-unsubscribe
                 h1 Von welchem Newsletter möchtest du dich abmelden?
                 form#newsletter-unsubscribe-form
@@ -27,13 +27,13 @@ block routeContent
             #newsletter-unsubscribe-error(style="display: none;")
                 p Beim Abmelden ist leider etwas schiefgelaufen.
         else if subscribe && subscriber && subscriber.subscribedTo != 3
-            #newsletter-subscribe-other
+            #newsletter-subscribe-additional
                 h1 Bei #[+newsletterName(~subscriber.subscribedTo)] Newsletter anmelden
-                button(onclick=`newsletter_subscribe_other('${subscriber.token}')`) Bestätigen
-            #newsletter-subscribe-other-success(style="display: none;")
+                button#input-newsletter-subscribe-additional-confirm Bestätigen
+            #newsletter-subscribe-additional-success(style="display: none;")
                 h1 Vielen Dank für Deine Newsletter-Anmeldung
                 p Du erhältst jetzt auch den Newsletter von #[+newsletterName(~subscriber.subscribedTo)].
-            #newsletter-subscribe-other-error(style="display: none;")
+            #newsletter-subscribe-additional-error(style="display: none;")
                 h1 Die Newsletter-Anmeldung war nicht erfolgreich
                 p Es ist ein unbekannter Fehler aufgetreten.
         else if subscriber.confirmed

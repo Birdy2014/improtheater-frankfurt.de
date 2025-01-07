@@ -1,3 +1,5 @@
+import { show_message, MESSAGE_ERROR, show_error } from "./navigator.js";
+
 async function login(event, route) {
     event.preventDefault();
 
@@ -11,7 +13,7 @@ async function login(event, route) {
         if (err.response.status === 403) {
             show_message(MESSAGE_ERROR, "Falscher Benutzername oder Passwort", false);
         } else {
-            showError(err);
+            show_error(err);
         }
     }
 }
@@ -29,17 +31,17 @@ async function request_password_reset(form) {
         if (err.response.status === 404) {
             show_message(MESSAGE_ERROR, "Ungültiger Benutzername oder E-Mail-Adresse");
         } else {
-            showError(err);
+            show_error(err);
         }
     }
 }
 
-function login_init(container, query) {
+window.login_init = (container, query) => {
     const search_params = new URLSearchParams(query);
     const route = search_params.get("route") || "/start";
 
     const login_form = container.querySelector("#login-form");
     login_form.addEventListener("submit", event => login(event, route));
     const password_reset_link = container.querySelector("#password-reset-link");
-    password_reset_link.addEventListener("click", event => request_password_reset(login_form));
+    password_reset_link.addEventListener("click", _ => request_password_reset(login_form));
 }
