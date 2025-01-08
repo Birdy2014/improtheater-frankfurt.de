@@ -100,6 +100,7 @@ export async function navigate(to, params = { }) {
         document.getElementById("wrapper").appendChild(targetContainer);
     }
     let containers = document.getElementsByClassName("container");
+    let load_promise;
     if (targetContainer.childElementCount === 0 || params.reload) {
         // clear container
         targetContainer.innerHTML = "";
@@ -126,9 +127,15 @@ export async function navigate(to, params = { }) {
         }
         targetContainer.innerHTML = website.data;
 
-        initRoute(route, targetContainer, to.includes("?") ? to.substring(to.indexOf("?")) : "");
+        load_promise = new Promise(resolve => {
+            setTimeout(_ => {
+                initRoute(route, targetContainer, to.includes("?") ? to.substring(to.indexOf("?")) : "");
+                resolve();
+            }, 100);
+        });
     }
     if (params.preload) {
+        await load_promise;
         return;
     }
     // set link anctive
@@ -154,6 +161,7 @@ export async function navigate(to, params = { }) {
     if (params.push_history) {
         history.pushState({}, "", "/" + route);
     }
+    await load_promise;
 }
 
 function toggleMenu(hideMenu) {

@@ -1,7 +1,7 @@
 import { show_confirm_message, show_message, MESSAGE_SUCCESS, MESSAGE_ERROR, show_error, navigate } from "./navigator.js";
 import * as request from "./request.js";
 
-const workshops = {};
+export const workshops = {};
 const dateFormat = Intl.DateTimeFormat("de-DE", { weekday: "long", year: "numeric", month: "long", day: "numeric" });
 const timeFormat = Intl.DateTimeFormat("de-DE", { hour: "numeric", minute: "numeric" });
 
@@ -254,7 +254,7 @@ function toggleWorkshopPreview() {
     let date_preview = container.querySelector(".workshop-date");
     let time_preview = container.querySelector(".workshop-time");
     let properties = container.querySelector(".workshop-properties");
-    let preview_button = container.querySelector(".edit-preview");
+    let preview_button = container.querySelector(".edit-edit");
     let image = container.querySelector(".workshop-image");
 
     let workshop_edit_fields = container.querySelectorAll(".workshop-edit-field");

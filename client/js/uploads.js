@@ -1,5 +1,6 @@
 import { show_confirm_message, show_message, MESSAGE_SUCCESS, MESSAGE_ERROR, show_error, navigate } from "./navigator.js";
 import * as request from "./request.js";
+import { workshops } from "./workshops.js";
 
 async function upload() {
     let file = document.getElementById("input-uploads-image").files[0];
