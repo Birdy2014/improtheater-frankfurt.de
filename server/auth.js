@@ -125,7 +125,7 @@ export async function api_change_user(req, res) {
             admin = undefined;
     }
 
-    let full_access = req.body.admin;
+    let full_access = req.body.full_access;
     switch (full_access) {
         case true:
         case 1:
