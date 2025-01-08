@@ -1,3 +1,5 @@
+import * as request from "./request.js";
+
 window.onload = () => {
     NProgress.configure({ showSpinner: false });
     let url = new URL(document.location.href);
@@ -106,7 +108,7 @@ export async function navigate(to, params = { }) {
         NProgress.start();
         try {
             let url = to.includes("?") ? "/" + to + "&partial=1" : "/" + to + "?partial=1";
-            website = await axios.get(url);
+            website = await request.get(url);
             NProgress.done();
         } catch(error) {
             NProgress.done();
@@ -118,7 +120,7 @@ export async function navigate(to, params = { }) {
             }
             return;
         }
-        if (!website.headers["content-type"].startsWith("text")) {
+        if (!website.headers.get("content-type").startsWith("text")) {
             window.location.href = "/" + to;
             return;
         }
@@ -188,7 +190,7 @@ function initRoute(route, container, query) {
 }
 
 async function logout() {
-    await axios.post("/api/logout");
+    await request.post("/api/logout");
     window.location.reload();
 }
 
@@ -239,8 +241,10 @@ function toggle_message_details() {
 export function show_error(error) {
     let errorText = "Ein Fehler ist aufgetreten: ";
     if (error.response) {
-        errorText += "Status: " + JSON.stringify(error.response.status, null, 4) + "; ";
-        errorText += "Data: " + JSON.stringify(error.response.data, null, 4);
+        errorText += "Status: " + error.response.statusText;
+        if (error.response.data) {
+            errorText += "; Data: " + JSON.stringify(error.response.data, null, 4);
+        }
     } else {
         errorText += error.message;
     }

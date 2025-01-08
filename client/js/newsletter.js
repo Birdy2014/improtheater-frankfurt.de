@@ -1,3 +1,5 @@
+import * as request from "./request.js";
+
 async function subscribe(event) {
     event.preventDefault();
     try {
@@ -16,7 +18,7 @@ async function subscribe(event) {
         // Send request
         let email = document.getElementById("input-newsletter-email").value;
         let name = document.getElementById("input-newsletter-name").value;
-        await axios.post("/api/newsletter/subscribe", { email, name, subscribedTo });
+        await request.post("/api/newsletter/subscribe", { email, name, subscribedTo });
         document.getElementById("text-email-address").innerText = email;
         document.getElementById("newsletter-subscribe").style.display = "none";
         document.getElementById("newsletter-subscribe-success").style.removeProperty("display");
@@ -61,7 +63,7 @@ async function unsubscribe(event) {
         }
         // Send request
         const token = document.getElementById("newsletter-subscriber-token").innerText;
-        await axios.post("/api/newsletter/unsubscribe", { token, type });
+        await request.post("/api/newsletter/unsubscribe", { token, type });
         document.getElementById("newsletter-unsubscribe").style.display = "none";
         document.getElementById("newsletter-unsubscribe-success").style.removeProperty("display");
     } catch(e) {
@@ -78,7 +80,7 @@ async function unsubscribe(event) {
 async function subscribe_additional() {
     try {
         const token = document.getElementById("newsletter-subscriber-token").innerText;
-        await axios.post("/api/newsletter/subscribe", { token, subscribedTo: 3 });
+        await request.post("/api/newsletter/subscribe", { token, subscribedTo: 3 });
         document.getElementById("newsletter-subscribe-additional").style.display = "none";
         document.getElementById("newsletter-subscribe-additional-success").style.removeProperty("display");
     } catch(e) {

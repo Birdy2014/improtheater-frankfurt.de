@@ -1,4 +1,5 @@
 import { navigate, show_error, show_confirm_message, show_message, MESSAGE_SUCCESS } from "./navigator.js";
+import * as request from "./request.js";
 
 async function subscribers_add(event) {
     event.preventDefault();
@@ -6,7 +7,7 @@ async function subscribers_add(event) {
         let email = document.getElementById("subscribers-add-email").value;
         let name = document.getElementById("subscribers-add-name").value;
         let subscribedTo = document.getElementById("subscribers-add-type").value;
-        await axios.post("/api/newsletter/add", { email, name, subscribedTo });
+        await request.post("/api/newsletter/add", { email, name, subscribedTo });
         show_message(MESSAGE_SUCCESS, "Abonent hinzugefügt");
         navigate(currentRoute, { reload: true, push_history: false })
     } catch(err) {
@@ -18,7 +19,7 @@ async function subscribers_remove(token, name) {
     try {
         if (!await show_confirm_message(`Soll ${name} wirklich vom Newsletter abgemeldet werden?`))
             return;
-        await axios.post("/api/newsletter/unsubscribe", { token });
+        await request.post("/api/newsletter/unsubscribe", { token });
         document.querySelector(`#subscriber-${token}`).remove();
         show_message(MESSAGE_SUCCESS, `${name} wurde entfernt.`);
     } catch(err) {
@@ -32,7 +33,7 @@ async function subscribers_change_type(event) {
         const token = row.id.substring(row.id.lastIndexOf("-") + 1);
         const subscribedTo = event.target.value;
         const name = row.querySelector(".subscribers-name").innerText;
-        await axios.post("/api/newsletter/subscribe", { token, subscribedTo });
+        await request.post("/api/newsletter/subscribe", { token, subscribedTo });
         show_message(MESSAGE_SUCCESS, `Newsletter für ${name} geändert.`);
     } catch(err) {
         show_error(err);

@@ -1,4 +1,5 @@
 import { show_confirm_message, show_message, MESSAGE_SUCCESS, MESSAGE_ERROR, show_error, navigate } from "./navigator.js";
+import * as request from "./request.js";
 
 const workshops = {};
 const dateFormat = Intl.DateTimeFormat("de-DE", { weekday: "long", year: "numeric", month: "long", day: "numeric" });
@@ -15,7 +16,7 @@ if (window.marked) {
 
 async function createWorkshop() {
     try {
-        let response = await axios.post("/api/workshops");
+        let response = await request.post("/api/workshops");
         let id = response.data.id;
         invalidate_workshops_pages();
         await navigate(`workshop/${id}`, { reload: true });
@@ -48,7 +49,7 @@ async function changeWorkshopValues() {
     workshop_updateValues(id);
     invalidate_workshops_pages();
     try {
-        await axios.post("/api/workshops", workshops[id].texts);
+        await request.post("/api/workshops", workshops[id].texts);
         show_message(MESSAGE_SUCCESS, "Daten gespeichert");
     } catch(error) {
         if (error.response && error.response.status === 400) {
@@ -65,7 +66,7 @@ async function publishWorkshop() {
     let button = container.getElementsByClassName("edit-publish")[0];
 
     try {
-        await axios.post("/api/workshops", { id, visible: workshops[id].buttons.published ? 0 : 1 });
+        await request.post("/api/workshops", { id, visible: workshops[id].buttons.published ? 0 : 1 });
 
         workshops[id].buttons.published = !workshops[id].buttons.published;
         invalidate_workshops_pages();
@@ -92,9 +93,7 @@ async function deleteWorkshop(id) {
     if (!await show_confirm_message("Soll der Newsletter wirklich gelöscht werden?"))
         return;
     if (!id) id = currentRoute.substring(currentRoute.indexOf("/") + 1);
-    await axios.delete("/api/workshops", {
-        data: { id }
-    });
+    await request.del("/api/workshops", { id });
     invalidate_workshops_pages();
     await navigate("workshops", { reload: true });
 }
@@ -104,7 +103,7 @@ async function copyWorkshop() {
         return;
 
     const id = currentRoute.substring(currentRoute.indexOf("/") + 1);
-    const response = await axios.post("/api/workshop/copy", { id });
+    const response = await request.post("/api/workshop/copy", { id });
     const copy_id = response.data.id;
 
     invalidate_workshops_pages();
@@ -149,7 +148,7 @@ async function create_workshop_attachment_dropdown()  {
 
     const workshops_list = [
         { id: 0, title: "Angehängten Newsletter auswählen" },
-        ...(await axios.get("/api/workshops")).data
+        ...(await request.get("/api/workshops")).data
     ];
 
     const workshop_attachment_dropdown = document.createElement("select");
@@ -191,7 +190,7 @@ async function sendNewsletter() {
                 return;
         }
 
-        await axios.post("/api/newsletter/send", { workshops: marked_newsletters });
+        await request.post("/api/newsletter/send", { workshops: marked_newsletters });
         for (const marked_newsletter_id of marked_newsletters) {
             if (workshops[marked_newsletter_id] === undefined)
                 continue
@@ -231,7 +230,7 @@ async function sendTestNewsletter() {
             }
         }
 
-        await axios.post("/api/newsletter/send", { workshops: marked_newsletters, test: true });
+        await request.post("/api/newsletter/send", { workshops: marked_newsletters, test: true });
         show_message(MESSAGE_SUCCESS, "Testmail gesendet");
     } catch (e) {
         console.error(e);
@@ -342,7 +341,7 @@ window.workshop_init = (container) => {
     });
 
     container.querySelector(".workshop-color-set-dominant").addEventListener("click", async () => {
-        const response = await axios.get(`/api/upload-color/${workshops[id].current.img}`);
+        const response = await request.get(`/api/upload-color/${workshops[id].current.img}`);
         color_input.value = response.data;
     });
 

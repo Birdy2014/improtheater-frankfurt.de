@@ -1,4 +1,5 @@
 import { show_message, MESSAGE_SUCCESS, MESSAGE_ERROR, show_error } from "./navigator.js";
+import * as request from "./request.js";
 
 async function reset_password(event, token) {
     event.preventDefault();
@@ -6,7 +7,7 @@ async function reset_password(event, token) {
     const password_field = event.target.querySelector("input[name='reset-password']");
     const password = password_field.value;
     try {
-        await axios.post("/api/user/password_reset", { token, password });
+        await request.post("/api/user/password_reset", { token, password });
         password_field.value = "";
         show_message(MESSAGE_SUCCESS, "Passwort geändert");
     } catch (err) {

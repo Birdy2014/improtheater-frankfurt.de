@@ -1,4 +1,5 @@
 import { show_message, MESSAGE_ERROR, show_error } from "./navigator.js";
+import * as request from "./request.js";
 
 async function login(event, route) {
     event.preventDefault();
@@ -7,7 +8,7 @@ async function login(event, route) {
     const password = event.target.querySelector("input[name='password']").value;
 
     try {
-        await axios.post("/api/login", { login, password });
+        await request.post("/api/login", { login, password });
         location.href = route;
     } catch (err) {
         if (err.response.status === 403) {
@@ -26,7 +27,7 @@ async function request_password_reset(form) {
     }
 
     try {
-        await axios.post("/api/user/request_password_reset", { login });
+        await request.post("/api/user/request_password_reset", { login });
     } catch (err) {
         if (err.response.status === 404) {
             show_message(MESSAGE_ERROR, "Ungültiger Benutzername oder E-Mail-Adresse");

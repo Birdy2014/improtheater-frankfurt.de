@@ -1,4 +1,5 @@
 import { show_message, MESSAGE_SUCCESS, show_error, navigate } from "./navigator.js";
+import * as request from "./request.js";
 
 async function change_email(event) {
     event.preventDefault();
@@ -6,7 +7,7 @@ async function change_email(event) {
     const email_field = event.target.querySelector("input[name='change-email']");
     const email = email_field.value;
     try {
-        await axios.put("/api/user", { email });
+        await request.put("/api/user", { email });
         email_field.placeholder = email;
         email_field.value = "";
         show_message(MESSAGE_SUCCESS, "E-Mail Adresse geändert");
@@ -21,7 +22,7 @@ async function change_username(event) {
     const username_field = event.target.querySelector("input[name='change-username']");
     const username = username_field.value;
     try {
-        await axios.put("/api/user", { username });
+        await request.put("/api/user", { username });
         username_field.placeholder = username;
         username_field.value = "";
         show_message(MESSAGE_SUCCESS, "Benutzername geändert");
@@ -36,7 +37,7 @@ async function change_password(event) {
     const password_field = event.target.querySelector("input[name='change-password']");
     const password = password_field.value;
     try {
-        await axios.put("/api/user", { password });
+        await request.put("/api/user", { password });
         password_field.value = "";
         show_message(MESSAGE_SUCCESS, "Passwort geändert");
     } catch (err) {
@@ -55,7 +56,7 @@ async function change_user_handler(event) {
     const full_access_field = event.target.querySelector("input[name='full_access']");
 
     try {
-        await axios.put("/api/user", {
+        await request.put("/api/user", {
             id,
             username: username_field.value,
             email: email_field.value,
@@ -89,7 +90,7 @@ async function create_user_handler(event) {
     const full_access_field = event.target.querySelector("input[name='full_access']");
 
     try {
-        await axios.post("/api/user", {
+        await request.post("/api/user", {
             username: username_field.value,
             email: email_field.value,
             password: password_field.value,
@@ -110,7 +111,7 @@ async function delete_user_handler(event) {
     const id = event.target.parentElement.querySelector(".id_row").innerText;
 
     try {
-        await axios.delete("/api/user", { data: { id } });
+        await request.del("/api/user", { id });
 
         navigate("/user", { reload: true, push_history: false });
         show_message(MESSAGE_SUCCESS, "Benutzer erstellt");

@@ -1,17 +1,18 @@
 import { show_confirm_message, show_message, MESSAGE_SUCCESS, MESSAGE_ERROR, show_error, navigate } from "./navigator.js";
+import * as request from "./request.js";
 
 async function upload() {
     let file = document.getElementById("input-uploads-image").files[0];
     let formData = new FormData();
     formData.append("img", file);
     try {
-        const response = await axios.post("/api/upload", formData, { headers: { "Content-Type": "multipart/form-data" } });
+        const response = await request.post("/api/upload", formData);
         const { id, name } = response.data;
         addImage(id, name, true);
         show_message(MESSAGE_SUCCESS, "Hochgeladen!");
         selectImage(id);
     } catch (e) {
-        if (e.response.status === 409) {
+        if (e instanceof request.HTTPRequestError && e.response.status === 409) {
             show_message(MESSAGE_ERROR, "Es existiert bereits ein Bild mit dem gleichen Namen.", false);
         } else {
             show_error(e);
@@ -22,7 +23,7 @@ async function upload() {
 async function deleteImage(image_id) {
     if (!await show_confirm_message("Soll das Bild wirklich gelöscht werden? Es verschwindet auch aus bereits gesendeten Newslettern."))
         return;
-    await axios.delete(`/api/upload/${image_id}`);
+    await request.del(`/api/upload/${image_id}`);
     document.getElementById(`uploads-image-${image_id}`).remove();
 }
 

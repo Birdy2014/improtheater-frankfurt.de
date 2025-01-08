@@ -30,7 +30,7 @@ export function post(req, res) {
         throw new utils.HTTPError(400);
     }
 
-    const workshop = req.body;
+    const workshop = req.body || {};
 
     if (workshop.img && db.get("select count(*) from upload where id = ?", workshop.img)["count(*)"] != 1) {
         throw new utils.HTTPError(400, "Nicht gespeichert: Ungültiges Bild");
