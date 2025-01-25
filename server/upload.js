@@ -16,12 +16,12 @@ export function get(req, res) {
     const uuid_regex = /^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/;
 
     let file = uuid_regex.test(id)
-        ? db.get("SELECT data, mimetype FROM upload WHERE id = ?", id)
-        : db.get("SELECT upload.data, upload.mimetype FROM upload JOIN workshop ON upload.id = workshop.img WHERE workshop.id = ?", id);
+        ? db.get("SELECT name, data, mimetype FROM upload WHERE id = ?", id)
+        : db.get("SELECT upload.name, upload.data, upload.mimetype FROM upload JOIN workshop ON upload.id = workshop.img WHERE workshop.id = ?", id);
 
     if (!file) {
         // Compatibility for old newsletters using names to identify images
-        file = db.get("SELECT data, mimetype FROM upload WHERE name = ?", id);
+        file = db.get("SELECT name, data, mimetype FROM upload WHERE name = ?", id);
     }
 
     if (!file) {
@@ -30,6 +30,7 @@ export function get(req, res) {
 
     res.status(200)
         .set("Content-Type", file.mimetype)
+        .set("Content-Disposition", `inline; filename="${file.name}"`)
         .send(Buffer.from(file.data, "binary"));
 
     if (req.query.token) {
