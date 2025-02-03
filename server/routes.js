@@ -2,7 +2,6 @@ import express from "express";
 import path from "path";
 import fileUpload from "express-fileupload";
 import { marked } from "marked";
-import * as sass from "sass";
 import * as esbuild from "esbuild";
 import * as auth from "./auth.js";
 import * as workshops from "./workshops.js";
@@ -83,32 +82,38 @@ router.get("/lib/marked.min.js", (_, res) => res.sendFile(path.join(utils.projec
 router.use("/roboto", cors_allow_all, express.static(path.join(utils.project_path, "/node_modules/@fontsource/roboto/files")));
 
 router.use("/public", express.static(path.join(utils.project_path, "/client/public")));
-const css = sass.compile(path.join(utils.project_path, "/client/scss/index.scss")).css;
-router.use("/index.css", (_, res) => {
-    res.contentType("text/css");
-    if (process.env.NODE_ENV === "development") {
-        res.send(sass.compile(path.join(utils.project_path, "/client/scss/index.scss")).css);
-    } else {
-        res.send(css);
-    }
-});
 
 const esbuild_context_js = await esbuild.context({
-    entryPoints: [ path.join(utils.project_path, "/client/js/index.js") ],
+    entryPoints: [ path.join(utils.project_path, "/client/js/index.js"), path.join(utils.project_path, "/client/css/index.css") ],
     bundle: true,
+    minify: process.env.NODE_ENV !== "development",
     write: false,
     outdir: path.join(utils.project_path, "dist"),
+    plugins: [
+        {
+            name: "ignore-external",
+            setup(build) {
+                build.onResolve({ filter: /^.*\.(woff|woff2|svg)$/ }, args => {
+                    return { path: args.path, external: true, };
+                });
+            },
+        }
+    ],
 });
 let esbuild_result;
-router.use("/index.js", async (_, res) => {
+
+router.use("/resource/:name", async (req, res) => {
     if (esbuild_result === undefined || process.env.NODE_ENV === "development") {
         esbuild_result = await esbuild_context_js.rebuild();
     }
-    for (const file of esbuild_result.outputFiles) {
-        if (file.path.endsWith("index.js")) {
-            res.contentType("application/javascript").send(file.text);
-            return;
-        }
+
+    switch (req.params.name) {
+    case "index.js":
+        res.contentType("application/javascript").send(esbuild_result.outputFiles[0].text);
+        return;
+    case "index.css":
+        res.contentType("text/css").send(esbuild_result.outputFiles[1].text);
+        return;
     }
 });
 

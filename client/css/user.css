@@ -19,15 +19,15 @@
     grid-template-columns: [username] auto [email] auto [password] auto [admin] max-content [full_access] max-content [submit] 80px [delete] 15px;
     gap: 5px;
 
-    input[type="checkbox"] {
+    & input[type="checkbox"] {
         margin: auto;
     }
 
-    *:not(.table-data, .table-header) {
+    & *:not(.table-data, .table-header) {
         display: contents;
     }
 
-    .table-header {
+    & .table-header {
         font-weight: bold;
     }
 }

@@ -22,7 +22,7 @@
         justify-content: space-between;
         gap: 10px;
 
-        p {
+        & p {
             background-color: var(--color-bg);
             margin: 0;
 
@@ -34,7 +34,7 @@
             white-space: nowrap;
         }
 
-        a {
+        & a {
             background-color: var(--color-bg);
         }
     }

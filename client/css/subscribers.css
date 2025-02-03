@@ -1,19 +1,19 @@
 #subscribers {
-    table {
+    & table {
         border: none;
         width: 100%;
     }
 
-    th, td {
+    & th, td {
         text-align: left;
         border: none;
     }
 
-    .subscribers-token {
+    & .subscribers-token {
         display: none;
     }
 
-    .subscribers-delete {
+    & .subscribers-delete {
         text-align: center;
     }
 }

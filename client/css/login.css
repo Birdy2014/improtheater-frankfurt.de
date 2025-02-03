@@ -12,12 +12,12 @@
 
     background-color: var(--color-bg-light);
 
-    input {
+    & input {
         width: 100%;
         box-sizing: border-box;
     }
 
-    label {
+    & label {
         margin-right: 5px;
     }
 }

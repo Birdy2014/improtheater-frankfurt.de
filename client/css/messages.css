@@ -11,11 +11,11 @@
     padding: 10px;
     color: white;
 
-    button {
+    & button {
         cursor: pointer;
     }
 
-    .message-text {
+    & .message-text {
         display: inline-block;
         width: calc(100% - 20px);
         overflow: hidden;
@@ -23,28 +23,28 @@
         white-space: nowrap;
     }
 
-    .message-close {
+    & .message-close {
         float: right;
         font-size: 22px;
         font-weight: bold;
         line-height: 20px;
         cursor: pointer;
 
-        ::hover {
+        & ::hover {
             color: black;
         }
     }
 }
 
 
-    #message-success {
+    & #message-success {
         background-color: green;
     }
 
-    #message-error {
+    & #message-error {
         background-color: var(--color-fg);
     }
 
-    #message-confirm {
+    & #message-confirm {
         background-color: gray;
     }

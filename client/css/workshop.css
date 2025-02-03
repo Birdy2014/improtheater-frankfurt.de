@@ -44,16 +44,16 @@
 }
 
 .workshop-properties {
-    a {
+    & a {
         color: inherit;
         text-decoration: underline;
     }
 
-    dd {
+    & dd {
         margin: 0;
     }
 
-    dt {
+    & dt {
         font-weight: bold;
     }
 }

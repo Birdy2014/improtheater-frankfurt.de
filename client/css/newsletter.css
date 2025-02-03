@@ -1,26 +1,26 @@
 #newsletter {
     margin-top: 10px;
 
-    label {
+    & label {
         vertical-align: middle;
     }
 }
 
 #newsletter-form {
-    label {
+    & label {
         font-weight: bold;
         margin-left: 5px;
     }
 
-    input[type="checkbox"] {
+    & input[type="checkbox"] {
         vertical-align: middle;
     }
 
-    #newsletter-form-text-container {
+    & #newsletter-form-text-container {
         margin-top: 20px;
     }
 
-    .input-newsletter-text {
+    & .input-newsletter-text {
         border: none;
         border-bottom: 2px solid var(--color-text);
         max-width: 350px;
@@ -30,12 +30,12 @@
         padding-bottom: 3px;
     }
 
-    .input-newsletter-text:focus {
+    & .input-newsletter-text:focus {
         border-bottom-color: var(--color-fg);
         transition: border .4s;
     }
 
-    .input-newsletter-button {
+    & .input-newsletter-button {
         color: white;
         background-color: var(--color-fg);
         border: none;
@@ -44,7 +44,7 @@
         font-weight: bold;
     }
 
-    .input-newsletter-button:hover {
+    & .input-newsletter-button:hover {
         background-color: #552726;
     }
 }

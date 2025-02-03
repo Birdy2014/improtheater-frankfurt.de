@@ -23,13 +23,13 @@ nav {
     margin-bottom: 5px;
     background-color: var(--color-bg);
 
-    #menu {
+    & #menu {
         margin: 0 auto;
         height: 100%;
         max-width: var(--site-width);
     }
 
-    #logo {
+    & #logo {
         float: left;
         box-sizing: border-box;
         height: 100%;
@@ -43,13 +43,13 @@ nav {
         background-clip: content-box;
     }
 
-    #main-menu {
+    & #main-menu {
         float: right;
         display: block;
         text-align: right;
     }
 
-    #main-menu a {
+    & #main-menu a {
         display: inline-block;
         box-sizing: border-box;
         color: var(--color-text);
@@ -60,24 +60,24 @@ nav {
         transition: padding .3s ease-out;
     }
 
-    .icon {
+    & .icon {
         display: none;
     }
 
     /* bad solution for vertically centering the links. Maybe flexbox is better */
-    #main-menu > a {
+    & #main-menu > a {
         padding: 31px 7.5px;
     }
 
-    #main-menu a:hover {
+    & #main-menu a:hover {
         color: var(--color-fg);
     }
 
-    #main-menu .active {
+    & #main-menu .active {
         color: var(--color-fg);
     }
 
-    .icon-nav-bars {
+    & .icon-nav-bars {
         width: 25px;
         height: 2px;
         background-color: var(--color-nav-button);
@@ -127,20 +127,20 @@ nav {
 
 @media screen and (max-width: 800px) {
     nav {
-        #main-menu {
+        & #main-menu {
             float: none;
             display: none;
             background-color: var(--color-bg);
             padding-top: var(--menu-height);
         }
 
-        #menu #main-menu a {
+        & #menu #main-menu a {
             display: block;
             padding: 10px 7.5px;
             text-align: left;
         }
 
-        .icon {
+        & .icon {
             display: block;
             text-decoration: none;
             padding: 30px 20px;
@@ -153,15 +153,15 @@ nav {
     }
 
     .nav-sticky {
-        #main-menu {
+        & #main-menu {
             padding-top: var(--menu-scrolled-height);
         }
 
-        #logo {
+        & #logo {
             height: var(--menu-scrolled-height);
         }
 
-        .icon {
+        & .icon {
             padding: 20px 20px;
         }
     }
@@ -181,7 +181,7 @@ nav {
     width: 100%;
     margin-top: calc(var(--menu-height) + var(--menu-top-padding));
 
-    .container {
+    & .container {
         max-width: var(--site-width);
         margin: 0 auto;
         font-size: 20px;
@@ -219,11 +219,11 @@ footer {
     border-top: 2px solid var(--color-fg);
     margin-bottom: 10px;
 
-    #footer-link-container {
+    & #footer-link-container {
         font-weight: bold;
     }
 
-    a {
+    & a {
         text-decoration: none;
         color: var(--color-text);
     }
