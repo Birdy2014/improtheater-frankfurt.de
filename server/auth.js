@@ -1,5 +1,5 @@
 import assert from "assert";
-import bcrypt from "bcrypt"
+import bcrypt from "bcryptjs"
 import crypto from "crypto";
 import db from "./db.js";
 import * as utils from "./utils.js";
