@@ -2,6 +2,7 @@ import db from "./db.js";
 import * as utils from "./utils.js";
 import * as logger from "./logger.js";
 import { invalidateUploadsCache } from "./upload.js";
+import { calcTextColor } from "../common/color.js";
 
 const timeDateFormat = Intl.DateTimeFormat("de-DE", { weekday: "long", year: "numeric", month: "long", day: "numeric", hour: "numeric", minute: "numeric" });
 const dateFormat = Intl.DateTimeFormat("de-DE", { weekday: "long", year: "numeric", month: "long", day: "numeric" });
@@ -228,16 +229,4 @@ export function editWorkshop(workshop) {
 export function deleteWorkshop(id) {
     db.run("DELETE FROM workshop WHERE id = ?", id);
     invalidateUploadsCache();
-}
-
-// Duplicate code from client/public/js/workshop.js
-export function calcTextColor(backgroundColor) {
-    const r = parseInt(backgroundColor.substr(1, 2), 16);
-    const g = parseInt(backgroundColor.substr(3, 2), 16);
-    const b = parseInt(backgroundColor.substr(5, 2), 16);
-    const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-    if (luminance > 0.5)
-        return "#000000";
-    else
-        return "#ffffff";
 }

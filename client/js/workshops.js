@@ -1,5 +1,6 @@
 import { show_confirm_message, show_message, MESSAGE_SUCCESS, MESSAGE_ERROR, show_error, navigate } from "./navigator.js";
 import * as request from "./request.js";
+import { calcTextColor } from "../../common/color.js";
 
 export const workshops = {};
 const dateFormat = Intl.DateTimeFormat("de-DE", { weekday: "long", year: "numeric", month: "long", day: "numeric" });
@@ -283,7 +284,7 @@ function toggleWorkshopPreview() {
         time_preview.innerHTML = timeFormat.formatRange(workshops[id].texts.begin * 1000, workshops[id].texts.end * 1000);
         properties.style.display = workshops[id].texts.propertiesHidden ? "none" : null;
         properties.style.backgroundColor = workshops[id].texts.color;
-        properties.style.color = workshop_calcTextColor(workshops[id].texts.color);
+        properties.style.color = calcTextColor(workshops[id].texts.color);
         preview_button.innerHTML = "Bearbeiten";
         image.style.cursor = "default";
 
@@ -392,17 +393,6 @@ function workshop_changed(id) {
         (container.querySelector(".workshop-input-propertieshidden") && workshops[id].texts.propertiesHidden !== container.querySelector(".workshop-input-propertieshidden").checked) ||
         workshops[id].texts.type !== container.querySelector(".workshop-input-type").value
     )
-}
-
-function workshop_calcTextColor(backgroundColor) {
-    const r = parseInt(backgroundColor.substr(1, 2), 16);
-    const g = parseInt(backgroundColor.substr(3, 2), 16);
-    const b = parseInt(backgroundColor.substr(5, 2), 16);
-    const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-    if (luminance > 0.5)
-        return "#000000";
-    else
-        return "#ffffff";
 }
 
 function workshop_break_links(container) {

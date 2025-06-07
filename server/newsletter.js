@@ -8,6 +8,7 @@ import * as utils from "./utils.js";
 import * as logger from "./logger.js";
 import * as workshops from "./workshops.js";
 import { EMailTransporter } from "./mail.js";
+import { calcTextColor } from "../common/color.js";
 
 const transporter = {
     itf: new EMailTransporter("itf"),
@@ -147,7 +148,7 @@ function *build_newsletters(workshop_ids, subscribers, allow_resend) {
         const subscribe = utils.config.base_url + "/newsletter?subscribe=1&token=" + subscriber.token;
         const workshops_for_subscriber = workshops_to_send.map(workshop => ({
             ...workshop,
-            textColor: workshops.calcTextColor(workshop.color),
+            textColor: calcTextColor(workshop.color),
             website: `${utils.config.base_url}/workshop/${workshop.id}?token=${subscriber.token}`,
             img_url: `${utils.config.base_url}/api/upload/${workshop.id}?token=${subscriber.token}`,
         }));
