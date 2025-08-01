@@ -39,7 +39,8 @@ function get_marked_options(style) {
     }
 }
 
-const marked = new Marked(get_marked_options("text-decoration: underline; color: inherit;"));
+const marked_black_links = new Marked(get_marked_options("text-decoration: underline; color: #000000;"));
+const marked_white_links = new Marked(get_marked_options("text-decoration: underline; color: #ffffff;"));
 
 export function subscribe(req, res) {
     // TODO: check email address, length limit name, sanitize name and email
@@ -169,8 +170,8 @@ function *build_newsletters(workshop_ids, subscribers, allow_resend) {
             subscribe,
             logo,
             subscriber,
-            marked,
-            marked,
+            marked_black_links,
+            marked_white_links,
             base_url: utils.config.base_url
         });
 
