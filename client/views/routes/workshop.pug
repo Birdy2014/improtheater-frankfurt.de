@@ -18,7 +18,7 @@ block routeContent
         img.workshop-image(src=img_url)
         .workshop-right
             if loggedIn || !propertiesHidden
-                dl.workshop-right-item.workshop-properties(style=`background-color: ${color}; color: ${textColor}`)
+                dl.workshop-right-item.workshop-properties(style=`background-color: ${color}; color: ${textColorResolved}`)
                     if loggedIn
                         .workshop-edit-field
                             input.workshop-input-propertieshidden(type="checkbox" name=propertieshidden checked=propertiesHidden)
@@ -62,6 +62,13 @@ block routeContent
                                 a.workshop-color-set-default(href="javascript:void(0)") Standard
                                 a.workshop-color-set-dominant(href="javascript:void(0)") Automatisch
                                 a.workshop-color-set-reset(href="javascript:void(0)") Reset
+                        .workshop-edit-field
+                            dt Textfarbe?
+                            dd
+                                select.input-workshop-text-color
+                                    option(value="" selected=(textColor=="")) Automatisch
+                                    option(value="#ffffff" selected=(textColor=="#ffffff")) Weiß
+                                    option(value="#000000" selected=(textColor=="#000000")) Schwarz
 
             if loggedIn
                 .workshop-right-item.workshop-edit-field(style="margin-top: 10px;")

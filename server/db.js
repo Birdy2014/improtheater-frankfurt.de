@@ -17,6 +17,7 @@ class Database {
                 content TEXT NOT NULL,
                 img TEXT NOT NULL,
                 color TEXT NOT NULL,
+                textColor TEXT NOT NULL DEFAULT "",
                 visible INTEGER DEFAULT 0,
                 location TEXT NOT NULL,
                 price TEXT NOT NULL,

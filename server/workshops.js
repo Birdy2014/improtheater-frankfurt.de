@@ -130,7 +130,7 @@ export function getWorkshops(loggedIn, page = 0, type = 3) {
             workshop.outdated = workshop.end < utils.getCurrentTimestamp();
         }
         workshop.img_url = `${utils.config.base_url}/api/upload/${workshop.img}`;
-        workshop.textColor = calcTextColor(workshop.color);
+        workshop.textColorResolved = workshop.textColor || calcTextColor(workshop.color);
     }
     invalidateUploadsCache();
     return workshops;
@@ -165,6 +165,7 @@ export function getWorkshop(id, loggedIn) {
     }
     workshop.img_url = `${utils.config.base_url}/api/upload/${workshop.img}`;
     workshop.propertiesHidden = workshop.propertiesHidden === 1;
+    workshop.textColorResolved = workshop.textColor || calcTextColor(workshop.color);
     return workshop;
 }
 
@@ -177,6 +178,7 @@ export function editWorkshop(workshop) {
         title: defaultTitle,
         content: defaultContent,
         color: "#e65656",
+        textColor: "",
         visible: 0,
         location: "Ort",
         price: "Preis",

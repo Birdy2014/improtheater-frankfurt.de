@@ -6,7 +6,7 @@ mixin workshop-item(workshop, link_target = "_self")
                 .workshops-draft-text
                     unless workshop.visible
                         | Entwurf
-            .workshop-text(style=`background-color: ${workshop.color}; color: ${workshop.textColor}`)
+            .workshop-text(style=`background-color: ${workshop.color}; color: ${workshop.textColorResolved}`)
                 h2 #{workshop.title}
                 h4
                     unless workshop.propertiesHidden

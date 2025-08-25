@@ -284,7 +284,7 @@ function toggleWorkshopPreview() {
         time_preview.innerHTML = timeFormat.formatRange(workshops[id].texts.begin * 1000, workshops[id].texts.end * 1000);
         properties.style.display = workshops[id].texts.propertiesHidden ? "none" : null;
         properties.style.backgroundColor = workshops[id].texts.color;
-        properties.style.color = calcTextColor(workshops[id].texts.color);
+        properties.style.color = workshops[id].texts.textColor || calcTextColor(workshops[id].texts.color);
         preview_button.innerHTML = "Bearbeiten";
         image.style.cursor = "default";
 
@@ -368,6 +368,7 @@ function workshop_updateValues(id) {
     workshops[id].texts.price = container.querySelector(".edit-workshop-price").value;
     workshops[id].texts.email = container.querySelector(".edit-workshop-email").value;
     workshops[id].texts.color = container.querySelector(".input-workshop-color").value;
+    workshops[id].texts.textColor = container.querySelector(".input-workshop-text-color").selectedOptions[0].value;
     workshops[id].texts.propertiesHidden = container.querySelector(".workshop-input-propertieshidden")?.checked;
     workshops[id].texts.type = container.querySelector(".workshop-input-type").value
 }
@@ -390,6 +391,7 @@ function workshop_changed(id) {
         workshops[id].texts.price !== container.querySelector(".edit-workshop-price").value ||
         workshops[id].texts.email !== container.querySelector(".edit-workshop-email").value ||
         workshops[id].texts.color !== container.querySelector(".input-workshop-color").value ||
+        workshops[id].texts.textColor !== container.querySelector(".input-workshop-text-color").selectedOptions[0].value ||
         (container.querySelector(".workshop-input-propertieshidden") && workshops[id].texts.propertiesHidden !== container.querySelector(".workshop-input-propertieshidden").checked) ||
         workshops[id].texts.type !== container.querySelector(".workshop-input-type").value
     )

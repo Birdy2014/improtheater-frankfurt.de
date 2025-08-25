@@ -42,14 +42,14 @@ html
                     img(src=logo style="display: block; height: 60px; margin-bottom: 20px;")
                 td
             each workshop, index in workshops
-                - var marked_colored_block = workshop.textColor === "#ffffff" ? marked_white_links : marked_black_links;
+                - var marked_colored_block = workshop.textColorResolved === "#ffffff" ? marked_white_links : marked_black_links;
                 if index > 0
                     tr(height="50px")
                 tr(style=`background-color: ${workshop.color};`)
                     td
                     td(width="750" style="text-align: center; padding: 10px;")
                         h1(style="margin-top: 20px; text-align: center; font-family: Roboto, Helvetica; font-size: 32px;")
-                            a(href=workshop.website style=`color: ${workshop.textColor}; text-decoration: none;`)!= marked_colored_block.parseInline(workshop.title)
+                            a(href=workshop.website style=`color: ${workshop.textColorResolved}; text-decoration: none;`)!= marked_colored_block.parseInline(workshop.title)
                         img(src=workshop.img_url style="width: 100%;")
                     td
                 tr
@@ -58,10 +58,10 @@ html
                         div(style=`display: block; padding: 10px; font-family: Roboto, Helvetica; font-size: 18px; line-height: 1.5;`)
                             != marked_black_links.parse(workshop.content)
                         unless workshop.propertiesHidden
-                            div(style=`background-color: ${workshop.color}; color: ${workshop.textColor}; padding: 15px; margin-top: 10px;`)
+                            div(style=`background-color: ${workshop.color}; color: ${workshop.textColorResolved}; padding: 15px; margin-top: 10px;`)
                                 div(style="padding-bottom: 10px; font-weight: 700; font-family: Roboto, Helvetica; font-size: 18px;")
-                                    a(href=workshop.website style=`color: ${workshop.textColor}; text-decoration: none;`)!= marked_colored_block.parseInline(workshop.title)
-                                dl(style=`color: ${workshop.textColor}; margin: 0;`)
+                                    a(href=workshop.website style=`color: ${workshop.textColorResolved}; text-decoration: none;`)!= marked_colored_block.parseInline(workshop.title)
+                                dl(style=`color: ${workshop.textColorResolved}; margin: 0;`)
                                     dt(style="padding-top: 5px; font-weight: 700; font-family: Roboto, Helvetica; font-size: 18px;") Wann?
                                     dd(style="font-family: Roboto, Helvetica; font-size: 18px; margin: 0;")
                                         | #{workshop.dateText}
