@@ -5,6 +5,7 @@ import router from "./server/routes.js";
 import * as utils from "./server/utils.js";
 import * as logger from "./server/logger.js";
 import { clear_expired_sessions } from "./server/auth.js";
+import * as newsletter from "./server/newsletter.js";
 
 marked.use({
     breaks: true,
@@ -12,6 +13,8 @@ marked.use({
 
 setInterval(clear_expired_sessions, 24 * 60 * 60 * 1000);
 clear_expired_sessions();
+
+setInterval(newsletter.send_from_queue, 4_000);
 
 const app = express();
 

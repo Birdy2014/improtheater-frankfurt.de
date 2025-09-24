@@ -1,7 +1,5 @@
-import assert from "assert";
 import pug from "pug";
 import { Marked } from "marked";
-import { Mutex } from "async-mutex";
 import { SqliteError } from "better-sqlite3";
 import db from "./db.js";
 import * as utils from "./utils.js";
@@ -14,7 +12,11 @@ const transporter = {
     improglycerin: new EMailTransporter("improglycerin"),
 };
 
-const mail_mutex = new Mutex();
+/**
+ *  @type {{ recipients: Object[], is_newsletter: boolean, workshops: Object[]|null }[]}
+ */
+const mail_queue = [];
+
 
 function get_marked_options(style) {
     return {
@@ -64,8 +66,15 @@ export function subscribe(req, res) {
         removeExpiredSubscribers();
         let token = utils.generateToken(20);
         let timestamp = utils.getCurrentTimestamp();
-        db.run("INSERT INTO subscriber (name, email, token, timestamp, subscribedTo) VALUES (?, ?, ?, ?, ?)", req.body.name, req.body.email, token, timestamp, req.body.subscribedTo);
-        sendConfirmMail({ name: req.body.name, email: req.body.email, token, subscribedTo: req.body.subscribedTo });
+        const subscriber = {
+            name: req.body.name,
+            email: req.body.email,
+            token,
+            timestamp,
+            subscribedTo: req.body.subscribedTo,
+        };
+        db.run("INSERT INTO subscriber (name, email, token, timestamp, subscribedTo) VALUES (?, ?, ?, ?, ?)", subscriber.name, subscriber.email, subscriber.token, subscriber.timestamp, subscriber.subscribedTo);
+        queue_confirm_email(subscriber)
         res.sendStatus(200);
     } catch(e) {
         if (e instanceof SqliteError && e.code === "SQLITE_CONSTRAINT_PRIMARYKEY") {
@@ -104,20 +113,60 @@ export function unsubscribe(req, res) {
     res.sendStatus(200);
 }
 
+export async function send_from_queue() {
+    const mail_batch = mail_queue[0]
+
+    if (!mail_batch) {
+        return;
+    }
+
+    const recipient = mail_batch.recipients.shift()
+    if (mail_batch.recipients.length === 0) {
+        mail_queue.shift();
+    }
+
+    if (mail_batch.is_newsletter) {
+        const newsletter = build_newsletter(mail_batch.workshops, recipient);
+        const workshop_ids = mail_batch.workshops.map(workshop => workshop.id);
+        try {
+            const smtp_response = await sendMail(newsletter.type, {
+                to: newsletter.email,
+                replyTo: "hallo@improglycerin.de",
+                subject: newsletter.subject,
+                html: newsletter.html,
+                text: newsletter.text
+            });
+            logger.info(`Sent newsletter ${workshop_ids.join(", ")} to ${newsletter.email}. Got response '${smtp_response}'`);
+        } catch (e) {
+            logger.error(`Failed to send Newsletter ${workshop_ids.join(", ")} to ${newsletter.email}:\n ${e.stack}`);
+        }
+    } else {
+        const mail = build_confirm_mail(recipient);
+        try {
+            const smtp_response = await sendMail(mail.type, {
+                to: mail.email,
+                replyTo: "hallo@improglycerin.de",
+                subject: mail.subject,
+                html: mail.html,
+                text: mail.text
+            });
+            logger.info(`Sent confirm email to ${mail.email}. Got response '${smtp_response}'`);
+        } catch (e) {
+            logger.error(`Failed to send confirm email to ${newsletter.email}:\n ${e.stack}`);
+        }
+    }
+
+    if (mail_queue.length === 0) {
+        logger.info("Mail queue is now empty")
+    }
+}
+
 /**
- * Instanciates the templates for the given workshops to be sent to the given subscribers
  * @param {number[]} workshop_ids
  * @param {{email: string, name: string, subscribedTo: number, token: string}[]} subscribers
  * @param {boolean} allow_resend
- * @yields {{email: string, type: number, subject: string, text: string, html: string}}
- * @throws {utils.HTTPError}
  */
-function *build_newsletters(workshop_ids, subscribers, allow_resend) {
-    assert(Array.isArray(workshop_ids));
-    assert(Array.isArray(subscribers));
-    assert.notStrictEqual(workshop_ids.length, 0);
-    assert.notStrictEqual(subscribers.length, 0);
-
+function queue_newsletter(workshop_ids, subscribers, allow_resend) {
     const workshops_to_send = workshop_ids.map(id => workshops.getWorkshop(id, true));
     const workshop_type = workshops_to_send[0].type;
 
@@ -139,56 +188,102 @@ function *build_newsletters(workshop_ids, subscribers, allow_resend) {
         }
     }
 
+    const target_subscribers = subscribers.filter(({subscribedTo}) => subscribedTo & workshop_type);
+
+    mail_queue.push({
+        recipients: target_subscribers,
+        is_newsletter: true,
+        workshops: workshops_to_send,
+    });
+}
+
+function queue_confirm_email(subscriber) {
+    mail_queue.unshift({
+        recipients: [subscriber],
+        is_newsletter: false,
+        workshops: null,
+    });
+}
+
+/**
+ * Instanciates the templates for the given workshops to be sent to the given subscribers
+ * @param {Object[]} workshops_to_send
+ * @param {{email: string, name: string, subscribedTo: number, token: string}} subscriber
+ * @returns {{email: string, type: number, subject: string, text: string, html: string}}
+ * @throws {utils.HTTPError}
+ */
+function build_newsletter(workshops_to_send, subscriber) {
+    const workshop_type = workshops_to_send[0].type;
+
+    if (typeof workshop_type !== "number") {
+        throw new utils.HTTPError(500, "Invalid workshop type.");
+    }
+
     const logo = workshop_type === workshops.type_itf
         ? utils.config.base_url + "/public/img/improtheater_frankfurt_logo.png"
         : "https://improglycerin.de/wp-content/uploads/2017/04/improglycerin_logo_website_white_medium_2.jpg";
 
-    for (const subscriber of subscribers.filter(({subscribedTo}) => subscribedTo & workshop_type)) {
-        const unsubscribe = utils.config.base_url + "/newsletter?unsubscribe=1&token=" + subscriber.token;
-        const subscribe = utils.config.base_url + "/newsletter?subscribe=1&token=" + subscriber.token;
-        const workshops_for_subscriber = workshops_to_send.map(workshop => ({
-            ...workshop,
-            website: `${utils.config.base_url}/workshop/${workshop.id}?token=${subscriber.token}`,
-            img_url: `${utils.config.base_url}/api/upload/${workshop.id}?token=${subscriber.token}`,
-        }));
+    const unsubscribe = utils.config.base_url + "/newsletter?unsubscribe=1&token=" + subscriber.token;
+    const workshops_for_subscriber = workshops_to_send.map(workshop => ({
+        ...workshop,
+        website: `${utils.config.base_url}/workshop/${workshop.id}?token=${subscriber.token}`,
+        img_url: `${utils.config.base_url}/api/upload/${workshop.id}?token=${subscriber.token}`,
+    }));
 
-        const subject = workshops_for_subscriber.length === 1
-            ? (workshops_for_subscriber[0].propertiesHidden ? workshops_for_subscriber[0].title : workshops_for_subscriber[0].title + ", am " + workshops_for_subscriber[0].dateText)
-            : `${workshops_for_subscriber.length} ${workshop_type === workshops.type_itf ? "Workshops" : "Shows"}: ${workshops_for_subscriber.map(workshop => workshop.title).join(" / ")}`;
+    const subject = workshops_for_subscriber.length === 1
+        ? (workshops_for_subscriber[0].propertiesHidden ? workshops_for_subscriber[0].title : workshops_for_subscriber[0].title + ", am " + workshops_for_subscriber[0].dateText)
+        : `${workshops_for_subscriber.length} ${workshop_type === workshops.type_itf ? "Workshops" : "Shows"}: ${workshops_for_subscriber.map(workshop => workshop.title).join(" / ")}`;
 
-        const weblink = workshops_to_send.length === 1
-            ? `${utils.config.base_url}/workshop/${workshops_to_send[0].id}`
-            : `${utils.config.base_url}/workshops`;
+    const weblink = workshops_to_send.length === 1
+        ? `${utils.config.base_url}/workshop/${workshops_to_send[0].id}`
+        : `${utils.config.base_url}/workshops`;
 
-        let html = pug.renderFile(utils.project_path + "/client/views/emails/newsletter.pug", {
-            subject: subject,
-            workshops: workshops_for_subscriber,
-            weblink,
-            unsubscribe,
-            subscribe,
-            logo,
-            subscriber,
-            marked_black_links,
-            marked_white_links,
-            base_url: utils.config.base_url
-        });
+    let html = pug.renderFile(utils.project_path + "/client/views/emails/newsletter.pug", {
+        subject: subject,
+        workshops: workshops_for_subscriber,
+        weblink,
+        unsubscribe,
+        logo,
+        subscriber,
+        marked_black_links,
+        marked_white_links,
+        base_url: utils.config.base_url
+    });
 
-        const text =
-            workshops_for_subscriber.map(workshop =>
-                workshop.propertiesHidden
-                ? `${workshop.title}\n\n${workshop.content}`
-                : `Im Browser anschauen: ${weblink}\n\nImproglycerin lädt ein zu ${workshop.title} am ${workshop.dateText}.\n\n${workshop.content}\n\nWann? ${workshop.timeText}\nWo? ${workshop.location}\nBetrag? ${workshop.price}\nAnmelden? ${workshop.email}`
-            ).join("\n\n")
-            + `\n\nImpressum: https://improtheater-frankfurt.de/impressum\nDatenschutz: https://improglycerin.de/datenschutz\nKontakt: https://improglycerin.de/kontakt/\nAbmelden: ${unsubscribe}`;
+    const text =
+        workshops_for_subscriber.map(workshop =>
+            workshop.propertiesHidden
+            ? `${workshop.title}\n\n${workshop.content}`
+            : `Im Browser anschauen: ${weblink}\n\nImproglycerin lädt ein zu ${workshop.title} am ${workshop.dateText}.\n\n${workshop.content}\n\nWann? ${workshop.timeText}\nWo? ${workshop.location}\nBetrag? ${workshop.price}\nAnmelden? ${workshop.email}`
+        ).join("\n\n")
+        + `\n\nImpressum: https://improtheater-frankfurt.de/impressum\nDatenschutz: https://improglycerin.de/datenschutz\nKontakt: https://improglycerin.de/kontakt/\nAbmelden: ${unsubscribe}`;
 
-        yield {
-            email: subscriber.email,
-            type: workshop_type,
-            subject,
-            text,
-            html,
-        };
-    }
+    return {
+        email: subscriber.email,
+        type: workshop_type,
+        subject,
+        text,
+        html,
+    };
+}
+
+function build_confirm_mail(subscriber) {
+    const link = utils.config.base_url + "/api/newsletter/confirm?token=" + subscriber.token;
+    const subscribe = utils.config.base_url + "/newsletter?subscribe=1&token=" + subscriber.token;
+    const html = pug.renderFile(utils.project_path + "/client/views/emails/confirm.pug", {
+        name: subscriber.name,
+        link,
+        subscribedTo: subscriber.subscribedTo,
+        subscribe,
+    });
+
+    return {
+        email: subscriber.email,
+        type: subscriber.subscribedTo,
+        subject: "Improtheater Frankfurt Newsletterbestätigung",
+        text: `Liebe/r ${subscriber.name},\nvielen Dank für die Bestellung unseres Newsletters, in dem Du zukünftig über unsere Workshops, unsere Jams und unsere Shows informiert wirst.\nBitte bestätige durch Klick auf diesen Link, dass Du unseren tollen Newsletter erhalten möchtest: ${link}`,
+        html,
+    };
 }
 
 export async function send(req, res) {
@@ -213,28 +308,9 @@ export async function send(req, res) {
         subscribers = getSubscribers();
     }
 
-    const newsletters = build_newsletters(workshop_ids_to_send, subscribers, true);
+    // TODO: Really allow resend?
+    queue_newsletter(workshop_ids_to_send, subscribers, true);
     res.sendStatus(200);
-
-    // Send newsletter
-    logger.info(`Start sending newsletter ${workshop_ids_to_send.join(", ")}`);
-
-    for (const newsletter of newsletters) {
-        try {
-            const smtp_response = await sendMail(newsletter.type, {
-                to: newsletter.email,
-                replyTo: "hallo@improglycerin.de",
-                subject: newsletter.subject,
-                html: newsletter.html,
-                text: newsletter.text
-            });
-            logger.info(`Sent newsletter ${workshop_ids_to_send.join(", ")} to ${newsletter.email}. Got response '${smtp_response}'`);
-        } catch (e) {
-            logger.error(`Failed to send Newsletter ${workshop_ids_to_send.join(", ")} to ${newsletter.email}:\n ${e.stack}`);
-        }
-    }
-
-    logger.info(`Sent newsletter ${workshop_ids_to_send.join(", ")}`);
 }
 
 export async function preview(req, res) {
@@ -250,16 +326,17 @@ export async function preview(req, res) {
         ? req.query.workshops.map(id => parseInt(id))
         : [parseInt(req.query.workshops)];
 
-    const subscribers = [{
+    const subscriber = {
         name: req.user.username,
         email: req.user.email,
         token: "",
         subscribedTo: 3
-    }];
+    };
 
-    const newsletters = build_newsletters(workshop_ids_to_send, subscribers, true);
+    const workshops_to_send = workshop_ids_to_send.map(id => workshops.getWorkshop(id, true));
+    const newsletter = build_newsletter(workshops_to_send, subscriber, true);
 
-    res.send(newsletters.next().value.html);
+    res.send(newsletter.html);
 }
 
 export function exportSubscribers(req, res) {
@@ -303,24 +380,6 @@ export function addSubscriber(req, res) {
     }
 }
 
-function sendConfirmMail(subscriber) {
-    let link = utils.config.base_url + "/api/newsletter/confirm?token=" + subscriber.token;
-    let subscribe = utils.config.base_url + "/newsletter?subscribe=1&token=" + subscriber.token;
-    let html = pug.renderFile(utils.project_path + "/client/views/emails/confirm.pug", {
-        name: subscriber.name,
-        link,
-        subscribedTo: subscriber.subscribedTo,
-        subscribe,
-    });
-    sendMail(subscriber.subscribedTo, {
-        to: subscriber.email,
-        replyTo: "hallo@improglycerin.de",
-        subject: "Improtheater Frankfurt Newsletterbestätigung",
-        html: html,
-        text: `Liebe/r ${subscriber.name},\nvielen Dank für die Bestellung unseres Newsletters, in dem Du zukünftig über unsere Workshops, unsere Jams und unsere Shows informiert wirst.\nBitte bestätige durch Klick auf diesen Link, dass Du unseren tollen Newsletter erhalten möchtest: ${link}`
-    });
-}
-
 export function getSubscribers() {
     return db.all("SELECT * FROM subscriber WHERE confirmed = 1");
 }
@@ -340,17 +399,11 @@ function validNewsletterType(subscribedTo) {
 
 async function sendMail(type, options) {
     const namedType = type == 1 ? "itf" : "improglycerin";
-    await mail_mutex.acquire();
     try {
-        const smtp_response = await transporter[namedType].send(options);
-        await utils.sleep(2_000);
-        mail_mutex.release();
-        return smtp_response;
+        return await transporter[namedType].send(options);
     } catch(e) {
         logger.error(`Failed to send email to ${options.to}:\n ${e.stack}`);
         logger.warn("Delaying next newsletter by 1 minute because of previous error");
-        await utils.sleep(60_000);
-        mail_mutex.release();
         throw e;
     }
 }
