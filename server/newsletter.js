@@ -1,6 +1,8 @@
 import pug from "pug";
 import { Marked } from "marked";
 import { SqliteError } from "better-sqlite3";
+import path from "path";
+import fs from "fs";
 import db from "./db.js";
 import * as utils from "./utils.js";
 import * as logger from "./logger.js";
@@ -158,6 +160,29 @@ export async function send_from_queue() {
 
     if (mail_queue.length === 0) {
         logger.info("Mail queue is now empty")
+    }
+}
+
+const mail_queue_save_path = path.join(utils.config.data_directory, "mail_queue.json");
+export function store_mail_queue_to_file() {
+    if (mail_queue.length === 0) {
+        return;
+    }
+    fs.writeFileSync(mail_queue_save_path, JSON.stringify(mail_queue));
+    mail_queue.length = 0;
+}
+
+export function load_mail_queue_from_file() {
+    try {
+        const serialized_queue = fs.readFileSync(mail_queue_save_path);
+        fs.unlinkSync(mail_queue_save_path);
+        if (process.env.NODE_ENV !== "development" || !process.env.ITF_SEND_MAILS) {
+            mail_queue.push(...JSON.parse(serialized_queue));
+        }
+    } catch (e) {
+        if (e.code !== "ENOENT") {
+            throw e;
+        }
     }
 }
 

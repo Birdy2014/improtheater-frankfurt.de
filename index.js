@@ -15,6 +15,14 @@ setInterval(clear_expired_sessions, 24 * 60 * 60 * 1000);
 clear_expired_sessions();
 
 setInterval(newsletter.send_from_queue, 4_000);
+function exit_handler() {
+    newsletter.store_mail_queue_to_file();
+    process.exit();
+}
+process.on("SIGINT", exit_handler);
+process.on("SIGTERM", exit_handler);
+process.on("SIGINT", exit_handler);
+newsletter.load_mail_queue_from_file();
 
 const app = express();
 

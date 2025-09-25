@@ -1,4 +1,5 @@
 import SqliteDatabase from "better-sqlite3";
+import path from "path";
 import * as logger from "./logger.js";
 import * as utils from "./utils.js";
 
@@ -6,7 +7,7 @@ class Database {
     #db;
 
     constructor() {
-        this.#db = new SqliteDatabase(utils.config.dbpath);
+        this.#db = new SqliteDatabase(path.join(utils.config.data_directory, "improtheater-frankfurt.db"));
 
         this.run(`
             CREATE TABLE IF NOT EXISTS workshop (
