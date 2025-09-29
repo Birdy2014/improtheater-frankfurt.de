@@ -128,6 +128,8 @@ router.get("/index.html", (_, res) => {
 });
 
 router.get("/workshop/:workshopID", auth.getUser, (req, res) => {
+    res.set("X-Robots-Tag", "noindex");
+
     let w = workshops.getWorkshop(req.params.workshopID, req.user !== undefined);
     if (!w) {
         throw new utils.HTTPError(404);

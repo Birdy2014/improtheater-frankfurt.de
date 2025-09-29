@@ -1,2 +1,5 @@
 User-agent: *
 Disallow: /api/
+Disallow: /lib/
+Disallow: /roboto/
+Disallow: /resource/
