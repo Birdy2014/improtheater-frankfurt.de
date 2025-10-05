@@ -19,6 +19,14 @@ else
             block head
 
         body
+            script(type="application/ld+json").
+                {
+                    "@context": "https://schema.org",
+                    "@type": "WebSite",
+                    name: "Improtheater Frankfurt",
+                    url: "https://improtheater-frankfurt.de",
+                }
+
             #message-success.message
                 span.message-text
                 span.message-close &times;
