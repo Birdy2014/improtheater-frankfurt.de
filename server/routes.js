@@ -48,6 +48,20 @@ function cors_allow_all(_, res, next) {
     next();
 }
 
+function cors_allow_improglycerin(req, res, next) {
+    const origin = req.get("Origin");
+    if (!origin) {
+        next();
+        return;
+    }
+    const allowed_origins = /^https:\/\/(.*\.)?improglycerin\.de|http:\/\/localhost(:[0-9]+)?$/;
+    if (allowed_origins.test(origin.toLowerCase())) {
+        res.set("Access-Control-Allow-Origin", origin);
+        res.set("Access-Control-Allow-Headers", "*");
+    }
+    next();
+}
+
 // Backend
 router.get("/robots.txt", (_, res) => res.sendFile(path.join(utils.project_path, "/client/robots.txt")));
 router.post("/api/login", auth.login);
@@ -61,7 +75,8 @@ router.get("/api/workshops", auth.getUser, workshops.api_get);
 router.post("/api/workshops", auth.getUser, workshops.post);
 router.delete("/api/workshops", auth.getUser, workshops.del);
 router.post("/api/workshop/copy", auth.getUser, workshops.copy);
-router.post("/api/newsletter/subscribe", newsletter.subscribe);
+router.options("/api/newsletter/subscribe", cors_allow_improglycerin);
+router.post("/api/newsletter/subscribe", cors_allow_improglycerin, newsletter.subscribe);
 router.get("/api/newsletter/confirm", newsletter.confirm);
 router.post("/api/newsletter/unsubscribe", newsletter.unsubscribe);
 router.post("/api/newsletter/send", auth.getUser, newsletter.send);
