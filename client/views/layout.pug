@@ -16,6 +16,12 @@ else
             if loggedIn
                 script(src="/lib/marked.min.js")
             script(src="/resource/index.js")
+            script(defer src="https://analytics.improglycerin.de/script.js" data-website-id="6f4a8746-754f-4efa-95cb-bd83e26a68f7" data-domains="improtheater-frankfurt.de")
+            if loggedIn
+                script.
+                    window.addEventListener("load", _ => {
+                        umami.identify({ loggedIn: true, });
+                    });
             block head
 
         body
