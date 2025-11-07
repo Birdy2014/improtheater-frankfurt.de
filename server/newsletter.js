@@ -246,7 +246,7 @@ function build_newsletter(workshops_to_send, subscriber) {
 
     const logo = workshop_type === workshops.type_itf
         ? utils.config.base_url + "/public/img/improtheater_frankfurt_logo.png"
-        : "https://improglycerin.de/wp-content/uploads/2017/04/improglycerin_logo_website_white_medium_2.jpg";
+        : utils.config.base_url + "/public/img/improglycerin_logo.jpg";
 
     const unsubscribe = utils.config.base_url + "/newsletter?unsubscribe=1&token=" + subscriber.token;
     const workshops_for_subscriber = workshops_to_send.map(workshop => ({
