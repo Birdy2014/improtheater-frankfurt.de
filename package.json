@@ -27,6 +27,7 @@
     "nodemailer": "7.0.11",
     "nprogress": "0.2.0",
     "pug": "3.0.3",
-    "sharp": "0.34.5"
+    "sharp": "0.34.5",
+    "node-addon-api": "8.5.0"
   }
 }
