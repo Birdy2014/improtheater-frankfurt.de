@@ -55,4 +55,4 @@ app.use((err, req, res, next) => {
     }
 });
 
-app.listen(utils.config.port || 8080);
+app.listen(utils.config.port, utils.config.address);
