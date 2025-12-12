@@ -16,17 +16,17 @@
   "author": "Moritz Vogel",
   "license": "",
   "dependencies": {
-    "@fontsource/roboto": "5.2.5",
-    "bcryptjs": "3.0.2",
-    "better-sqlite3": "11.10.0",
+    "@fontsource/roboto": "5.2.9",
+    "bcryptjs": "3.0.3",
+    "better-sqlite3": "12.5.0",
     "cookie-parser": "1.4.7",
-    "esbuild": "0.25.5",
-    "express": "5.1.0",
-    "express-fileupload": "1.5.1",
-    "marked": "15.0.12",
-    "nodemailer": "7.0.3",
+    "esbuild": "0.27.1",
+    "express": "5.2.1",
+    "express-fileupload": "1.5.2",
+    "marked": "17.0.1",
+    "nodemailer": "7.0.11",
     "nprogress": "0.2.0",
     "pug": "3.0.3",
-    "sharp": "0.34.2"
+    "sharp": "0.34.5"
   }
 }

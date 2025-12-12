@@ -91,7 +91,7 @@ router.delete("/api/upload/:id", auth.getUser, upload.del);
 // Libraries
 router.get("/lib/nprogress.js", (_, res) => res.sendFile(path.join(utils.project_path, "/node_modules/nprogress/nprogress.js")));
 router.get("/lib/nprogress.css", (_, res) => res.sendFile(path.join(utils.project_path, "/node_modules/nprogress/nprogress.css")));
-router.get("/lib/marked.min.js", (_, res) => res.sendFile(path.join(utils.project_path, "/node_modules/marked/marked.min.js")));
+router.get("/lib/marked.umd.js", (_, res) => res.sendFile(path.join(utils.project_path, "/node_modules/marked/lib/marked.umd.js")));
 
 // Thunderbird needs CORS to be enabled to load fonts
 router.use("/roboto", cors_allow_all, express.static(path.join(utils.project_path, "/node_modules/@fontsource/roboto/files")));
