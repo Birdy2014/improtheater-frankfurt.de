@@ -414,7 +414,8 @@ export function getSubscriber(token) {
 }
 
 function removeExpiredSubscribers() {
-    let expired = utils.getCurrentTimestamp() - 86400;
+    const week = 7 * 24 * 60 * 60;
+    const expired = utils.getCurrentTimestamp() - week;
     db.run("DELETE FROM subscriber WHERE confirmed = 0 AND timestamp < ?", expired);
 }
 
