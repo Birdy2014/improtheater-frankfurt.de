@@ -87,12 +87,12 @@ export function subscribe(req, res) {
 }
 
 export function confirm(req, res) {
-    if (!req.query.token) {
-        res.redirect("/newsletter");
+    if (!req.body.token) {
+        res.sendStatus(400);
         return;
     }
-    db.run("UPDATE subscriber SET confirmed = 1 WHERE token = ?", req.query.token);
-    res.redirect("/newsletter?token=" + req.query.token);
+    db.run("UPDATE subscriber SET confirmed = 1 WHERE token = ?", req.body.token);
+    res.sendStatus(200);
 }
 
 export function unsubscribe(req, res) {
@@ -293,7 +293,7 @@ function build_newsletter(workshops_to_send, subscriber) {
 }
 
 function build_confirm_mail(subscriber) {
-    const link = utils.config.base_url + "/api/newsletter/confirm?token=" + subscriber.token;
+    const link = utils.config.base_url + "/newsletter?token=" + subscriber.token;
     const subscribe = utils.config.base_url + "/newsletter?subscribe=1&token=" + subscriber.token;
     const html = pug.renderFile(utils.project_path + "/client/views/emails/confirm.pug", {
         name: subscriber.name,

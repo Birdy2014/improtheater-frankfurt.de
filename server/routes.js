@@ -77,7 +77,7 @@ router.delete("/api/workshops", auth.getUser, workshops.del);
 router.post("/api/workshop/copy", auth.getUser, workshops.copy);
 router.options("/api/newsletter/subscribe", cors_allow_improglycerin);
 router.post("/api/newsletter/subscribe", cors_allow_improglycerin, newsletter.subscribe);
-router.get("/api/newsletter/confirm", newsletter.confirm);
+router.post("/api/newsletter/confirm", newsletter.confirm);
 router.post("/api/newsletter/unsubscribe", newsletter.unsubscribe);
 router.post("/api/newsletter/send", auth.getUser, newsletter.send);
 router.get("/api/newsletter/export", auth.getUser, newsletter.exportSubscribers);

@@ -7,7 +7,58 @@ block routeContent
 
     #newsletter-text-container
         span#newsletter-subscriber-token #{subscriber.token}
-        if unsubscribe && subscriber
+        if subscriber && subscriber.token && !subscriber.confirmed
+            #newsletter-confirm
+                h1 Möchtest du dich wirklich
+                    |
+                    |
+                    case subscriber.subscribedTo & 3
+                        when 1
+                            | beim ITF-Newsletter
+                        when 2
+                            | beim Improglycerin-Newsletter
+                        default
+                            | bei beiden Newslettern
+                    |
+                    | anmelden?
+                button#input-newsletter-confirm Bestätigen
+            #newsletter-confirm-success(style="display: none;")
+                p.
+                    Liebe/r #{subscriber.name},
+                case subscriber.subscribedTo
+                    when 1
+                        // Improtheater Frankfurt Workshops
+                        p.
+                            herzlich willkommen auf dem Mailverteiler von Improtheater Frankfurt. Du wirst jetzt einmal
+                            wöchentlich zu unserem offenen Workshop eingeladen, der jeden Mittwochabend stattfindet
+                            und jedes Mal ein anderes Thema hat, sowie einmal im Monat zu einer Jam am Wochenende.
+                            Die Daten, Ort und Zeit kannst Du der jeweiligen Einladung entnehmen.
+                        p.
+                            Die Workshops finden am Dornbusch/Frankfurt, statt. Im Sommer sind wir manchmal auch im Park.
+                            Den genauen Ort entnimmst Du dem jeweiligen Newsletter.
+                    when 2
+                        // Improglycerin Shows
+                        p.
+                            herzlich willkommen auf dem Mailverteiler von Improglycerin. Du wirst jetzt ca. einmal im
+                            Monat zu einer Show von Improglycerin eingeladen. Die Daten, Ort und Zeit kannst Du der
+                            jeweiligen Einladung entnehmen.
+                    when 3
+                        // Beide
+                        p.
+                            herzlich willkommen auf dem Mailverteiler von Improtheater Frankfurt und Improglycerin.
+                            Du wirst jetzt einmal wöchentlich zu unserem offenen Workshop eingeladen, der jeden
+                            Mittwochabend stattfindet und jedes Mal ein anderes Thema hat, sowie einmal im Monat zu einer
+                            Jam am Wochenende und ca. zehnmal im Jahr zu einer Show von Improglycerin. Die
+                            Daten, Ort und Zeit kannst Du der jeweiligen Einladung entnehmen.
+                        p.
+                            Die Workshops finden am Dornbusch/Frankfurt, statt. Im Sommer sind wir manchmal auch im Park.
+                            Den genauen Ort entnimmst Du dem jeweiligen Newsletter.
+                p.linebreak.
+                    Herzliche Grüße
+                    Dein Team von Improglycerin
+            #newsletter-confirm-error(style="display: none;")
+                h1 Ein Fehler ist aufgetreten
+        else if unsubscribe && subscriber
             #newsletter-unsubscribe
                 h1 Von welchem Newsletter möchtest du dich abmelden?
                 form#newsletter-unsubscribe-form
@@ -36,40 +87,6 @@ block routeContent
             #newsletter-subscribe-additional-error(style="display: none;")
                 h1 Die Newsletter-Anmeldung war nicht erfolgreich
                 p Es ist ein unbekannter Fehler aufgetreten.
-        else if subscriber.confirmed
-            p.
-                Liebe/r #{subscriber.name},
-            case subscriber.subscribedTo
-                when 1
-                    // Improtheater Frankfurt Workshops
-                    p.
-                        herzlich willkommen auf dem Mailverteiler von Improtheater Frankfurt. Du wirst jetzt einmal
-                        wöchentlich zu unserem offenen Workshop eingeladen, der jeden Mittwochabend stattfindet
-                        und jedes Mal ein anderes Thema hat, sowie einmal im Monat zu einer Jam am Wochenende.
-                        Die Daten, Ort und Zeit kannst Du der jeweiligen Einladung entnehmen.
-                    p.
-                        Die Workshops finden am Dornbusch/Frankfurt, statt. Im Sommer sind wir manchmal auch im Park.
-                        Den genauen Ort entnimmst Du dem jeweiligen Newsletter.
-                when 2
-                    // Improglycerin Shows
-                    p.
-                        herzlich willkommen auf dem Mailverteiler von Improglycerin. Du wirst jetzt ca. einmal im
-                        Monat zu einer Show von Improglycerin eingeladen. Die Daten, Ort und Zeit kannst Du der
-                        jeweiligen Einladung entnehmen.
-                when 3
-                    // Beide
-                    p.
-                        herzlich willkommen auf dem Mailverteiler von Improtheater Frankfurt und Improglycerin.
-                        Du wirst jetzt einmal wöchentlich zu unserem offenen Workshop eingeladen, der jeden
-                        Mittwochabend stattfindet und jedes Mal ein anderes Thema hat, sowie einmal im Monat zu einer
-                        Jam am Wochenende und ca. zehnmal im Jahr zu einer Show von Improglycerin. Die
-                        Daten, Ort und Zeit kannst Du der jeweiligen Einladung entnehmen.
-                    p.
-                        Die Workshops finden am Dornbusch/Frankfurt, statt. Im Sommer sind wir manchmal auch im Park.
-                        Den genauen Ort entnimmst Du dem jeweiligen Newsletter.
-            p.linebreak.
-                Herzliche Grüße
-                Dein Team von Improglycerin
         else
             #newsletter-subscribe
                 h1 NEWSLETTER

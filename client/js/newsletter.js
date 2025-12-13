@@ -89,6 +89,19 @@ async function subscribe_additional() {
     }
 }
 
+async function confirm() {
+    try {
+        const token = document.getElementById("newsletter-subscriber-token").innerText;
+        await request.post("/api/newsletter/confirm", { token });
+        document.getElementById("newsletter-confirm").style.display = "none";
+        document.getElementById("newsletter-confirm-success").style.removeProperty("display");
+    } catch(e) {
+        console.log(e)
+        document.getElementById("newsletter-confirm").style.display = "none";
+        document.getElementById("newsletter-confirm-error").style.removeProperty("display");
+    }
+}
+
 window.newsletter_init = () => {
     const subscribe_form = document.getElementById("newsletter-form");
     if (subscribe_form) {
@@ -107,5 +120,10 @@ window.newsletter_init = () => {
     const confirm_subscribe_additional = document.getElementById("input-newsletter-subscribe-additional-confirm");
     if (confirm_subscribe_additional) {
         confirm_subscribe_additional.addEventListener("click", _ => subscribe_additional());
+    }
+
+    const confirm_button = document.getElementById("input-newsletter-confirm");
+    if (confirm_button) {
+        confirm_button.addEventListener("click", _ => confirm())
     }
 }
