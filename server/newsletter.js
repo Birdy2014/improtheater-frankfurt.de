@@ -425,11 +425,5 @@ function validNewsletterType(subscribedTo) {
 
 async function sendMail(type, options) {
     const namedType = type == 1 ? "itf" : "improglycerin";
-    try {
-        return await transporter[namedType].send(options);
-    } catch(e) {
-        logger.error(`Failed to send email to ${options.to}:\n ${e.stack}`);
-        logger.warn("Delaying next newsletter by 1 minute because of previous error");
-        throw e;
-    }
+    return await transporter[namedType].send(options);
 }
