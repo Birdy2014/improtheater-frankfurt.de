@@ -154,7 +154,7 @@ export async function send_from_queue() {
             });
             logger.info(`Sent confirm email to ${mail.email}. Got response '${smtp_response}'`);
         } catch (e) {
-            logger.error(`Failed to send confirm email to ${newsletter.email}:\n ${e.stack}`);
+            logger.error(`Failed to send confirm email to ${mail.email}:\n ${e.stack}`);
         }
     }
 
