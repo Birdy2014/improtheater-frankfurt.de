@@ -19,6 +19,8 @@ const transporter = {
  */
 const mail_queue = [];
 
+const cf_turnstile_secret = utils.config.cf_turnstile_secret || fs.readFileSync(utils.config.cf_turnstile_secret_file, "utf8").replace(/\n/g, "");
+
 
 function get_marked_options(style) {
     return {
@@ -45,7 +47,7 @@ function get_marked_options(style) {
 const marked_black_links = new Marked(get_marked_options("text-decoration: underline; color: #000000;"));
 const marked_white_links = new Marked(get_marked_options("text-decoration: underline; color: #ffffff;"));
 
-export function subscribe(req, res) {
+export async function subscribe(req, res) {
     // TODO: check email address, length limit name, sanitize name and email
     try {
         if (req.body.subscribedTo)
@@ -65,6 +67,25 @@ export function subscribe(req, res) {
         }
 
         // User is not subscribed
+        if (!req.body.cf_turnstile_response) {
+            throw utils.HTTPError(400);
+        }
+        const form_data = new FormData();
+        form_data.append("secret", cf_turnstile_secret);
+        form_data.append("response", req.body.cf_turnstile_response);
+        try {
+            const cf_turnstile_response = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
+                method: "POST",
+                body: form_data,
+            });
+            const cf_turnstile_result = await cf_turnstile_response.json();
+            if (!cf_turnstile_result.success) {
+                throw new utils.HTTPError(400, "Invalid Cloudflare turnstile token")
+            }
+        } catch (error) {
+            throw new utils.HTTPError(400, "Invalid Cloudflare turnstile token")
+        }
+
         removeExpiredSubscribers();
         let token = utils.generateToken(20);
         let timestamp = utils.getCurrentTimestamp();

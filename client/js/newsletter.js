@@ -2,35 +2,44 @@ import * as request from "./request.js";
 
 async function subscribe(event) {
     event.preventDefault();
-    try {
-        // Check Checkboxes
-        const checkbox_id_prefix = "input-newsletter-";
-        let checkboxes = document.querySelectorAll("input[type='checkbox']");
-        let subscribedTo = 0;
-        for (const checkbox of checkboxes) {
-            if (checkbox.checked && checkbox.id.startsWith(checkbox_id_prefix)) {
-                subscribedTo |= 1 << parseInt(checkbox.id.substring(checkbox_id_prefix.length));
-            }
-        }
-        if (subscribedTo == 0) {
-            return;
-        }
-        // Send request
-        let email = document.getElementById("input-newsletter-email").value;
-        let name = document.getElementById("input-newsletter-name").value;
-        await request.post("/api/newsletter/subscribe", { email, name, subscribedTo });
-        document.getElementById("text-email-address").innerText = email;
-        document.getElementById("newsletter-subscribe").style.display = "none";
-        document.getElementById("newsletter-subscribe-success").style.removeProperty("display");
-    } catch(e) {
-        document.getElementById("newsletter-subscribe").style.display = "none";
-        if (e.response && e.response.status === 409) {
-            document.getElementById("newsletter-subscribe-failed").style.removeProperty("display");
-        } else {
-            document.getElementById("newsletter-subscribe-error").style.removeProperty("display");
-            console.log(JSON.stringify(e));
+
+    // Check Checkboxes
+    const checkbox_id_prefix = "input-newsletter-";
+    let checkboxes = document.querySelectorAll("input[type='checkbox']");
+    let subscribedTo = 0;
+    for (const checkbox of checkboxes) {
+        if (checkbox.checked && checkbox.id.startsWith(checkbox_id_prefix)) {
+            subscribedTo |= 1 << parseInt(checkbox.id.substring(checkbox_id_prefix.length));
         }
     }
+    if (subscribedTo == 0) {
+        return;
+    }
+
+    // Send request
+    let email = document.getElementById("input-newsletter-email").value;
+    let name = document.getElementById("input-newsletter-name").value;
+
+    turnstile.render("#turnstile-container", {
+        sitekey: "0x4AAAAAACJq2P9fqQr716Sp",
+        callback: async function (cf_turnstile_response) {
+            request.post("/api/newsletter/subscribe", { email, name, subscribedTo, cf_turnstile_response })
+                .then(() => {
+                    document.getElementById("text-email-address").innerText = email;
+                    document.getElementById("newsletter-subscribe").style.display = "none";
+                    document.getElementById("newsletter-subscribe-success").style.removeProperty("display");
+                })
+                .catch(e => {
+                    document.getElementById("newsletter-subscribe").style.display = "none";
+                    if (e.response && e.response.status === 409) {
+                        document.getElementById("newsletter-subscribe-failed").style.removeProperty("display");
+                    } else {
+                        document.getElementById("newsletter-subscribe-error").style.removeProperty("display");
+                        console.log(JSON.stringify(e));
+                    }
+                })
+        },
+    });
 }
 
 function check_validity() {
