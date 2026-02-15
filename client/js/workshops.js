@@ -147,9 +147,11 @@ async function create_workshop_attachment_dropdown()  {
         return;
     }
 
+    const other_workshops = (await request.get("/api/workshops")).data.filter(workshop => workshop.id != workshop_id);
+
     const workshops_list = [
         { id: 0, title: "Angehängten Newsletter auswählen" },
-        ...(await request.get("/api/workshops")).data
+        ...other_workshops
     ];
 
     const workshop_attachment_dropdown = document.createElement("select");
