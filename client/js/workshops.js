@@ -161,6 +161,11 @@ async function create_workshop_attachment_dropdown()  {
         option.text = workshop.title;
         workshop_attachment_dropdown.append(option);
     }
+    workshop_attachment_dropdown.addEventListener("change", _ => {
+        if (workshop_attachments_container.querySelectorAll("select").values().every(dropdown => dropdown.selectedIndex > 0)) {
+            create_workshop_attachment_dropdown()
+        }
+    });
 }
 
 function showNewsletterPreview() {
