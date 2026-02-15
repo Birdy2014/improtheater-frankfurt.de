@@ -214,19 +214,10 @@ export function load_mail_queue_from_file() {
  */
 function queue_newsletter(workshop_ids, subscribers, allow_resend) {
     const workshops_to_send = workshop_ids.map(id => workshops.getWorkshop(id, true));
-    const workshop_type = workshops_to_send[0].type;
-
-    if (typeof workshop_type !== "number") {
-        throw new utils.HTTPError(500, "Invalid workshop type.");
-    }
 
     for (const workshop_to_send of workshops_to_send) {
         if (!workshop_to_send) {
             throw new utils.HTTPError(404);
-        }
-
-        if (workshop_to_send.type !== workshop_type) {
-            throw new utils.HTTPError(400, "Mismatching workshop types.");
         }
 
         if (workshop_to_send.newsletterSent && !allow_resend) {
@@ -234,6 +225,7 @@ function queue_newsletter(workshop_ids, subscribers, allow_resend) {
         }
     }
 
+    const workshop_type = workshops_to_send.reduce((type, workshop) => type | workshop.type, 0);
     const target_subscribers = subscribers.filter(({subscribedTo}) => subscribedTo & workshop_type);
 
     mail_queue.push({
@@ -259,7 +251,7 @@ function queue_confirm_email(subscriber) {
  * @throws {utils.HTTPError}
  */
 function build_newsletter(workshops_to_send, subscriber) {
-    const workshop_type = workshops_to_send[0].type;
+    const workshop_type = workshops_to_send.reduce((type, workshop) => type | workshop.type, 0);
 
     if (typeof workshop_type !== "number") {
         throw new utils.HTTPError(500, "Invalid workshop type.");
@@ -278,7 +270,7 @@ function build_newsletter(workshops_to_send, subscriber) {
 
     const subject = workshops_for_subscriber.length === 1
         ? (workshops_for_subscriber[0].propertiesHidden ? workshops_for_subscriber[0].title : workshops_for_subscriber[0].title + ", am " + workshops_for_subscriber[0].dateText)
-        : `${workshops_for_subscriber.length} ${workshop_type === workshops.type_itf ? "Workshops" : "Shows"}: ${workshops_for_subscriber.map(workshop => workshop.title).join(" / ")}`;
+        : workshops_for_subscriber.map(workshop => workshop.title).join(" / ");
 
     const weblink = workshops_to_send.length === 1
         ? `${utils.config.base_url}/workshop/${workshops_to_send[0].id}`
