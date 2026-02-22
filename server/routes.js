@@ -1,7 +1,7 @@
 import express from "express";
 import path from "path";
 import fileUpload from "express-fileupload";
-import { marked } from "marked";
+import { Marked } from "marked";
 import * as esbuild from "esbuild";
 import * as auth from "./auth.js";
 import * as workshops from "./workshops.js";
@@ -9,8 +9,10 @@ import * as newsletter from "./newsletter.js";
 import * as upload from "./upload.js";
 import * as utils from "./utils.js";
 import * as logger from "./logger.js";
+import { common_marked_options } from "../common/marked_options.js";
 
 const router = express.Router();
+const marked = new Marked(common_marked_options(undefined));
 
 // Get all routes
 const routes = [

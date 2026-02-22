@@ -8,6 +8,7 @@ import * as utils from "./utils.js";
 import * as logger from "./logger.js";
 import * as workshops from "./workshops.js";
 import { EMailTransporter } from "./mail.js";
+import { common_marked_options } from "../common/marked_options.js";
 
 const transporter = {
     itf: new EMailTransporter("itf"),
@@ -21,31 +22,8 @@ const mail_queue = [];
 
 const cf_turnstile_secret = utils.config.cf_turnstile_secret || fs.readFileSync(utils.config.cf_turnstile_secret_file, "utf8").replace(/\n/g, "");
 
-
-function get_marked_options(style) {
-    return {
-        breaks: true,
-        renderer: {
-            link({ href, title, tokens }) {
-                const text = this.parser.parseInline(tokens);
-                try {
-                    href = encodeURI(href).replace(/%25/g, "%");
-                } catch {
-                    return text;
-                }
-                let out = `<a href="${href}"`;
-                if (title) {
-                  out += ` title="${title}"`;
-                }
-                out += ` style="${style}">${text}</a>`;
-                return out;
-            }
-        }
-    }
-}
-
-const marked_black_links = new Marked(get_marked_options("text-decoration: underline; color: #000000;"));
-const marked_white_links = new Marked(get_marked_options("text-decoration: underline; color: #ffffff;"));
+const marked_black_links = new Marked(common_marked_options("text-decoration: underline; color: #000000;"));
+const marked_white_links = new Marked(common_marked_options("text-decoration: underline; color: #ffffff;"));
 
 export async function subscribe(req, res) {
     // TODO: check email address, length limit name, sanitize name and email
