@@ -9,7 +9,7 @@ import * as newsletter from "./newsletter.js";
 setInterval(clear_expired_sessions, 24 * 60 * 60 * 1000);
 clear_expired_sessions();
 
-setInterval(newsletter.send_from_queue, 4_000);
+newsletter.send_from_queue();
 function exit_handler() {
     newsletter.store_mail_queue_to_file();
     process.exit();

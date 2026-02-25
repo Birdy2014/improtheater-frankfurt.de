@@ -118,48 +118,54 @@ export async function send_from_queue() {
     const mail_batch = mail_queue[0]
 
     if (!mail_batch) {
+        setTimeout(send_from_queue, 4_000);
         return;
     }
 
     const recipient = mail_batch.recipients.shift()
-    if (mail_batch.recipients.length === 0) {
+    if (!recipient) {
         mail_queue.shift();
+        if (mail_queue.length === 0) {
+            logger.info("Mail queue is now empty")
+        }
+        setTimeout(send_from_queue, 4_000);
+        return;
     }
+
+    const mail = mail_batch.is_newsletter
+        ? build_newsletter(mail_batch.workshops, recipient)
+        : build_confirm_mail(recipient);
+
+    let log_message = `[${mail_queue.length} batches, ${mail_batch.recipients.length} rcpt] `;
 
     if (mail_batch.is_newsletter) {
-        const newsletter = build_newsletter(mail_batch.workshops, recipient);
         const workshop_ids = mail_batch.workshops.map(workshop => workshop.id);
-        try {
-            const smtp_response = await sendMail(newsletter.type, {
-                to: newsletter.email,
-                replyTo: "hallo@improglycerin.de",
-                subject: newsletter.subject,
-                html: newsletter.html,
-                text: newsletter.text
-            });
-            logger.info(`Sent newsletter ${workshop_ids.join(", ")} to ${newsletter.email}. Got response '${smtp_response}'`);
-        } catch (e) {
-            logger.error(`Failed to send Newsletter ${workshop_ids.join(", ")} to ${newsletter.email}:\n ${e.stack}`);
-        }
+        log_message += `newsletter ${workshop_ids.join(", ")} to ${recipient.email}`;
     } else {
-        const mail = build_confirm_mail(recipient);
-        try {
-            const smtp_response = await sendMail(mail.type, {
-                to: mail.email,
-                replyTo: "hallo@improglycerin.de",
-                subject: mail.subject,
-                html: mail.html,
-                text: mail.text
-            });
-            logger.info(`Sent confirm email to ${mail.email}. Got response '${smtp_response}'`);
-        } catch (e) {
-            logger.error(`Failed to send confirm email to ${mail.email}:\n ${e.stack}`);
+        log_message += `confirm to ${recipient.email}`;
+    }
+
+    try {
+        const smtp_response = await sendMail(mail.type, {
+            to: mail.email,
+            replyTo: "hallo@improglycerin.de",
+            subject: mail.subject,
+            html: mail.html,
+            text: mail.text
+        });
+
+        logger.info(`${log_message} - '${smtp_response}'`)
+    } catch (error) {
+        logger.error(`${log_message} - ${error.message}`)
+        if (error.responseCode === 450 && error.response.includes("Transmit rate limit exceeded")) {
+            mail_batch.recipients.push(recipient);
+            logger.info("Rate limit exceeded - requeued recipient");
+            setTimeout(send_from_queue, 20 * 60 * 1000);
+            return;
         }
     }
 
-    if (mail_queue.length === 0) {
-        logger.info("Mail queue is now empty")
-    }
+    setTimeout(send_from_queue, 4_000);
 }
 
 const mail_queue_save_path = path.join(utils.config.data_directory, "mail_queue.json");
