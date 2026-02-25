@@ -2,16 +2,15 @@
   "name": "improtheater-frankfurt",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index.js",
+    "start": "node server/server.js",
     "prod": "NODE_ENV=production npm start",
     "dev": "NODE_ENV=development npm start"
   },
   "bin": {
-    "improtheater-frankfurt": "index.js"
+    "improtheater-frankfurt": "server/server.js"
   },
   "author": "Moritz Vogel",
   "license": "",

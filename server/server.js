@@ -1,11 +1,11 @@
 import express from "express";
 import cookieParser from "cookie-parser";
 import { marked } from "marked";
-import router from "./server/routes.js";
-import * as utils from "./server/utils.js";
-import * as logger from "./server/logger.js";
-import { clear_expired_sessions } from "./server/auth.js";
-import * as newsletter from "./server/newsletter.js";
+import router from "./routes.js";
+import * as utils from "./utils.js";
+import * as logger from "./logger.js";
+import { clear_expired_sessions } from "./auth.js";
+import * as newsletter from "./newsletter.js";
 
 marked.use({
     breaks: true,
