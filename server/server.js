@@ -1,15 +1,10 @@
 import express from "express";
 import cookieParser from "cookie-parser";
-import { marked } from "marked";
 import router from "./routes.js";
 import * as utils from "./utils.js";
 import * as logger from "./logger.js";
 import { clear_expired_sessions } from "./auth.js";
 import * as newsletter from "./newsletter.js";
-
-marked.use({
-    breaks: true,
-});
 
 setInterval(clear_expired_sessions, 24 * 60 * 60 * 1000);
 clear_expired_sessions();
