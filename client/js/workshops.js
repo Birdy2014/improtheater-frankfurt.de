@@ -277,7 +277,7 @@ function toggleWorkshopPreview() {
     } else {
         workshop_updateValues(id);
 
-        title_preview.innerHTML = marked.parseInline(workshops[id].texts.title);
+        title_preview.innerHTML = workshops[id].texts.title;
         content_preview.innerHTML = marked.parse(workshops[id].texts.content);
         workshop_break_links(container);
         location_preview.innerHTML = marked.parseInline(workshops[id].texts.location);

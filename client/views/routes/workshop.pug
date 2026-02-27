@@ -10,7 +10,7 @@ block head
 
 block routeContent
     h1
-        span.workshop-preview-field.workshop-title!= marked.parseInline(title)
+        span.workshop-preview-field.workshop-title #{title}
         if loggedIn
             input.workshop-input.workshop-edit-field.edit-title(type="text" autocomplete="off" value=title)
 
