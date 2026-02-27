@@ -260,10 +260,13 @@ function build_newsletter(workshops_to_send, subscriber) {
         ? `${utils.config.base_url}/workshop/${workshops_to_send[0].id}`
         : `${utils.config.base_url}/workshops`;
 
+    const preview_link = `${utils.config.base_url}/newsletter-preview?token=${subscriber.token}&${workshops_to_send.map(w => `workshops=${w.id}`).join("&")}`;
+
     let html = pug.renderFile(utils.project_path + "/client/views/emails/newsletter.pug", {
         subject: subject,
         workshops: workshops_for_subscriber,
         weblink,
+        preview_link,
         unsubscribe,
         logo,
         subscriber,
@@ -336,10 +339,6 @@ export async function send(req, res) {
 }
 
 export async function preview(req, res) {
-    if (!req.user) {
-        throw new utils.HTTPError(403);
-    }
-
     if (!req.query.workshops) {
         throw new utils.HTTPError(400);
     }
@@ -348,14 +347,21 @@ export async function preview(req, res) {
         ? req.query.workshops.map(id => parseInt(id))
         : [parseInt(req.query.workshops)];
 
-    const subscriber = {
-        name: req.user.username,
-        email: req.user.email,
-        token: "",
-        subscribedTo: 3
-    };
-
     const workshops_to_send = workshop_ids_to_send.map(id => workshops.getWorkshop(id, true));
+    if (!req.user && workshops_to_send.some(w => !w.newsletterSent)) {
+        throw new utils.HTTPError(403);
+    }
+
+    let subscriber = getSubscriber(req.query.token);
+    if (!subscriber || Object.keys(subscriber).length === 0) {
+        subscriber = {
+            name: req.user?.username,
+            email: req.user?.email,
+            token: "",
+            subscribedTo: 3
+        };
+    }
+
     const newsletter = build_newsletter(workshops_to_send, subscriber, true);
 
     res.send(newsletter.html);
