@@ -38,49 +38,40 @@ html
         table(cellpadding="0" cellspacing="0" width="100%" style="color: inherit; background-color: inherit; border-collapse: collapse;")
             tr
                 td
-                td(width="750" height="80")
+                td(width="650" height="80")
                     img(src=logo style="display: block; height: 60px; margin-bottom: 20px;")
                 td
             each workshop, index in workshops
                 - var marked_colored_block = workshop.textColorResolved === "#ffffff" ? marked_white_links : marked_black_links;
                 if index > 0
-                    tr(height="50px")
-                tr(style=`background-color: ${workshop.color};`)
+                    tr(height="20px")
+                tr
                     td
-                    td(width="750" style="text-align: center; padding: 10px;")
-                        h1(style="margin-top: 20px; text-align: center; font-family: Roboto, Helvetica; font-size: 32px;")
-                            a(href=workshop.website style=`color: ${workshop.textColorResolved}; text-decoration: none;`)!= marked_colored_block.parseInline(workshop.title)
-                        img(src=workshop.img_url style="width: 100%;")
+                    td(width="650")
+                        img(src=workshop.img_url style="display: block; width: 100%;")
                     td
                 tr
                     td
-                    td(width="750")
-                        div(style=`display: block; padding: 10px; font-family: Roboto, Helvetica; font-size: 18px; line-height: 1.5;`)
+                    td(width="650")
+                        div(style="font-family: Roboto, Helvetica; font-size: 16px; line-height: 1.5;")
+                            div(style=`background-color: ${workshop.color}; color: ${workshop.textColorResolved}; padding: 20px;`)
+                                h1(style="margin-top: 20px; font-size: 30px; margin: 0; line-height: 1.2;")
+                                    a(href=workshop.website style=`color: ${workshop.textColorResolved}; text-decoration: none;`) #{workshop.title}
+                                unless workshop.propertiesHidden
+                                    span #{workshop.dateText}, #{workshop.timeText}, !{marked_colored_block.parseInline(workshop.email)}
+                                    br
+                                    span !{marked_colored_block.parseInline(workshop.location)}
+                        div(style="font-family: Roboto, Helvetica; padding: 10px;")
                             != marked_black_links.parse(workshop.content)
-                        unless workshop.propertiesHidden
-                            div(style=`background-color: ${workshop.color}; color: ${workshop.textColorResolved}; padding: 15px; margin-top: 10px;`)
-                                div(style="padding-bottom: 10px; font-weight: 700; font-family: Roboto, Helvetica; font-size: 18px;")
-                                    a(href=workshop.website style=`color: ${workshop.textColorResolved}; text-decoration: none;`)!= marked_colored_block.parseInline(workshop.title)
-                                dl(style=`color: ${workshop.textColorResolved}; margin: 0;`)
-                                    dt(style="padding-top: 5px; font-weight: 700; font-family: Roboto, Helvetica; font-size: 18px;") Wann?
-                                    dd(style="font-family: Roboto, Helvetica; font-size: 18px; margin: 0;")
-                                        | #{workshop.dateText}
-                                        br
-                                        | #{workshop.timeText}
-                                    dt(style="padding-top: 5px; font-weight: 700; font-family: Roboto, Helvetica; font-size: 18px;") Wo?
-                                    dd(style="font-family: Roboto, Helvetica; font-size: 18px; margin: 0;")
-                                        != marked_colored_block.parseInline(workshop.location)
-                                    dt(style="padding-top: 5px; font-weight: 700; font-family: Roboto, Helvetica; font-size: 18px;") Beitrag?
-                                    dd(style="font-family: Roboto, Helvetica; font-size: 18px; margin: 0;")
-                                        != marked_colored_block.parseInline(workshop.price)
-                                    dt(style="padding-top: 5px; font-weight: 700; font-family: Roboto, Helvetica; font-size: 18px;") Anmelden?
-                                    dd(style="font-family: Roboto, Helvetica; font-size: 18px; margin: 0;")
-                                        != marked_colored_block.parseInline(workshop.email)
                     td
 
+            tr
+                td(height=20)
+            tr
+                td(colspan="3" height="2" style="background-color: #cf0d2b;")
             tr(style="color: black; text-align: center;")
                 td
-                td(style="padding: 10px; font-family: Roboto, Helvetica; font-size: 18px;")
+                td(style="padding: 10px; font-family: Roboto, Helvetica; font-size: 16px;")
                     a(href="https://improtheater-frankfurt.de/impressum" style="text-decoration: none; color: black;") Impressum
                     = " | "
                     a(href="https://improtheater-frankfurt.de/datenschutz" style="text-decoration: none; color: black;") Datenschutz

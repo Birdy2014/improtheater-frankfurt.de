@@ -277,9 +277,13 @@ function build_newsletter(workshops_to_send, subscriber) {
 
     const text =
         workshops_for_subscriber.map(workshop =>
-            workshop.propertiesHidden
-            ? `${workshop.title}\n\n${workshop.content}`
-            : `Im Browser anschauen: ${weblink}\n\nImproglycerin lädt ein zu ${workshop.title} am ${workshop.dateText}.\n\n${workshop.content}\n\nWann? ${workshop.timeText}\nWo? ${workshop.location}\nBetrag? ${workshop.price}\nAnmelden? ${workshop.email}`
+            `Im Browser anschauen: ${preview_link}\n\n`
+            + `${workshop.title} - ${weblink}\n\n`
+            + (workshop.propertiesHidden
+                ? ""
+                : `${workshop.dateText}, ${workshop.timeText}, ${workshop.email}\n`
+                + `${workshop.location}\n\n`)
+            + `${workshop.content}\n\n`
         ).join("\n\n")
         + `\n\nImpressum: https://improtheater-frankfurt.de/impressum\nDatenschutz: https://improglycerin.de/datenschutz\nKontakt: https://improglycerin.de/kontakt/\nAbmelden: ${unsubscribe}`;
 
