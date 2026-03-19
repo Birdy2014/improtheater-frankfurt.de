@@ -77,7 +77,7 @@ export async function post(req, res) {
 
     const resized_image = await sharp(req.files.img.data)
         .resize(900, 400, { fit: 'inside' })
-        .toFormat("jpeg")
+        .jpeg({ quality: 90 })
         .toBuffer()
 
     const mimetype = "image/jpeg";
