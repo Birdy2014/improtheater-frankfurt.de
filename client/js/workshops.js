@@ -2,10 +2,9 @@ import { show_confirm_message, show_message, MESSAGE_SUCCESS, MESSAGE_ERROR, sho
 import * as request from "./request.js";
 import { calcTextColor } from "../../common/color.js";
 import { common_marked_options } from "../../common/marked_options.js";
+import { dateFormat, timeFormat } from "../../common/format.js";
 
 export const workshops = {};
-const dateFormat = Intl.DateTimeFormat("de-DE", { weekday: "long", year: "numeric", month: "long", day: "numeric" });
-const timeFormat = Intl.DateTimeFormat("de-DE", { hour: "numeric", minute: "numeric" });
 
 if (window.marked) {
     marked.use(common_marked_options(undefined));

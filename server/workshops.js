@@ -3,11 +3,7 @@ import * as utils from "./utils.js";
 import * as logger from "./logger.js";
 import { invalidateUploadsCache } from "./upload.js";
 import { calcTextColor } from "../common/color.js";
-
-const timeDateFormat = Intl.DateTimeFormat("de-DE", { weekday: "long", year: "numeric", month: "long", day: "numeric", hour: "numeric", minute: "numeric" });
-const dateFormat = Intl.DateTimeFormat("de-DE", { weekday: "long", year: "numeric", month: "long", day: "numeric" });
-const timeFormat = Intl.DateTimeFormat("de-DE", { hour: "numeric", minute: "numeric" });
-const isoFormat = Intl.DateTimeFormat("sv-SE", { timeZone: "Europe/Berlin", year: "numeric", month: "numeric", day: "numeric", hour: "numeric", minute: "numeric" });
+import { timeDateFormat, dateFormat, timeFormat, isoFormat } from "../common/format.js";
 
 export const type_itf = 1;
 export const type_improglycerin = 2;
