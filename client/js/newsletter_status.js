@@ -13,8 +13,15 @@ function newsletter_id_string(newsletter) {
 }
 
 async function update_status() {
-    const response = await request.get("/api/newsletter/status");
-    for (const newsletter of response.data) {
+    let newsletters = [];
+    try {
+        const response = await request.get("/api/newsletter/status");
+        newsletters = response.data;
+    } catch (error) {
+        setTimeout(update_status, 4000);
+        return;
+    }
+    for (const newsletter of newsletters) {
         const id = newsletter_id_string(newsletter);
         let element = newsletter_elements[id];
         if (!element) {
@@ -38,7 +45,7 @@ async function update_status() {
     }
 
     for (const newsletter_id in newsletter_elements) {
-        if (!response.data.some(newsletter => newsletter_id_string(newsletter) === newsletter_id)) {
+        if (!newsletters.some(newsletter => newsletter_id_string(newsletter) === newsletter_id)) {
             newsletter_elements[newsletter_id].remove();
         }
     }
