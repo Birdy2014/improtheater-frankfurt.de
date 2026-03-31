@@ -1,3 +1,4 @@
+import { show_confirm_message } from "./navigator.js";
 import * as request from "./request.js";
 import { timeDateFormat, getCurrentTimestamp } from "../../common/time.js";
 
@@ -22,6 +23,13 @@ async function update_status() {
             const preview_link = fragment.querySelector(".preview-link");
             preview_link.innerText = newsletter.workshops.map(w => w.title).join(", ");
             preview_link.href = `/newsletter-preview?${newsletter.workshops.map(w => `workshops=${w.id}`).join("&")}`;
+
+            const delete_icon = fragment.querySelector(".icon-delete");
+            delete_icon.addEventListener("click", async event => {
+                if (await show_confirm_message("Soll das Senden dieses Newsletters wirklich abgebrochen werden?")) {
+                    request.post("/api/newsletter/cancel", { workshops: newsletter.workshops.map(w => w.id) })
+                }
+            });
 
             fragment.querySelector(".progress-bar").max = newsletter.recipientsAmount;
 

@@ -132,6 +132,33 @@ export function api_get_status(req, res) {
     res.json(mail_status);
 }
 
+export function api_post_cancel(req, res) {
+    if (!req.user) {
+        throw new utils.HTTPError(401);
+    }
+
+    if (!req.body.workshops) {
+        throw new utils.HTTPError(400);
+    }
+
+    function arraysEqual(a, b) {
+        if (a.length !== b.length) {
+            return false;
+        }
+
+        return !a.some((element, index) => element !== b[index]);
+    }
+
+    const index = mail_queue.findIndex(mail_batch => arraysEqual(mail_batch.workshops.map(w => w.id), req.body.workshops))
+
+    if (index < 0) {
+        throw new utils.HTTPError(404);
+    }
+
+    mail_queue.splice(index, 1);
+    res.status(200);
+}
+
 export async function send_from_queue() {
     const mail_batch_index = mail_queue.findIndex(mail_batch => mail_batch.sendTime < getCurrentTimestamp());
     if (mail_batch_index < 0) {

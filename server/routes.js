@@ -86,6 +86,7 @@ router.post("/api/newsletter/send", auth.getUser, newsletter.send);
 router.get("/api/newsletter/export", auth.getUser, newsletter.exportSubscribers);
 router.post("/api/newsletter/add", auth.getUser, newsletter.addSubscriber);
 router.get("/api/newsletter/status", auth.getUser, newsletter.api_get_status);
+router.post("/api/newsletter/cancel", auth.getUser, newsletter.api_post_cancel);
 router.get("/api/upload", upload.get); // Old
 router.get("/api/upload/:id", upload.get);
 router.get("/api/upload-color/:id", upload.get_color);
