@@ -132,6 +132,14 @@ export function api_get_status(req, res) {
     res.json(mail_status);
 }
 
+function arraysEqual(a, b) {
+    if (a.length !== b.length) {
+        return false;
+    }
+
+    return !a.some((element, index) => element !== b[index]);
+}
+
 export function api_post_cancel(req, res) {
     if (!req.user) {
         throw new utils.HTTPError(401);
@@ -139,14 +147,6 @@ export function api_post_cancel(req, res) {
 
     if (!req.body.workshops) {
         throw new utils.HTTPError(400);
-    }
-
-    function arraysEqual(a, b) {
-        if (a.length !== b.length) {
-            return false;
-        }
-
-        return !a.some((element, index) => element !== b[index]);
     }
 
     const index = mail_queue.findIndex(mail_batch => arraysEqual(mail_batch.workshops.map(w => w.id), req.body.workshops))
@@ -374,6 +374,10 @@ export async function send(req, res) {
     const sendTime = Number.isInteger(req.body.sendTime) ? req.body.sendTime : 0;
 
     const workshop_ids_to_send = req.body.workshops.map(id => parseInt(id));
+
+    if (!req.body.test && mail_queue.some(mail_batch => arraysEqual(mail_batch.workshops.map(w => w.id), workshop_ids_to_send))) {
+        throw new utils.HTTPError(400, "Newsletter wird bereits gesendet");
+    }
 
     let subscribers = [];
     if (req.body.test) {
