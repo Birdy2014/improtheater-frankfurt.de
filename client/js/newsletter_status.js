@@ -31,8 +31,6 @@ async function update_status() {
                 }
             });
 
-            fragment.querySelector(".progress-bar").max = newsletter.recipientsAmount;
-
             newsletter_elements[id] = element = fragment.firstElementChild;
             document.querySelector("#newsletter-status-list").appendChild(fragment);
         }
@@ -51,7 +49,10 @@ async function update_status() {
 function update_element(element, status) {
     const sent = status.recipientsAmount - status.recipientsLeft;
     element.querySelector(".progress-indicator").innerText = `${sent}/${status.recipientsAmount}`;
-    element.querySelector(".progress-bar").value = sent;
+
+    const progress_bar = element.querySelector(".progress-bar");
+    progress_bar.max = status.recipientsAmount;
+    progress_bar.value = sent;
 
     element.querySelector(".newsletter-status-text").innerText = status.sendTime < getCurrentTimestamp() ? "Wird versendet" : `Wird am ${timeDateFormat.format(status.sendTime * 1000)} versendet`;
 }
