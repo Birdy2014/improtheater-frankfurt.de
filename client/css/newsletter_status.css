@@ -19,3 +19,7 @@
         flex-grow: 1;
     }
 }
+
+#newsletter-status-list:empty::before {
+    content: "Es werden gerade keine Newsletter versendet";
+}
