@@ -17,16 +17,16 @@
   "dependencies": {
     "@fontsource/roboto": "5.2.10",
     "bcryptjs": "3.0.3",
-    "better-sqlite3": "12.6.2",
+    "better-sqlite3": "12.8.0",
     "cookie-parser": "1.4.7",
-    "esbuild": "0.27.3",
+    "esbuild": "0.27.4",
     "express": "5.2.1",
     "express-fileupload": "1.5.2",
-    "marked": "17.0.3",
-    "nodemailer": "8.0.1",
+    "marked": "17.0.5",
+    "nodemailer": "8.0.4",
     "nprogress": "0.2.0",
-    "pug": "3.0.3",
+    "pug": "3.0.4",
     "sharp": "0.34.5",
-    "node-addon-api": "8.5.0"
+    "node-addon-api": "8.7.0"
   }
 }
