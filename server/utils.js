@@ -7,10 +7,6 @@ export const project_path = path.dirname(path.join(fileURLToPath(import.meta.url
 const config_text = fs.readFileSync(process.env.ITF_CONFIG_FILE || path.join(project_path, "config.json"));
 export const config = JSON.parse(config_text);
 
-export function getCurrentTimestamp() {
-    return Math.floor(Date.now() / 1000);
-}
-
 /**
  * Generates random string
  * @param {number} length

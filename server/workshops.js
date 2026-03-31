@@ -3,7 +3,7 @@ import * as utils from "./utils.js";
 import * as logger from "./logger.js";
 import { invalidateUploadsCache } from "./upload.js";
 import { calcTextColor } from "../common/color.js";
-import { timeDateFormat, dateFormat, timeFormat, isoFormat } from "../common/format.js";
+import { timeDateFormat, dateFormat, timeFormat, isoFormat, getCurrentTimestamp } from "../common/time.js";
 
 export const type_itf = 1;
 export const type_improglycerin = 2;
@@ -72,7 +72,7 @@ export function copy(req, res) {
         throw new utils.HTTPError(404);
     }
 
-    const timestamp = utils.getCurrentTimestamp();
+    const timestamp = getCurrentTimestamp();
     workshop.id = undefined;
     workshop.title = copy_prefix + workshop.title;
     workshop.visible = 0;
@@ -104,7 +104,7 @@ export function not_ready_for_publishing_error(workshop) {
 export function getWorkshops(loggedIn, page = 0, type = 3) {
     const perPage = 6;
     page = parseInt(page);
-    const currentTime = utils.getCurrentTimestamp();
+    const currentTime = getCurrentTimestamp();
     const { future, past } =
         (db.all(
             "SELECT * FROM workshop WHERE type & $type AND ((NOT $publicOnly) OR visible = 1) ORDER BY begin DESC",
@@ -120,10 +120,10 @@ export function getWorkshops(loggedIn, page = 0, type = 3) {
     for (let workshop of workshops) {
         try {
             workshop.timeText = timeDateFormat.formatRange(workshop.begin * 1000, workshop.end * 1000);
-            workshop.outdated = workshop.end < utils.getCurrentTimestamp();
+            workshop.outdated = workshop.end < getCurrentTimestamp();
         } catch (e) {
             workshop.timeText = "Error: Invalid Time";
-            workshop.outdated = workshop.end < utils.getCurrentTimestamp();
+            workshop.outdated = workshop.end < getCurrentTimestamp();
         }
         workshop.img_url = `${utils.config.base_url}/api/upload/${workshop.img}`;
         workshop.textColorResolved = workshop.textColor || calcTextColor(workshop.color);
@@ -166,7 +166,7 @@ export function getWorkshop(id, loggedIn) {
 }
 
 export function editWorkshop(workshop) {
-    const timestamp = utils.getCurrentTimestamp();
+    const timestamp = getCurrentTimestamp();
     const defaultWorkshop = {
         id: timestamp,
         begin: timestamp,

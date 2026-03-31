@@ -2,7 +2,7 @@ import { show_confirm_message, show_message, MESSAGE_SUCCESS, MESSAGE_ERROR, sho
 import * as request from "./request.js";
 import { calcTextColor } from "../../common/color.js";
 import { common_marked_options } from "../../common/marked_options.js";
-import { timeDateFormat, dateFormat, timeFormat } from "../../common/format.js";
+import { timeDateFormat, dateFormat, timeFormat } from "../../common/time.js";
 
 export const workshops = {};
 
@@ -194,7 +194,7 @@ async function sendNewsletter() {
             return 0;
         })();
 
-        const sendTimeConfirmationString = sendTime === 0 ? "jetzt" : `um ${timeDateFormat.format(new Date(sendTime * 1000))}`;
+        const sendTimeConfirmationString = sendTime === 0 ? "jetzt" : `am ${timeDateFormat.format(new Date(sendTime * 1000))}`;
 
         if (marked_newsletters.length === 1) {
             if (!await show_confirm_message(`Soll der Newsletter wirklich ${sendTimeConfirmationString} versendet werden?`))

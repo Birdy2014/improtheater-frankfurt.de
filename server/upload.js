@@ -2,6 +2,7 @@ import sharp from "sharp";
 import crypto from "crypto";
 import db from "./db.js";
 import * as utils from "./utils.js";
+import { getCurrentTimestamp } from "../common/time.js";
 import * as logger from "./logger.js";
 
 let uploads_cache = undefined;
@@ -86,7 +87,7 @@ export async function post(req, res) {
     const id = crypto.randomUUID();
 
     try {
-        db.run("INSERT INTO upload (id, name, mimetype, size, data, user_id, time) VALUES (?, ?, ?, ?, ?, ?, ?)", id, name, mimetype, size, resized_image, req.user.id, utils.getCurrentTimestamp());
+        db.run("INSERT INTO upload (id, name, mimetype, size, data, user_id, time) VALUES (?, ?, ?, ?, ?, ?, ?)", id, name, mimetype, size, resized_image, req.user.id, getCurrentTimestamp());
         invalidateUploadsCache();
         res.status(200).json({ id, name });
     } catch (e) {

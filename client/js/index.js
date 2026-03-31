@@ -1,6 +1,7 @@
 import "./login.js";
 import "./navigator.js";
 import "./newsletter.js";
+import "./newsletter_status.js";
 import "./password_reset.js";
 import "./start.js";
 import "./subscribers.js";

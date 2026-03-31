@@ -26,7 +26,8 @@ const routes = [
     "login",
     "user",
     "password_reset",
-    "shows"
+    "shows",
+    "newsletter_status"
 ];
 
 // Redirect trailing slashes
@@ -84,6 +85,7 @@ router.post("/api/newsletter/unsubscribe", newsletter.unsubscribe);
 router.post("/api/newsletter/send", auth.getUser, newsletter.send);
 router.get("/api/newsletter/export", auth.getUser, newsletter.exportSubscribers);
 router.post("/api/newsletter/add", auth.getUser, newsletter.addSubscriber);
+router.get("/api/newsletter/status", auth.getUser, newsletter.api_get_status);
 router.get("/api/upload", upload.get); // Old
 router.get("/api/upload/:id", upload.get);
 router.get("/api/upload-color/:id", upload.get_color);

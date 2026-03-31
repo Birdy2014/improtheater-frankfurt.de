@@ -1,0 +1,21 @@
+#newsletter_status {
+    .newsletter-status-item {
+        display: flex;
+        flex-direction: column;
+        margin: 10px;
+    }
+
+    .newsletter-status-item-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 20px;
+    }
+
+    .progress-indicator {
+        flex-grow: 0;
+    }
+
+    .progress-bar {
+        flex-grow: 1;
+    }
+}

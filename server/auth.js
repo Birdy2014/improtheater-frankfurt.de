@@ -4,9 +4,10 @@ import crypto from "crypto";
 import db from "./db.js";
 import * as utils from "./utils.js";
 import * as logger from "./logger.js"
+import { getCurrentTimestamp } from "../common/time.js";
 import { EMailTransporter } from "./mail.js";
 
-const loggedInRoutes = [ "/uploads", "/subscribers", "/user" ];
+const loggedInRoutes = [ "/uploads", "/subscribers", "/user", "/newsletter_status" ];
 
 const session_expiration_time = 10 * 24 * 60 * 60;
 
@@ -18,10 +19,10 @@ export async function getUser(req, res, next) {
     // Get user info
     if (session_token) {
         const session = db.get("SELECT * FROM session WHERE token = ?", session_token);
-        if (session && session.expires > utils.getCurrentTimestamp()) {
+        if (session && session.expires > getCurrentTimestamp()) {
             req.user = db.get("SELECT * FROM user WHERE id = ?", session.user_id);
             if (req.user) {
-                db.run("UPDATE session SET expires = ? WHERE token = ?", utils.getCurrentTimestamp() + session_expiration_time, session_token);
+                db.run("UPDATE session SET expires = ? WHERE token = ?", getCurrentTimestamp() + session_expiration_time, session_token);
 
                 next();
                 return;
@@ -247,7 +248,7 @@ async function create_session(user_id, expiration_time) {
     assert.strictEqual(typeof expiration_time, "number");
 
     const session_token = crypto.randomBytes(20).toString("hex");
-    db.run("INSERT INTO session (user_id, token, expires) VALUES (?, ?, ?)", user_id, session_token, utils.getCurrentTimestamp() + expiration_time);
+    db.run("INSERT INTO session (user_id, token, expires) VALUES (?, ?, ?)", user_id, session_token, getCurrentTimestamp() + expiration_time);
     return session_token;
 }
 
@@ -256,5 +257,5 @@ export function get_users() {
 }
 
 export function clear_expired_sessions() {
-    db.run("DELETE FROM session WHERE expires < ?", utils.getCurrentTimestamp());
+    db.run("DELETE FROM session WHERE expires < ?", getCurrentTimestamp());
 }

@@ -1,0 +1,14 @@
+extends ../layout.pug
+
+block routeContent
+    template#template-newsletter-status-item
+        .newsletter-status-item
+            .newsletter-status-item-row
+                a.preview-link
+                a.icon-delete
+            .newsletter-status-item-row
+                .progress-indicator
+                progress.progress-bar
+            .newsletter-status-text
+
+    #newsletter-status-list

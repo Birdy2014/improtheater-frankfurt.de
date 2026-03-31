@@ -7,6 +7,7 @@ import db from "./db.js";
 import * as utils from "./utils.js";
 import * as logger from "./logger.js";
 import * as workshops from "./workshops.js";
+import { getCurrentTimestamp } from "../common/time.js";
 import { EMailTransporter } from "./mail.js";
 import { common_marked_options } from "../common/marked_options.js";
 
@@ -16,7 +17,7 @@ const transporter = {
 };
 
 /**
- *  @type {{ recipients: Object[], is_newsletter: boolean, workshops: Object[]|null, sendTime: number }[]}
+ *  @type {{ recipients: Object[], recipientsAmount: number, is_newsletter: boolean, workshops: Object[]|null, sendTime: number }[]}
  */
 const mail_queue = [];
 
@@ -66,7 +67,7 @@ export async function subscribe(req, res) {
 
         removeExpiredSubscribers();
         let token = utils.generateToken(20);
-        let timestamp = utils.getCurrentTimestamp();
+        let timestamp = getCurrentTimestamp();
         const subscriber = {
             name: req.body.name,
             email: req.body.email,
@@ -114,8 +115,25 @@ export function unsubscribe(req, res) {
     res.sendStatus(200);
 }
 
+export function api_get_status(req, res) {
+    if (!req.user) {
+        throw new utils.HTTPError(401);
+    }
+
+    const mail_status = mail_queue
+        .filter(batch => batch.is_newsletter)
+        .map(batch => ({
+            recipientsLeft: batch.recipients.length,
+            recipientsAmount: batch.recipientsAmount,
+            workshops: batch.workshops.map(workshop => ({ id: workshop.id, title: workshop.title })),
+            sendTime: batch.sendTime,
+        }));
+
+    res.json(mail_status);
+}
+
 export async function send_from_queue() {
-    const mail_batch_index = mail_queue.findIndex(mail_batch => mail_batch.sendTime < utils.getCurrentTimestamp());
+    const mail_batch_index = mail_queue.findIndex(mail_batch => mail_batch.sendTime < getCurrentTimestamp());
     if (mail_batch_index < 0) {
         setTimeout(send_from_queue, 4_000);
         return;
@@ -137,7 +155,7 @@ export async function send_from_queue() {
         ? build_newsletter(mail_batch.workshops, recipient)
         : build_confirm_mail(recipient);
 
-    let log_message = `[${mail_queue.length} batches, ${mail_batch.recipients.length} rcpt] `;
+    let log_message = `[${mail_queue.length} batches, ${mail_batch.recipients.length}/${mail_batch.recipientsAmount} rcpt] `;
 
     if (mail_batch.is_newsletter) {
         const workshop_ids = mail_batch.workshops.map(workshop => workshop.id);
@@ -216,6 +234,7 @@ function queue_newsletter(workshop_ids, subscribers, allow_resend, sendTime) {
 
     mail_queue.push({
         recipients: target_subscribers,
+        recipientsAmount: target_subscribers.length,
         is_newsletter: true,
         workshops: workshops_to_send,
         sendTime,
@@ -225,6 +244,7 @@ function queue_newsletter(workshop_ids, subscribers, allow_resend, sendTime) {
 function queue_confirm_email(subscriber) {
     mail_queue.unshift({
         recipients: [subscriber],
+        recipientsAmount: 1,
         is_newsletter: false,
         workshops: null,
         sendTime: 0,
@@ -407,7 +427,7 @@ export function addSubscriber(req, res) {
     try {
         removeExpiredSubscribers();
         let token = utils.generateToken(20);
-        let timestamp = utils.getCurrentTimestamp();
+        let timestamp = getCurrentTimestamp();
         db.run("INSERT INTO subscriber (name, email, token, timestamp, confirmed, subscribedTo) VALUES (?, ?, ?, ?, 1, ?)", req.body.name, req.body.email, token, timestamp, req.body.subscribedTo);
         res.sendStatus(200);
     } catch(e) {
@@ -428,7 +448,7 @@ export function getSubscriber(token) {
 
 function removeExpiredSubscribers() {
     const week = 7 * 24 * 60 * 60;
-    const expired = utils.getCurrentTimestamp() - week;
+    const expired = getCurrentTimestamp() - week;
     db.run("DELETE FROM subscriber WHERE confirmed = 0 AND timestamp < ?", expired);
 }
 
