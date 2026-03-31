@@ -114,5 +114,8 @@ block routeContent
                     a.edit-button.edit-preview(href="javascript:void(0)") Vorschau
                     = " | "
                     a.edit-button.edit-send-test(href="javascript:void(0)") Testmail
-            if full_access
-                .workshop-attachments
+                    br
+                    = "Später senden: "
+                    input.edit-send-time(type="datetime-local")
+                    if full_access
+                        .workshop-attachments

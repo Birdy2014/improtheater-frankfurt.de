@@ -2,7 +2,7 @@ import { show_confirm_message, show_message, MESSAGE_SUCCESS, MESSAGE_ERROR, sho
 import * as request from "./request.js";
 import { calcTextColor } from "../../common/color.js";
 import { common_marked_options } from "../../common/marked_options.js";
-import { dateFormat, timeFormat } from "../../common/format.js";
+import { timeDateFormat, dateFormat, timeFormat } from "../../common/format.js";
 
 export const workshops = {};
 
@@ -185,15 +185,26 @@ async function sendNewsletter() {
             }
         }
 
+        const sendTime = (() => {
+            const currentContainer = document.getElementById("workshop/" + current_workshop);
+            const sendTimeString = currentContainer.querySelector(".edit-send-time").value;
+            if (sendTimeString.length > 0) {
+                return Math.floor(new Date(sendTimeString).getTime() / 1000);
+            }
+            return 0;
+        })();
+
+        const sendTimeConfirmationString = sendTime === 0 ? "jetzt" : `um ${timeDateFormat.format(new Date(sendTime * 1000))}`;
+
         if (marked_newsletters.length === 1) {
-            if (!await show_confirm_message("Soll der Newsletter wirklich so versendet werden?"))
+            if (!await show_confirm_message(`Soll der Newsletter wirklich ${sendTimeConfirmationString} versendet werden?`))
                 return;
         } else {
-            if (!await show_confirm_message(`Soll der Newsletter mit folgenden Workshops wirklich so versendet werden?\n${marked_newsletters.join("\n")}`))
+            if (!await show_confirm_message(`Soll der Newsletter mit folgenden Workshops wirklich ${sendTimeConfirmationString} versendet werden?\n${marked_newsletters.join("\n")}`))
                 return;
         }
 
-        await request.post("/api/newsletter/send", { workshops: marked_newsletters });
+        await request.post("/api/newsletter/send", { workshops: marked_newsletters, sendTime  });
         for (const marked_newsletter_id of marked_newsletters) {
             if (workshops[marked_newsletter_id] === undefined)
                 continue

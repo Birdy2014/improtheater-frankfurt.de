@@ -16,7 +16,7 @@ const transporter = {
 };
 
 /**
- *  @type {{ recipients: Object[], is_newsletter: boolean, workshops: Object[]|null }[]}
+ *  @type {{ recipients: Object[], is_newsletter: boolean, workshops: Object[]|null, sendTime: number }[]}
  */
 const mail_queue = [];
 
@@ -115,16 +115,17 @@ export function unsubscribe(req, res) {
 }
 
 export async function send_from_queue() {
-    const mail_batch = mail_queue[0]
-
-    if (!mail_batch) {
+    const mail_batch_index = mail_queue.findIndex(mail_batch => mail_batch.sendTime < utils.getCurrentTimestamp());
+    if (mail_batch_index < 0) {
         setTimeout(send_from_queue, 4_000);
         return;
     }
 
+    const mail_batch = mail_queue[mail_batch_index];
+
     const recipient = mail_batch.recipients.shift()
     if (!recipient) {
-        mail_queue.shift();
+        mail_queue.splice(mail_batch_index, 1);
         if (mail_queue.length === 0) {
             logger.info("Mail queue is now empty")
         }
@@ -195,8 +196,9 @@ export function load_mail_queue_from_file() {
  * @param {number[]} workshop_ids
  * @param {{email: string, name: string, subscribedTo: number, token: string}[]} subscribers
  * @param {boolean} allow_resend
+ * @param {number} sendTime
  */
-function queue_newsletter(workshop_ids, subscribers, allow_resend) {
+function queue_newsletter(workshop_ids, subscribers, allow_resend, sendTime) {
     const workshops_to_send = workshop_ids.map(id => workshops.getWorkshop(id, true));
 
     for (const workshop_to_send of workshops_to_send) {
@@ -216,6 +218,7 @@ function queue_newsletter(workshop_ids, subscribers, allow_resend) {
         recipients: target_subscribers,
         is_newsletter: true,
         workshops: workshops_to_send,
+        sendTime,
     });
 }
 
@@ -224,6 +227,7 @@ function queue_confirm_email(subscriber) {
         recipients: [subscriber],
         is_newsletter: false,
         workshops: null,
+        sendTime: 0,
     });
 }
 
@@ -320,6 +324,8 @@ export async function send(req, res) {
         throw new utils.HTTPError(400);
     }
 
+    const sendTime = Number.isInteger(req.body.sendTime) ? req.body.sendTime : 0;
+
     const workshop_ids_to_send = req.body.workshops.map(id => parseInt(id));
 
     let subscribers = [];
@@ -338,7 +344,7 @@ export async function send(req, res) {
     }
 
     // TODO: Really allow resend?
-    queue_newsletter(workshop_ids_to_send, subscribers, true);
+    queue_newsletter(workshop_ids_to_send, subscribers, true, sendTime);
     res.sendStatus(200);
 }
 
