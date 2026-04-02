@@ -16,7 +16,6 @@ function exit_handler() {
 }
 process.on("SIGINT", exit_handler);
 process.on("SIGTERM", exit_handler);
-process.on("SIGINT", exit_handler);
 newsletter.load_mail_queue_from_file();
 
 const app = express();

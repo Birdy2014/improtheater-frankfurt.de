@@ -33,7 +33,7 @@ function statusMessage(status) {
         case 409: return "Conflict";
         case 413: return "Payload Too Large";
     };
-    logger.warn(`Missing default status message for code '{status}'`);
+    logger.warn(`Missing default status message for code '${status}'`);
     return "";
 }
 

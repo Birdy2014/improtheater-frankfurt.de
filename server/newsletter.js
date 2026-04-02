@@ -47,7 +47,7 @@ export async function subscribe(req, res) {
 
         // User is not subscribed
         if (!req.body.cf_turnstile_response) {
-            throw utils.HTTPError(400);
+            throw new utils.HTTPError(400);
         }
         const form_data = new FormData();
         form_data.append("secret", cf_turnstile_secret);
@@ -463,7 +463,7 @@ export function addSubscriber(req, res) {
         res.sendStatus(200);
     } catch(e) {
         if (e instanceof SqliteError && e.code === "SQLITE_CONSTRAINT_PRIMARYKEY") {
-            throw new HTTPError(409);
+            throw new utils.HTTPError(409);
         }
         throw e;
     }

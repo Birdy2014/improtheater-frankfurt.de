@@ -215,7 +215,7 @@ export function editWorkshop(workshop) {
 
     // Run upsert query
     if (update.length > 0)
-        db.run(`INSERT INTO workshop ${insert} ON CONFLICT(id) DO UPDATE SET ${update} WHERE id = '${id}'`, params);
+        db.run(`INSERT INTO workshop ${insert} ON CONFLICT(id) DO UPDATE SET ${update} WHERE id = $id`, params);
     else
         db.run(`INSERT INTO workshop ${insert} ON CONFLICT(id) DO NOTHING`, params);
 
