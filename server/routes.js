@@ -42,7 +42,15 @@ router.use(function (req, res, next) {
 
 // Set security headers
 router.use((_, res, next) => {
-    res.set("Content-Security-Policy", "default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' https://analytics.improglycerin.de https://challenges.cloudflare.com; img-src 'self' https://improglycerin.de; frame-ancestors https://improglycerin.de; frame-src https://challenges.cloudflare.com;");
+    res.set("Content-Security-Policy", [
+        "default-src 'self'",
+        "style-src 'self' 'unsafe-inline'",
+        "script-src 'self' 'unsafe-inline' https://analytics.improglycerin.de https://challenges.cloudflare.com",
+        "img-src 'self' https://improglycerin.de",
+        "frame-ancestors https://improglycerin.de http://localhost:3000",
+        "frame-src https://challenges.cloudflare.com",
+        "connect-src 'self' https://analytics.improglycerin.de",
+    ].map(line => line + ";").join(" "));
     next();
 })
 
