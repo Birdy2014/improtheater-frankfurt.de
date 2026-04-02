@@ -208,11 +208,14 @@ export async function api_request_password_reset(req, res) {
     const session_token = await create_session(user.id, 30 * 60);
     const reset_url = `${utils.config.base_url}/password_reset?token=${session_token}`;
 
-    transporter.send({
+    const smtp_response = await transporter.send({
         to: user.email,
         subject: "Passwort reset",
         text: `Hallo ${user.username}, reset url: ${reset_url}`
     });
+    logger.info(`Password reset E-Mail and ${user.email} gesendet: ${smtp_response}`);
+
+    res.sendStatus(200);
 }
 
 export async function api_password_reset(req, res) {

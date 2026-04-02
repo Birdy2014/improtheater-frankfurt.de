@@ -1,4 +1,4 @@
-import { show_message, MESSAGE_ERROR, show_error } from "./navigator.js";
+import { show_message, MESSAGE_ERROR, show_error, MESSAGE_SUCCESS } from "./navigator.js";
 import * as request from "./request.js";
 
 async function login(event, route) {
@@ -28,6 +28,7 @@ async function request_password_reset(form) {
 
     try {
         await request.post("/api/user/request_password_reset", { login });
+        show_message(MESSAGE_SUCCESS, "E-Mail gesendet");
     } catch (err) {
         if (err.response.status === 404) {
             show_message(MESSAGE_ERROR, "Ungültiger Benutzername oder E-Mail-Adresse");
