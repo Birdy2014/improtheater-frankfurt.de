@@ -14,7 +14,7 @@ export const defaultContent = "Eine Beschreibung des Workshops";
 export const copy_prefix = "[KOPIE] ";
 
 export function api_get(req, res) {
-    const limit = 10; // This is an arbitrary number
+    const limit = 20; // This is an arbitrary number
 
     const workshops = req.user === undefined
         ? db.all("SELECT id, title FROM workshop WHERE visible = 1 ORDER BY begin DESC LIMIT ?", limit) || []
