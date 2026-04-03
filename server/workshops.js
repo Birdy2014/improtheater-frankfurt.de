@@ -183,41 +183,29 @@ export function editWorkshop(workshop) {
         propertiesHidden: 0,
         type: 1
     };
-    const id = workshop.id || defaultWorkshop.id;
+    const id = workshop.id ?? defaultWorkshop.id;
 
-    let params = {};
+    const keys = Object.keys(defaultWorkshop);
 
-    // Create params
-    for (let key in defaultWorkshop) {
-        params[key] = workshop[key] || defaultWorkshop[key];
+    const params = {};
+    for (const key of keys) {
+        params[key] = workshop[key] ?? defaultWorkshop[key];
         if (typeof params[key] === "boolean") params[key] = params[key] ? 1 : 0;
     }
 
-    // Create update string
-    let update = "";
-    for (let key in defaultWorkshop) {
-        if (workshop[key] !== undefined) {
-            update += `${key} = $${key}, `
-        }
-    }
-    update = update.substring(0, update.length - 2);
+    const update = keys.filter(key => workshop[key] !== undefined)
+        .map(key => `${key} = $${key}`)
+        .join(", ");
 
-    // Create insert string
-    let insert = "(";
-    for (let key in defaultWorkshop) {
-        insert += `${key}, `;
-    }
-    insert = insert.substring(0, insert.length - 2) + `) VALUES (`;
-    for (let key in defaultWorkshop) {
-        insert += `$${key}, `;
-    }
-    insert = insert.substring(0, insert.length - 2) + `)`;
+    const columns = keys.join(", ");
+    const placeholders = keys.map(key => `$${key}`).join(", ");
+    const insert = `(${columns}) VALUES (${placeholders})`;
 
-    // Run upsert query
-    if (update.length > 0)
+    if (update.length > 0) {
         db.run(`INSERT INTO workshop ${insert} ON CONFLICT(id) DO UPDATE SET ${update} WHERE id = $id`, params);
-    else
+    } else {
         db.run(`INSERT INTO workshop ${insert} ON CONFLICT(id) DO NOTHING`, params);
+    }
 
     invalidateUploadsCache();
 
