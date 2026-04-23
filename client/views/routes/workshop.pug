@@ -103,19 +103,17 @@ block routeContent
             = " | "
             a.edit-button.edit-copy(href="javascript:void(0)") Kopieren
             br
-            unless newsletterSent && !full_access
-                span.edit-newsletter
-                    = "Newsletter: "
+            span.edit-newsletter
+                = "Newsletter: "
+                strong.newsletter-sent
                     if newsletterSent
-                        strong.newsletter-sent BEREITS VERSENDET
-                        = " "
-                    a.edit-button.edit-send(href="javascript:void(0)") Senden
-                    = " | "
-                    a.edit-button.edit-preview(href="javascript:void(0)") Vorschau
-                    = " | "
-                    a.edit-button.edit-send-test(href="javascript:void(0)") Testmail
-                    br
-                    = "Später senden: "
-                    input.edit-send-time(type="datetime-local")
-                    if full_access
-                        .workshop-attachments
+                        = "BEREITS VERSENDET "
+                a.edit-button.edit-send(href="javascript:void(0)") Senden
+                = " | "
+                a.edit-button.edit-preview(href="javascript:void(0)") Vorschau
+                = " | "
+                a.edit-button.edit-send-test(href="javascript:void(0)") Testmail
+                br
+                = "Später senden: "
+                input.edit-send-time(type="datetime-local")
+                .workshop-attachments

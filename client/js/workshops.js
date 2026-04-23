@@ -212,8 +212,7 @@ async function sendNewsletter() {
             workshops[marked_newsletter_id].buttons.newsletterSent = true;
             const container = document.getElementById("workshop/" + marked_newsletter_id);
             if (container) {
-                // TODO: Only do this if the user is not allowed to resend newsletters
-                container.querySelectorAll(".edit-newsletter").forEach(value => value.style.display = "none");
+                container.querySelector(".newsletter-sent").innerText = "BEREITS VERSENDET ";
             }
         }
         sessionStorage.removeItem("marked_newsletters");
