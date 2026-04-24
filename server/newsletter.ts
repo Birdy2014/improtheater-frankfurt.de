@@ -47,7 +47,6 @@ const marked_white_links = new Marked(common_marked_options("text-decoration: un
 
 export async function subscribe(req: Request, res: Response) {
     const body = req.body as { name?: string; email?: string; token?: string; subscribedTo?: number; cf_turnstile_response?: string };
-    // TODO: check email address, length limit name, sanitize name and email
     try {
         if (body.subscribedTo)
             body.subscribedTo &= 3;
@@ -68,6 +67,12 @@ export async function subscribe(req: Request, res: Response) {
         // User is not subscribed
         if (!body.cf_turnstile_response || !body.name || !body.email) {
             throw new utils.HTTPError(400);
+        }
+        if (body.name.length > 200) {
+            throw new utils.HTTPError(400, "Name too long");
+        }
+        if (body.email.length > 254) {
+            throw new utils.HTTPError(400, "Email too long");
         }
         const form_data = new FormData();
         form_data.append("secret", cf_turnstile_secret);
