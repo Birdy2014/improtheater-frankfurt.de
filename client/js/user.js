@@ -53,7 +53,6 @@ async function change_user_handler(event) {
     const email_field = event.target.querySelector("input[name='email']");
     const password_field = event.target.querySelector("input[name='password']");
     const admin_field = event.target.querySelector("input[name='admin']");
-    const full_access_field = event.target.querySelector("input[name='full_access']");
 
     try {
         await request.put("/api/user", {
@@ -61,8 +60,7 @@ async function change_user_handler(event) {
             username: username_field.value,
             email: email_field.value,
             password: password_field.value,
-            admin: admin_field.checked,
-            full_access: full_access_field.checked
+            admin: admin_field.checked
         });
 
         if (username_field.value) {
@@ -87,15 +85,13 @@ async function create_user_handler(event) {
     const email_field = event.target.querySelector("input[name='email']");
     const password_field = event.target.querySelector("input[name='password']");
     const admin_field = event.target.querySelector("input[name='admin']");
-    const full_access_field = event.target.querySelector("input[name='full_access']");
 
     try {
         await request.post("/api/user", {
             username: username_field.value,
             email: email_field.value,
             password: password_field.value,
-            admin: admin_field.checked,
-            full_access: full_access_field.checked
+            admin: admin_field.checked
         });
 
         navigate("/user", { reload: true, push_history: false });

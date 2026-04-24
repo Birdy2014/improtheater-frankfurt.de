@@ -47,7 +47,6 @@ export interface User {
     email: string;
     password_hash: string;
     admin: number;
-    full_access: number;
 }
 
 export interface Session {
@@ -116,7 +115,6 @@ class Database {
                 email TEXT NOT NULL,
                 password_hash TEXT NOT NULL,
                 admin INTEGER NOT NULL,
-                full_access INTEGER NOT NULL,
                 PRIMARY KEY(id)
             )
         `)

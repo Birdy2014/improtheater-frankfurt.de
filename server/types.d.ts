@@ -8,7 +8,6 @@ declare global {
                 username: string;
                 email: string;
                 admin: number;
-                full_access: number;
             };
         }
     }

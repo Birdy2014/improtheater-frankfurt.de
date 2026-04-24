@@ -171,7 +171,6 @@ router.get("/workshop/:workshopID", auth.getUser, (req: Request, res: Response) 
             ...w,
             loggedIn: req.user !== undefined,
             marked,
-            full_access: req.user?.full_access || false
         });
     } else {
         res.render("routes/workshop", {
@@ -180,7 +179,6 @@ router.get("/workshop/:workshopID", auth.getUser, (req: Request, res: Response) 
             ...w,
             loggedIn: req.user !== undefined,
             marked,
-            full_access: req.user?.full_access || false
         });
     }
 });

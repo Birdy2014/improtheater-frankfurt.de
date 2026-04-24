@@ -85,7 +85,6 @@ export async function api_create_user(req: Request, res: Response) {
     const username = req.body.username;
     const password = req.body.password;
     const admin = (req.body.admin ?? false) ? 1 : 0;
-    const full_access = (req.body.full_access ?? false) ? 1 : 0;
 
     if (!email || !username || !password) {
         throw new utils.HTTPError(400);
@@ -98,7 +97,7 @@ export async function api_create_user(req: Request, res: Response) {
     const id = crypto.randomUUID();
     const password_hash = await bcrypt.hash(password, 12);
 
-    db.run("INSERT INTO user (id, username, email, password_hash, admin, full_access) VALUES (?, ?, ?, ?, ?, ?)", id, username, email, password_hash, admin, full_access);
+    db.run("INSERT INTO user (id, username, email, password_hash, admin) VALUES (?, ?, ?, ?, ?)", id, username, email, password_hash, admin);
 
     res.sendStatus(200);
 }
@@ -127,21 +126,7 @@ export async function api_change_user(req: Request, res: Response) {
             admin = undefined;
     }
 
-    let full_access = req.body.full_access;
-    switch (full_access) {
-        case true:
-        case 1:
-            full_access = 1;
-            break;
-        case false:
-        case 0:
-            full_access = 0;
-            break;
-        default:
-            full_access = undefined;
-    }
-
-    if (!email && !username && !password && admin === undefined && full_access === undefined) {
+    if (!email && !username && !password && admin === undefined) {
         throw new utils.HTTPError(400);
     }
 
@@ -172,9 +157,6 @@ export async function api_change_user(req: Request, res: Response) {
     }
     if (admin !== undefined && req.user.admin) {
         db.run("UPDATE user SET admin = ? WHERE id = ?", admin, id)
-    }
-    if (full_access !== undefined && req.user.admin) {
-        db.run("UPDATE user SET full_access = ? WHERE id = ?", full_access, id)
     }
     res.sendStatus(200);
 }
