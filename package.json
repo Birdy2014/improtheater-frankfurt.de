@@ -11,7 +11,7 @@
     "prod": "NODE_ENV=production npm run build && node dist/server.js"
   },
   "bin": {
-    "improtheater-frankfurt": "server/server.ts"
+    "improtheater-frankfurt": "dist/server.js"
   },
   "author": "Moritz Vogel",
   "license": "",
