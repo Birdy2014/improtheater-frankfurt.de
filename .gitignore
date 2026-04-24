@@ -2,3 +2,5 @@ node_modules
 *.db
 config.json
 logs
+dist
+.direnv

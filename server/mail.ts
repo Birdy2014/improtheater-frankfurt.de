@@ -3,16 +3,20 @@ import nodemailer from "nodemailer";
 import * as utils from "./utils.js";
 import * as logger from "./logger.js"
 
-export class EMailTransporter {
-    #transporter;
-    #from;
-    #last_sent_time;
+export interface EMailOptions {
+    to: string;
+    replyTo?: string;
+    subject: string;
+    text?: string;
+    html?: string;
+}
 
-    /**
-     * Creates an EMailTransporter
-     * @param {string} name - The name in the config file
-     */
-    constructor(name) {
+export class EMailTransporter {
+    #transporter: nodemailer.Transporter;
+    #from: string;
+    #last_sent_time: number;
+
+    constructor(name: "auth" | "itf" | "improglycerin") {
         const config = utils.config.email[name];
         if (!config) {
             logger.error(`Invalid email name "${name}"`);
@@ -53,17 +57,7 @@ export class EMailTransporter {
         this.#last_sent_time = 0;
     }
 
-    /**
-     * Sends an email
-     * @param {Object} options
-     * @param {string} options.to - The recipient of the email
-     * @param {string|undefined} options.replyTo - The reply address
-     * @param {string} options.subject - The subject of the email
-     * @param {string|undefined} options.text - Plain text content
-     * @param {string|undefined} options.html - HTML content
-     * @returns {Promise<string>} Response string of the SMTP server
-     */
-    send(options) {
+    send(options: EMailOptions): Promise<string> {
         if (process.env.NODE_ENV === "development" && !process.env.ITF_SEND_MAILS) {
             let current_time = Date.now()
             let time_difference = current_time - this.#last_sent_time;

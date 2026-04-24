@@ -5,12 +5,13 @@
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server/server.js",
-    "prod": "NODE_ENV=production npm start",
-    "dev": "NODE_ENV=development npm start"
+    "build": "esbuild server/server.ts --bundle --platform=node --format=esm --packages=external --outfile=dist/server.js",
+    "typecheck": "tsc --noEmit",
+    "dev": "NODE_ENV=development tsx server/server.ts",
+    "prod": "NODE_ENV=production npm run build && node dist/server.js"
   },
   "bin": {
-    "improtheater-frankfurt": "server/server.js"
+    "improtheater-frankfurt": "server/server.ts"
   },
   "author": "Moritz Vogel",
   "license": "",
@@ -23,10 +24,21 @@
     "express": "5.2.1",
     "express-fileupload": "1.5.2",
     "marked": "17.0.5",
+    "node-addon-api": "8.7.0",
     "nodemailer": "8.0.4",
     "nprogress": "0.2.0",
     "pug": "3.0.4",
-    "sharp": "0.34.5",
-    "node-addon-api": "8.7.0"
+    "sharp": "0.34.5"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/cookie-parser": "^1.4.10",
+    "@types/express": "^5.0.6",
+    "@types/express-fileupload": "^1.5.1",
+    "@types/node": "^25.6.0",
+    "@types/nodemailer": "^8.0.0",
+    "@types/pug": "^2.0.10",
+    "tsx": "^4.21.0",
+    "typescript": "^6.0.3"
   }
 }

@@ -3,7 +3,7 @@ import * as request from "./request.js";
 window.onload = () => {
     NProgress.configure({ showSpinner: false });
     let url = new URL(document.location.href);
-    var currentRoute = url.pathname + url.search;
+    window.currentRoute = url.pathname + url.search;
     // set navlink active
     if (url.search)
         navigate(currentRoute);
@@ -147,7 +147,7 @@ export async function navigate(to, params = { }) {
             link.classList.remove("active");
     }
     // set variable
-    currentRoute = to;
+    window.currentRoute = to;
     // navigate
     for (let container of containers) {
         container.style = "display: none";

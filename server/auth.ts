@@ -1,10 +1,11 @@
 import assert from "assert";
 import bcrypt from "bcryptjs"
 import crypto from "crypto";
-import db from "./db.js";
+import { Request, Response, NextFunction } from "express";
+import db, { Session, User } from "./db.js";
 import * as utils from "./utils.js";
 import * as logger from "./logger.js"
-import { getCurrentTimestamp } from "../common/time.js";
+import { getCurrentTimestamp } from "../common/time";
 import { EMailTransporter } from "./mail.js";
 
 const loggedInRoutes = [ "/uploads", "/subscribers", "/user", "/newsletter_status" ];
@@ -13,12 +14,12 @@ const session_expiration_time = 10 * 24 * 60 * 60;
 
 const transporter = new EMailTransporter("auth");
 
-export async function getUser(req, res, next) {
+export async function getUser(req: Request, res: Response, next: NextFunction) {
     const session_token = req.cookies.session;
 
     // Get user info
     if (session_token) {
-        const session = db.get("SELECT * FROM session WHERE token = ?", session_token);
+        const session = db.get<Session>("SELECT * FROM session WHERE token = ?", session_token);
         if (session && session.expires > getCurrentTimestamp()) {
             req.user = db.get("SELECT * FROM user WHERE id = ?", session.user_id);
             if (req.user) {
@@ -44,11 +45,11 @@ export async function getUser(req, res, next) {
     }
 }
 
-export async function login(req, res) {
+export async function login(req: Request, res: Response) {
     const login = req.body.login;
     const password = req.body.password;
 
-    const user = db.get("SELECT id, password_hash FROM user WHERE username = ? OR email = ?", login, login);
+    const user = db.get<User>("SELECT id, password_hash FROM user WHERE username = ? OR email = ?", login, login);
     if (!user) {
         throw new utils.HTTPError(403);
     }
@@ -63,7 +64,7 @@ export async function login(req, res) {
     res.sendStatus(200);
 }
 
-export async function logout(req, res) {
+export async function logout(req: Request, res: Response) {
     const session_token = req.cookies.session;
 
     if (!session_token) {
@@ -75,7 +76,7 @@ export async function logout(req, res) {
     res.sendStatus(200);
 }
 
-export async function api_create_user(req, res) {
+export async function api_create_user(req: Request, res: Response) {
     if (!req.user || !req.user.admin) {
         throw new utils.HTTPError(403);
     }
@@ -102,7 +103,7 @@ export async function api_create_user(req, res) {
     res.sendStatus(200);
 }
 
-export async function api_change_user(req, res) {
+export async function api_change_user(req: Request, res: Response) {
     if (!req.user) {
         throw new utils.HTTPError(403);
     }
@@ -178,11 +179,15 @@ export async function api_change_user(req, res) {
     res.sendStatus(200);
 }
 
-export async function api_delete_user(req, res) {
+export async function api_delete_user(req: Request, res: Response) {
     const id = req.body.id;
 
     if (!id) {
         throw new utils.HTTPError(400);
+    }
+
+    if (!req.user) {
+        throw new utils.HTTPError(401);
     }
 
     if (!req.user.admin) {
@@ -194,12 +199,12 @@ export async function api_delete_user(req, res) {
     res.sendStatus(200);
 }
 
-export async function api_request_password_reset(req, res) {
+export async function api_request_password_reset(req: Request, res: Response) {
     const login = req.body.login;
     if (!login) {
         throw new utils.HTTPError(400);
     }
-    const user = db.get("SELECT id, username, email FROM user WHERE username = ? OR email = ?", login, login);
+    const user = db.get<User>("SELECT id, username, email FROM user WHERE username = ? OR email = ?", login, login);
     if (!user) {
         // Return 200 to hide existing accounts?
         throw new utils.HTTPError(404);
@@ -218,7 +223,7 @@ export async function api_request_password_reset(req, res) {
     res.sendStatus(200);
 }
 
-export async function api_password_reset(req, res) {
+export async function api_password_reset(req: Request, res: Response) {
     const token = req.body.token;
     const new_password = req.body.password;
 
@@ -228,7 +233,7 @@ export async function api_password_reset(req, res) {
 
     const password_hash = await bcrypt.hash(new_password, 12);
 
-    const session = db.get("SELECT user_id FROM session WHERE token = ?", token);
+    const session = db.get<Session>("SELECT user_id FROM session WHERE token = ?", token);
 
     if (!session) {
         throw new utils.HTTPError(400);
@@ -241,12 +246,7 @@ export async function api_password_reset(req, res) {
     res.sendStatus(200);
 }
 
-/**
- * @param {string} user_id
- * @param {number} expiration_time
- * @returns {Promise<string>} session_token
- */
-async function create_session(user_id, expiration_time) {
+async function create_session(user_id: string, expiration_time: number): Promise<string> {
     assert.strictEqual(typeof user_id, "string");
     assert.strictEqual(typeof expiration_time, "number");
 
@@ -256,7 +256,7 @@ async function create_session(user_id, expiration_time) {
 }
 
 export function get_users() {
-    return db.all("SELECT * FROM user");
+    return db.all<User>("SELECT * FROM user");
 }
 
 export function clear_expired_sessions() {

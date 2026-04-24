@@ -3,55 +3,70 @@ import { Marked } from "marked";
 import { SqliteError } from "better-sqlite3";
 import path from "path";
 import fs from "fs";
-import db from "./db.js";
+import { Request, Response } from "express";
+import db, { Subscriber } from "./db.js";
 import * as utils from "./utils.js";
 import * as logger from "./logger.js";
 import * as workshops from "./workshops.js";
-import { getCurrentTimestamp } from "../common/time.js";
-import { EMailTransporter } from "./mail.js";
-import { common_marked_options } from "../common/marked_options.js";
+import type { ExtendedWorkshop } from "./workshops.js";
+import { getCurrentTimestamp } from "../common/time";
+import { EMailOptions, EMailTransporter } from "./mail.js";
+import { common_marked_options } from "../common/marked_options";
 
 const transporter = {
     itf: new EMailTransporter("itf"),
     improglycerin: new EMailTransporter("improglycerin"),
 };
 
-/**
- *  @type {{ recipients: Object[], recipientsAmount: number, is_newsletter: boolean, workshops: Object[]|null, sendTime: number }[]}
- */
-const mail_queue = [];
+interface QueueItemNewsletter {
+    item_type: "newsletter",
+    recipients: SubscriberLike[],
+    recipientsAmount: number,
+    workshops: ExtendedWorkshop[],
+    sendTime: number,
+}
 
-const cf_turnstile_secret = utils.config.cf_turnstile_secret || fs.readFileSync(utils.config.cf_turnstile_secret_file, "utf8").replace(/\n/g, "");
+interface QueueItemConfirm {
+    item_type: "confirm",
+    recipients: SubscriberLike[],
+}
+
+type QueueItem = QueueItemNewsletter | QueueItemConfirm;
+
+const mail_queue: QueueItem[] = [];
+
+const cf_turnstile_secret = utils.config.cf_turnstile_secret || fs.readFileSync(utils.config.cf_turnstile_secret_file!, "utf8").replace(/\n/g, "");
 
 const marked_black_links = new Marked(common_marked_options("text-decoration: underline; color: #000000;"));
 const marked_white_links = new Marked(common_marked_options("text-decoration: underline; color: #ffffff;"));
 
-export async function subscribe(req, res) {
+export async function subscribe(req: Request, res: Response) {
+    const body = req.body as { name?: string; email?: string; token?: string; subscribedTo?: number; cf_turnstile_response?: string };
     // TODO: check email address, length limit name, sanitize name and email
     try {
-        if (req.body.subscribedTo)
-            req.body.subscribedTo &= 3;
+        if (body.subscribedTo)
+            body.subscribedTo &= 3;
 
-        if (((!req.body.name || !req.body.email) && !req.body.token) || !req.body.subscribedTo || !validNewsletterType(req.body.subscribedTo)) {
+        if (!validNewsletterType(body.subscribedTo)) {
             throw new utils.HTTPError(400);
         }
 
         // User is already subscribed
-        if (req.body.token) {
-            const subscriber = getSubscriber(req.body.token);
-            if (req.body.subscribedTo == subscriber.subscribedTo)
+        if (body.token) {
+            const subscriber = getSubscriber(body.token);
+            if (subscriber && body.subscribedTo == subscriber.subscribedTo)
                 return res.sendStatus(200);
-            db.run("UPDATE subscriber SET subscribedTo = ? WHERE token = ?", req.body.subscribedTo, req.body.token);
+            db.run("UPDATE subscriber SET subscribedTo = ? WHERE token = ?", body.subscribedTo, body.token);
             return res.sendStatus(200);
         }
 
         // User is not subscribed
-        if (!req.body.cf_turnstile_response) {
+        if (!body.cf_turnstile_response || !body.name || !body.email) {
             throw new utils.HTTPError(400);
         }
         const form_data = new FormData();
         form_data.append("secret", cf_turnstile_secret);
-        form_data.append("response", req.body.cf_turnstile_response);
+        form_data.append("response", body.cf_turnstile_response);
         try {
             const cf_turnstile_response = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
                 method: "POST",
@@ -68,14 +83,16 @@ export async function subscribe(req, res) {
         removeExpiredSubscribers();
         let token = utils.generateToken(20);
         let timestamp = getCurrentTimestamp();
-        const subscriber = {
-            name: req.body.name,
-            email: req.body.email,
+        const subscriber: Subscriber = {
+            name: body.name,
+            email: body.email,
             token,
             timestamp,
-            subscribedTo: req.body.subscribedTo,
+            subscribedTo: body.subscribedTo,
+            confirmed: 0,
+            last_viewed_newsletter: 0
         };
-        db.run("INSERT INTO subscriber (name, email, token, timestamp, subscribedTo) VALUES (?, ?, ?, ?, ?)", subscriber.name, subscriber.email, subscriber.token, subscriber.timestamp, subscriber.subscribedTo);
+        db.run("INSERT INTO subscriber (name, email, token, timestamp, subscribedTo, confirmed, last_viewed_newsletter) VALUES (?, ?, ?, ?, ?, ?, ?)", subscriber.name, subscriber.email, subscriber.token, subscriber.timestamp, subscriber.subscribedTo, subscriber.confirmed, subscriber.last_viewed_newsletter);
         queue_confirm_email(subscriber)
         res.sendStatus(200);
     } catch(e) {
@@ -86,7 +103,7 @@ export async function subscribe(req, res) {
     }
 }
 
-export function confirm(req, res) {
+export function confirm(req: Request, res: Response) {
     if (!req.body.token) {
         res.sendStatus(400);
         return;
@@ -95,7 +112,7 @@ export function confirm(req, res) {
     res.sendStatus(200);
 }
 
-export function unsubscribe(req, res) {
+export function unsubscribe(req: Request, res: Response) {
     if (!req.body.token) {
         throw new utils.HTTPError(400);
     }
@@ -115,24 +132,24 @@ export function unsubscribe(req, res) {
     res.sendStatus(200);
 }
 
-export function api_get_status(req, res) {
+export function api_get_status(req: Request, res: Response) {
     if (!req.user) {
         throw new utils.HTTPError(401);
     }
 
     const mail_status = mail_queue
-        .filter(batch => batch.is_newsletter)
+        .filter((batch): batch is QueueItemNewsletter => batch.item_type === "newsletter")
         .map(batch => ({
             recipientsLeft: batch.recipients.length,
             recipientsAmount: batch.recipientsAmount,
-            workshops: batch.workshops.map(workshop => ({ id: workshop.id, title: workshop.title })),
+            workshops: batch.workshops.filter(w => w !== undefined).map(w => ({ id: w!.id, title: w!.title })),
             sendTime: batch.sendTime,
         }));
 
     res.json(mail_status);
 }
 
-function arraysEqual(a, b) {
+function arraysEqual(a: any[], b: any[]) {
     if (a.length !== b.length) {
         return false;
     }
@@ -140,7 +157,7 @@ function arraysEqual(a, b) {
     return !a.some((element, index) => element !== b[index]);
 }
 
-export function api_post_cancel(req, res) {
+export function api_post_cancel(req: Request, res: Response) {
     if (!req.user) {
         throw new utils.HTTPError(401);
     }
@@ -149,7 +166,11 @@ export function api_post_cancel(req, res) {
         throw new utils.HTTPError(400);
     }
 
-    const index = mail_queue.findIndex(mail_batch => arraysEqual(mail_batch.workshops.map(w => w.id), req.body.workshops))
+    const index = mail_queue.findIndex(mail_batch => {
+        if (mail_batch.item_type !== "newsletter") return false;
+        const workshop_ids = mail_batch.workshops.filter(w => w !== undefined).map(w => w!.id);
+        return arraysEqual(workshop_ids, req.body.workshops);
+    });
 
     if (index < 0) {
         throw new utils.HTTPError(404);
@@ -160,7 +181,7 @@ export function api_post_cancel(req, res) {
 }
 
 export async function send_from_queue() {
-    const mail_batch_index = mail_queue.findIndex(mail_batch => mail_batch.sendTime < getCurrentTimestamp());
+    const mail_batch_index = mail_queue.findIndex(mail_batch => mail_batch.item_type !== "newsletter" || mail_batch.sendTime < getCurrentTimestamp());
     if (mail_batch_index < 0) {
         setTimeout(send_from_queue, 4_000);
         return;
@@ -178,14 +199,14 @@ export async function send_from_queue() {
         return;
     }
 
-    const mail = mail_batch.is_newsletter
-        ? build_newsletter(mail_batch.workshops, recipient)
+    const mail = mail_batch.item_type === "newsletter"
+        ? build_newsletter(mail_batch.workshops as ExtendedWorkshop[], recipient)
         : build_confirm_mail(recipient);
 
-    let log_message = `[${mail_queue.length} batches, ${mail_batch.recipients.length}/${mail_batch.recipientsAmount} rcpt] `;
+    let log_message = `[${mail_queue.length} batches, ${mail_batch.recipients.length}/${mail_batch.item_type === "newsletter" ? mail_batch.recipientsAmount: 1} rcpt] `;
 
-    if (mail_batch.is_newsletter) {
-        const workshop_ids = mail_batch.workshops.map(workshop => workshop.id);
+    if (mail_batch.item_type === "newsletter") {
+        const workshop_ids = mail_batch.workshops.filter((w): w is ExtendedWorkshop => w !== undefined).map(workshop => workshop.id);
         log_message += `newsletter ${workshop_ids.join(", ")} to ${recipient.email}`;
     } else {
         log_message += `confirm to ${recipient.email}`;
@@ -202,8 +223,9 @@ export async function send_from_queue() {
 
         logger.info(`${log_message} - '${smtp_response}'`)
     } catch (error) {
-        logger.error(`${log_message} - ${error.message}`)
-        if (error.responseCode === 450 && error.response.includes("Transmit rate limit exceeded")) {
+        const err = error as Error & { responseCode?: number; response?: string };
+        logger.error(`${log_message} - ${err.message}`)
+        if (err.responseCode === 450 && err.response?.includes("Transmit rate limit exceeded")) {
             mail_batch.recipients.push(recipient);
             logger.info("Rate limit exceeded - requeued recipient");
             setTimeout(send_from_queue, 20 * 60 * 1000);
@@ -228,23 +250,17 @@ export function load_mail_queue_from_file() {
         const serialized_queue = fs.readFileSync(mail_queue_save_path);
         fs.unlinkSync(mail_queue_save_path);
         if (process.env.NODE_ENV !== "development" || !process.env.ITF_SEND_MAILS) {
-            mail_queue.push(...JSON.parse(serialized_queue));
+            mail_queue.push(...JSON.parse(serialized_queue.toString()) as QueueItem[]);
         }
     } catch (e) {
-        if (e.code !== "ENOENT") {
+        if ((e as NodeJS.ErrnoException).code !== "ENOENT") {
             throw e;
         }
     }
 }
 
-/**
- * @param {number[]} workshop_ids
- * @param {{email: string, name: string, subscribedTo: number, token: string}[]} subscribers
- * @param {boolean} allow_resend
- * @param {number} sendTime
- */
-function queue_newsletter(workshop_ids, subscribers, allow_resend, sendTime) {
-    const workshops_to_send = workshop_ids.map(id => workshops.getWorkshop(id, true));
+function queue_newsletter(workshop_ids: number[], subscribers: SubscriberLike[], allow_resend: boolean, sendTime: number) {
+    const workshops_to_send = workshop_ids.map(id => workshops.getWorkshop(id, true)).filter(w => w != undefined);
 
     for (const workshop_to_send of workshops_to_send) {
         if (!workshop_to_send) {
@@ -256,43 +272,36 @@ function queue_newsletter(workshop_ids, subscribers, allow_resend, sendTime) {
         }
     }
 
-    const workshop_type = workshops_to_send.reduce((type, workshop) => type | workshop.type, 0);
+    const validWorkshops = workshops_to_send as ExtendedWorkshop[];
+    const workshop_type = validWorkshops.reduce((type, workshop) => type | workshop.type, 0);
     const target_subscribers = subscribers.filter(({subscribedTo}) => subscribedTo & workshop_type);
 
     mail_queue.push({
         recipients: target_subscribers,
         recipientsAmount: target_subscribers.length,
-        is_newsletter: true,
+        item_type: "newsletter",
         workshops: workshops_to_send,
         sendTime,
     });
 }
 
-function queue_confirm_email(subscriber) {
+type SubscriberLike = Pick<Subscriber, "name" | "email" | "token" | "subscribedTo">;
+
+function queue_confirm_email(subscriber: SubscriberLike) {
     mail_queue.unshift({
         recipients: [subscriber],
-        recipientsAmount: 1,
-        is_newsletter: false,
-        workshops: null,
-        sendTime: 0,
+        item_type: "confirm",
     });
 }
 
-/**
- * Instanciates the templates for the given workshops to be sent to the given subscribers
- * @param {Object[]} workshops_to_send
- * @param {{email: string, name: string, subscribedTo: number, token: string}} subscriber
- * @returns {{email: string, type: number, subject: string, text: string, html: string}}
- * @throws {utils.HTTPError}
- */
-function build_newsletter(workshops_to_send, subscriber) {
+function build_newsletter(workshops_to_send: ExtendedWorkshop[], subscriber: SubscriberLike) {
     const workshop_type = workshops_to_send.reduce((type, workshop) => type | workshop.type, 0);
 
     if (typeof workshop_type !== "number") {
         throw new utils.HTTPError(500, "Invalid workshop type.");
     }
 
-    const logo = workshop_type === workshops.type_itf
+    const logo = workshop_type === workshops.WorkshopType.Itf
         ? utils.config.base_url + "/public/img/improtheater_frankfurt_logo.png"
         : utils.config.base_url + "/public/img/improglycerin_logo.jpg";
 
@@ -332,7 +341,7 @@ function build_newsletter(workshops_to_send, subscriber) {
             + `${workshop.title} - ${weblink}\n\n`
             + (workshop.propertiesHidden
                 ? ""
-                : `${workshop.dateText}, ${workshop.timeText}, ${workshop.email}\n`
+                : `${workshop.dateText ?? ""}, ${workshop.timeText}, ${workshop.email}\n`
                 + `${workshop.location}\n\n`)
             + `${workshop.content}\n\n`
         ).join("\n\n")
@@ -347,7 +356,7 @@ function build_newsletter(workshops_to_send, subscriber) {
     };
 }
 
-function build_confirm_mail(subscriber) {
+function build_confirm_mail(subscriber: SubscriberLike) {
     const link = utils.config.base_url + "/newsletter?token=" + subscriber.token;
     const subscribe = utils.config.base_url + "/newsletter?subscribe=1&token=" + subscriber.token;
     const html = pug.renderFile(utils.project_path + "/client/views/emails/confirm.pug", {
@@ -366,27 +375,31 @@ function build_confirm_mail(subscriber) {
     };
 }
 
-export async function send(req, res) {
+export async function send(req: Request, res: Response) {
     if (!req.user || !req.body.workshops || !Array.isArray(req.body.workshops)) {
         throw new utils.HTTPError(400);
     }
 
     const sendTime = Number.isInteger(req.body.sendTime) ? req.body.sendTime : 0;
 
-    const workshop_ids_to_send = req.body.workshops.map(id => parseInt(id));
+    const workshop_ids_to_send = req.body.workshops.map((id: string | number) => parseInt(String(id)));
 
-    if (!req.body.test && mail_queue.some(mail_batch => arraysEqual(mail_batch.workshops.map(w => w.id), workshop_ids_to_send))) {
+    if (!req.body.test && mail_queue.some(mail_batch => {
+        if (mail_batch.item_type !== "newsletter") return false;
+        const workshop_ids = mail_batch.workshops.filter(w => w !== undefined).map(w => w!.id);
+        return arraysEqual(workshop_ids, workshop_ids_to_send);
+    })) {
         throw new utils.HTTPError(400, "Newsletter wird bereits gesendet");
     }
 
-    let subscribers = [];
+    let subscribers: SubscriberLike[];
     if (req.body.test) {
-        subscribers[0] = {
+        subscribers = [{
             name: req.user.username,
             email: req.user.email,
             token: "",
             subscribedTo: 3
-        };
+        }];
     } else {
         for (const id of workshop_ids_to_send) {
             db.run("UPDATE workshop SET newsletterSent = 1 WHERE id = ?", id);
@@ -394,41 +407,42 @@ export async function send(req, res) {
         subscribers = getSubscribers();
     }
 
-    // TODO: Really allow resend?
     queue_newsletter(workshop_ids_to_send, subscribers, true, sendTime);
     res.sendStatus(200);
 }
 
-export async function preview(req, res) {
+export async function preview(req: Request, res: Response) {
     if (!req.query.workshops) {
         throw new utils.HTTPError(400);
     }
 
     const workshop_ids_to_send = Array.isArray(req.query.workshops)
-        ? req.query.workshops.map(id => parseInt(id))
-        : [parseInt(req.query.workshops)];
+        ? req.query.workshops.map(id => parseInt(String(id)))
+        : [parseInt(String(req.query.workshops))];
 
     const workshops_to_send = workshop_ids_to_send.map(id => workshops.getWorkshop(id, true));
-    if (!req.user && workshops_to_send.some(w => !w.newsletterSent)) {
+    if (!req.user && workshops_to_send.some(w => w && w.newsletterSent)) {
         throw new utils.HTTPError(403);
     }
 
-    let subscriber = getSubscriber(req.query.token);
+    const token = req.query.token as string | undefined;
+    let subscriber: SubscriberLike = getSubscriber(token || "") ?? { name: "", email: "", token: "", subscribedTo: 0 };
     if (!subscriber || Object.keys(subscriber).length === 0) {
         subscriber = {
-            name: req.user?.username,
-            email: req.user?.email,
+            name: req.user?.username || "",
+            email: req.user?.email || "",
             token: "",
             subscribedTo: 3
         };
     }
 
-    const newsletter = build_newsletter(workshops_to_send, subscriber, true);
+    const validWorkshops = workshops_to_send.filter((w): w is ExtendedWorkshop => w !== undefined);
+    const newsletter = build_newsletter(validWorkshops, subscriber);
 
     res.send(newsletter.html);
 }
 
-export function exportSubscribers(req, res) {
+export function exportSubscribers(req: Request, res: Response) {
     if (!req.user) {
         throw new utils.HTTPError(403);
     }
@@ -446,7 +460,7 @@ export function exportSubscribers(req, res) {
     res.status(200).send(csv);
 }
 
-export function addSubscriber(req, res) {
+export function addSubscriber(req: Request, res: Response) {
     if (!req.user) {
         throw new utils.HTTPError(403);
     }
@@ -470,11 +484,11 @@ export function addSubscriber(req, res) {
 }
 
 export function getSubscribers() {
-    return db.all("SELECT * FROM subscriber WHERE confirmed = 1");
+    return db.all<Subscriber>("SELECT * FROM subscriber WHERE confirmed = 1");
 }
 
-export function getSubscriber(token) {
-    return db.get("SELECT * FROM subscriber WHERE token = ?", token) || {};
+export function getSubscriber(token: string) {
+    return db.get<Subscriber>("SELECT * FROM subscriber WHERE token = ?", token);
 }
 
 function removeExpiredSubscribers() {
@@ -483,11 +497,11 @@ function removeExpiredSubscribers() {
     db.run("DELETE FROM subscriber WHERE confirmed = 0 AND timestamp < ?", expired);
 }
 
-function validNewsletterType(subscribedTo) {
+function validNewsletterType(subscribedTo?: number) {
     return subscribedTo == 1 || subscribedTo == 2 || subscribedTo == 3;
 }
 
-async function sendMail(type, options) {
-    const namedType = type == 1 ? "itf" : "improglycerin";
+async function sendMail(type: workshops.WorkshopType, options: EMailOptions) {
+    const namedType = type == workshops.WorkshopType.Itf ? "itf" : "improglycerin";
     return await transporter[namedType].send(options);
 }

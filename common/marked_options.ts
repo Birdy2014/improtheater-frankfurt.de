@@ -1,5 +1,5 @@
-function escape_html_entities(html) {
-    const replacements = {
+function escape_html_entities(html: string): string {
+    const replacements: Record<string, string> = {
         '&': '&amp;',
         '<': '&lt;',
         '>': '&gt;',
@@ -14,14 +14,37 @@ function escape_html_entities(html) {
     return html;
 }
 
-export function common_marked_options(link_style) {
+interface MarkedLinkToken {
+    href: string;
+    title: string | null;
+    tokens: Array<{ raw: string; text: string }>;
+}
+
+interface MarkedCodeToken {
+    text: string;
+    escaped: boolean;
+}
+
+interface MarkedLinkRenderer {
+    parser: {
+        parseInline(tokens: Array<{ raw: string; text: string }>): string;
+    };
+}
+
+interface MarkedCodeRenderer {
+    parser: {
+        parseInline(tokens: Array<{ raw: string; text: string }>): string;
+    };
+}
+
+export function common_marked_options(link_style?: string | null): object {
     return {
         gfm: true,
         breaks: true,
         headerIds: false,
         mangle: false,
         renderer: {
-            link({ href, title, tokens }) {
+            link(this: MarkedLinkRenderer, { href, title, tokens }: MarkedLinkToken) {
                 const text = this.parser.parseInline(tokens);
                 try {
                     href = encodeURI(href).replace(/%25/g, "%");
@@ -38,7 +61,7 @@ export function common_marked_options(link_style) {
                 out += `>${text}</a>`;
                 return out;
             },
-            code({ text, escaped }) {
+            code(this: MarkedCodeRenderer, { text, escaped }: MarkedCodeToken) {
                 const code = text.replace(/\n$/, '') + '\n';
 
                 return '<pre>'

@@ -3,6 +3,59 @@ import path from "path";
 import * as logger from "./logger.js";
 import * as utils from "./utils.js";
 
+export interface Workshop {
+    id: number;
+    begin: number;
+    end: number;
+    title: string;
+    content: string;
+    img: string;
+    color: string;
+    textColor: string;
+    visible: number;
+    location: string;
+    price: string;
+    email: string;
+    propertiesHidden: number;
+    newsletterSent: number;
+    type: number;
+}
+
+export interface Subscriber {
+    name: string;
+    email: string;
+    token: string | null;
+    timestamp: number;
+    confirmed: number;
+    last_viewed_newsletter: number;
+    subscribedTo: number;
+}
+
+export interface Upload {
+    id: string;
+    name: string;
+    mimetype: string;
+    size: number;
+    data: Buffer;
+    user_id: string;
+    time: number;
+}
+
+export interface User {
+    id: string;
+    username: string;
+    email: string;
+    password_hash: string;
+    admin: number;
+    full_access: number;
+}
+
+export interface Session {
+    user_id: string;
+    token: string;
+    expires: number;
+}
+
 class Database {
     #db;
 
@@ -25,7 +78,6 @@ class Database {
                 email TEXT NOT NULL,
                 propertiesHidden INTEGER DEFAULT 0,
                 newsletterSent INTEGER DEFAULT 0,
-                facebookEventCreated INTEGER DEFAULT 0,
                 type INTEGER NOT NULL,
                 PRIMARY KEY (id)
             )
@@ -79,7 +131,7 @@ class Database {
         `)
     }
 
-    run(sql, ...params) {
+    run(sql: string, ...params: unknown[]): void {
         const start_time = process.hrtime();
 
         const statement = this.#db.prepare(sql);
@@ -90,11 +142,11 @@ class Database {
             logger.warn(`SQL run with query '${sql}' took ${duration[0]}s ${duration[1] / 1000000}ms`);
     }
 
-    get(sql, ...params) {
+    get<T = unknown>(sql: string, ...params: unknown[]): T | undefined {
         const start_time = process.hrtime();
 
         const statement = this.#db.prepare(sql);
-        const result = statement.get(params);
+        const result = statement.get(params) as T | undefined;
 
         const duration = process.hrtime(start_time);
         if (duration[0] >= 1)
@@ -103,11 +155,11 @@ class Database {
         return result;
     }
 
-    all(sql, ...params) {
+    all<T = unknown>(sql: string, ...params: unknown[]): T[] {
         const start_time = process.hrtime();
 
         const statement = this.#db.prepare(sql);
-        const result = statement.all(...params);
+        const result = statement.all(...params) as T[];
 
         const duration = process.hrtime(start_time);
         if (duration[0] >= 1)

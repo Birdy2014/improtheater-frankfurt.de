@@ -1,4 +1,4 @@
-import express from "express";
+import express, { Request, Response, NextFunction } from "express";
 import cookieParser from "cookie-parser";
 import router from "./routes.js";
 import * as utils from "./utils.js";
@@ -29,7 +29,7 @@ app.set("trust proxy", true);
 app.use(router);
 
 // Log errors
-app.use((err, req, res, next) => {
+app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
     let status;
     let message;
     if (err instanceof utils.HTTPError) {

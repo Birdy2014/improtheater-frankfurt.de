@@ -1,4 +1,4 @@
-import express from "express";
+import express, { Request, Response, NextFunction } from "express";
 import path from "path";
 import fileUpload from "express-fileupload";
 import { Marked } from "marked";
@@ -9,7 +9,8 @@ import * as newsletter from "./newsletter.js";
 import * as upload from "./upload.js";
 import * as utils from "./utils.js";
 import * as logger from "./logger.js";
-import { common_marked_options } from "../common/marked_options.js";
+import { common_marked_options } from "../common/marked_options";
+import { Subscriber } from "./db.js";
 
 const router = express.Router();
 const marked = new Marked(common_marked_options(undefined));
@@ -31,7 +32,7 @@ const routes = [
 ];
 
 // Redirect trailing slashes
-router.use(function (req, res, next) {
+router.use(function (req: Request, res: Response, next: NextFunction) {
     if (req.path.slice(-1) == '/' && req.path.length > 1) {
         let query = req.url.slice(req.path.length);
         res.redirect(301, req.path.slice(0, -1) + query);
@@ -41,7 +42,7 @@ router.use(function (req, res, next) {
 });
 
 // Set security headers
-router.use((_, res, next) => {
+router.use((_: Request, res: Response, next: NextFunction) => {
     res.set("Content-Security-Policy", [
         "default-src 'self'",
         "style-src 'self' 'unsafe-inline'",
@@ -54,12 +55,12 @@ router.use((_, res, next) => {
     next();
 })
 
-function cors_allow_all(_, res, next) {
+function cors_allow_all(_: Request, res: Response, next: NextFunction) {
     res.set("Access-Control-Allow-Origin", "*");
     next();
 }
 
-function cors_allow_improglycerin(req, res, next) {
+function cors_allow_improglycerin(req: Request, res: Response, next: NextFunction) {
     const origin = req.get("Origin");
     if (!origin) {
         next();
@@ -74,7 +75,7 @@ function cors_allow_improglycerin(req, res, next) {
 }
 
 // Backend
-router.get("/robots.txt", (_, res) => res.sendFile(path.join(utils.project_path, "/client/robots.txt")));
+router.get("/robots.txt", (_: Request, res: Response) => res.sendFile(path.join(utils.project_path, "/client/robots.txt")));
 router.post("/api/login", auth.login);
 router.post("/api/logout", auth.logout);
 router.post("/api/user", auth.getUser, auth.api_create_user);
@@ -102,9 +103,9 @@ router.post("/api/upload", auth.getUser, fileUpload({ limits: { fileSize: 10 * 1
 router.delete("/api/upload/:id", auth.getUser, upload.del);
 
 // Libraries
-router.get("/lib/nprogress.js", (_, res) => res.sendFile(path.join(utils.project_path, "/node_modules/nprogress/nprogress.js")));
-router.get("/lib/nprogress.css", (_, res) => res.sendFile(path.join(utils.project_path, "/node_modules/nprogress/nprogress.css")));
-router.get("/lib/marked.umd.js", (_, res) => res.sendFile(path.join(utils.project_path, "/node_modules/marked/lib/marked.umd.js")));
+router.get("/lib/nprogress.js", (_: Request, res: Response) => res.sendFile(path.join(utils.project_path, "/node_modules/nprogress/nprogress.js")));
+router.get("/lib/nprogress.css", (_: Request, res: Response) => res.sendFile(path.join(utils.project_path, "/node_modules/nprogress/nprogress.css")));
+router.get("/lib/marked.umd.js", (_: Request, res: Response) => res.sendFile(path.join(utils.project_path, "/node_modules/marked/lib/marked.umd.js")));
 
 // Thunderbird needs CORS to be enabled to load fonts
 router.use("/roboto", cors_allow_all, express.static(path.join(utils.project_path, "/node_modules/@fontsource/roboto/files")));
@@ -128,37 +129,37 @@ const esbuild_context_js = await esbuild.context({
         }
     ],
 });
-let esbuild_result;
+let esbuild_result: esbuild.BuildResult | undefined;
 
-router.use("/resource/:name", async (req, res) => {
+router.use("/resource/:name", async (req: Request, res: Response) => {
     if (esbuild_result === undefined || process.env.NODE_ENV === "development") {
         esbuild_result = await esbuild_context_js.rebuild();
     }
 
     switch (req.params.name) {
     case "index.js":
-        res.contentType("application/javascript").send(esbuild_result.outputFiles[0].text);
+        res.contentType("application/javascript").send(esbuild_result.outputFiles![0].text);
         return;
     case "index.css":
-        res.contentType("text/css").send(esbuild_result.outputFiles[1].text);
+        res.contentType("text/css").send(esbuild_result.outputFiles![1].text);
         return;
     }
 });
 
 // Frontend
-router.get("/", (_, res) => {
+router.get("/", (_: Request, res: Response) => {
     res.redirect("/start")
 });
 
 // Workaround for apache
-router.get("/index.html", (_, res) => {
+router.get("/index.html", (_: Request, res: Response) => {
     res.redirect("/start");
 });
 
-router.get("/workshop/:workshopID", auth.getUser, (req, res) => {
+router.get("/workshop/:workshopID", auth.getUser, (req: Request, res: Response) => {
     res.set("X-Robots-Tag", "noindex");
 
-    let w = workshops.getWorkshop(req.params.workshopID, req.user !== undefined);
+    let w = workshops.getWorkshop(parseInt(String(req.params.workshopID)), req.user !== undefined);
     if (!w) {
         throw new utils.HTTPError(404);
     }
@@ -184,13 +185,13 @@ router.get("/workshop/:workshopID", auth.getUser, (req, res) => {
     }
 });
 
-router.get("/workshops/:page", auth.getUser, async (req, res) => {
+router.get("/workshops/:page", auth.getUser, async (req: Request, res: Response) => {
     if (!req.user) {
         throw new utils.HTTPError(401);
     }
 
-    let page = parseInt(req.params.page);
-    let w = workshops.getWorkshops(req.user !== undefined, page, req.user !== undefined ? workshops.type_both : workshops.type_itf);
+    let page = parseInt(String(req.params.page));
+    let w = workshops.getWorkshops(req.user !== undefined, page, req.user !== undefined ? workshops.WorkshopType.Both : workshops.WorkshopType.Itf);
     if (!w || w.length === 0) {
         throw new utils.HTTPError(404);
     }
@@ -207,51 +208,57 @@ router.get("/workshops/:page", auth.getUser, async (req, res) => {
 
 router.get("/newsletter-preview", auth.getUser, newsletter.preview);
 
-router.get("/:route", auth.getUser, async (req, res) => {
-    if (!routes.includes(req.params.route)) {
+router.get("/:route", auth.getUser, async (req: Request, res: Response) => {
+    const route = req.params.route as string;
+    if (!routes.includes(route)) {
         throw new utils.HTTPError(404);
     }
 
-    const render_options = getRenderOptions(req.params.route, req.user, req.query);
+    const render_options = getRenderOptions(route, req.user, req.query as Record<string, string>);
 
     const start_time = process.hrtime();
 
     if (req.query.partial) {
-        res.render("routes/" + req.params.route, { partial: true, doctype: "html", ...render_options });
+        res.render("routes/" + route, { partial: true, doctype: "html", ...render_options });
     } else {
-        res.render("routes/" + req.params.route, {
-            route: req.params.route,
+        res.render("routes/" + route, {
+            route: route,
             ...render_options
         });
     }
 
     const duration = process.hrtime(start_time);
     if (duration[0] >= 1) {
-        logger.warn(`rendering of route '${req.params.route}' took ${duration[0]}s ${duration[1] / 1000000}ms`);
+        logger.warn(`rendering of route '${route}' took ${duration[0]}s ${duration[1] / 1000000}ms`);
     }
 });
 
 export default router;
 
-function getRenderOptions(route, user, query) {
+function getRenderOptions(route: string, user: Express.Request["user"], query: Record<string, string>) {
     const loggedIn = user !== undefined;
 
     switch(route) {
         case "workshops":
-            return { loggedIn, workshops: workshops.getWorkshops(loggedIn, 0, loggedIn ? workshops.type_both : workshops.type_itf), page: 0 };
+            return { loggedIn, workshops: workshops.getWorkshops(loggedIn, 0, loggedIn ? workshops.WorkshopType.Both : workshops.WorkshopType.Itf), page: 0 };
         case "shows":
-            return { loggedIn: false, workshops: workshops.getWorkshops(loggedIn, 0, workshops.type_improglycerin), page: 0 };
+            return { loggedIn: false, workshops: workshops.getWorkshops(false, 0, workshops.WorkshopType.Improglycerin), page: 0 };
         case "newsletter":
-            return { loggedIn, subscriber: newsletter.getSubscriber(query.token), unsubscribe: query.unsubscribe, subscribe: query.subscribe };
+            const token = query.token;
+            const unsubscribe = query.unsubscribe;
+            const subscribe = query.subscribe;
+            return { loggedIn, subscriber: newsletter.getSubscriber(token), unsubscribe, subscribe };
         case "subscribers":
-            let subscribers = [];
+            let renderableSubscribers: (Subscriber & { last_viewed_newsletter_date: string })[] = [];
             if (loggedIn) {
-                subscribers = newsletter.getSubscribers();
-                let format = new Intl.DateTimeFormat("de-DE");
-                for (let subscriber of subscribers)
-                    subscriber.last_viewed_newsletter_date = format.format(subscriber.last_viewed_newsletter * 1000);
+                const subscribers = newsletter.getSubscribers();
+                const format = new Intl.DateTimeFormat("de-DE");
+                renderableSubscribers = subscribers.map(subscriber => ({
+                    ...subscriber,
+                    last_viewed_newsletter_date: format.format(subscriber.last_viewed_newsletter * 1000),
+                }));
             }
-            return { loggedIn, subscribers };
+            return { loggedIn, subscribers: renderableSubscribers };
         case "uploads":
             return { loggedIn, uploads: upload.getAll() };
         case "user":

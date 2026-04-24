@@ -6,7 +6,8 @@ block routeContent
     img(src="/public/img/banner-newsletter.jpg" class="banner")
 
     #newsletter-text-container
-        span#newsletter-subscriber-token #{subscriber.token}
+        if subscriber
+            span#newsletter-subscriber-token #{subscriber.token}
         if subscriber && subscriber.token && !subscriber.confirmed
             #newsletter-confirm
                 h1 Möchtest du dich wirklich
