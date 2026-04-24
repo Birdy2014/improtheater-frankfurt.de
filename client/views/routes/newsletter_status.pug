@@ -9,6 +9,12 @@ block routeContent
             .newsletter-status-item-row
                 .progress-indicator
                 progress.progress-bar
+
+    template#template-pending-newsletter-status-item
+        .newsletter-status-item
+            .newsletter-status-item-row
+                a.preview-link
+                a.icon-delete(href="javascript:void(0);")
             .newsletter-status-text
 
     #newsletter-status-list

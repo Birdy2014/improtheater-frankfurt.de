@@ -23,6 +23,11 @@ interface QueueItemNewsletter {
     recipients: SubscriberLike[],
     recipientsAmount: number,
     workshops: ExtendedWorkshop[],
+}
+
+interface QueueItemPendingNewsletter {
+    item_type: "pending_newsletter",
+    workshopIds: number[],
     sendTime: number,
 }
 
@@ -31,7 +36,7 @@ interface QueueItemConfirm {
     recipients: SubscriberLike[],
 }
 
-type QueueItem = QueueItemNewsletter | QueueItemConfirm;
+type QueueItem = QueueItemNewsletter | QueueItemPendingNewsletter | QueueItemConfirm;
 
 const mail_queue: QueueItem[] = [];
 
@@ -138,13 +143,25 @@ export function api_get_status(req: Request, res: Response) {
     }
 
     const mail_status = mail_queue
-        .filter((batch): batch is QueueItemNewsletter => batch.item_type === "newsletter")
-        .map(batch => ({
-            recipientsLeft: batch.recipients.length,
-            recipientsAmount: batch.recipientsAmount,
-            workshops: batch.workshops.filter(w => w !== undefined).map(w => ({ id: w!.id, title: w!.title })),
-            sendTime: batch.sendTime,
-        }));
+        .filter((batch): batch is QueueItemNewsletter | QueueItemPendingNewsletter => batch.item_type === "newsletter" || batch.item_type === "pending_newsletter")
+        .map(batch => { if (batch.item_type === "newsletter") {
+            return {
+                itemType: batch.item_type,
+                recipientsLeft: batch.recipients.length,
+                recipientsAmount: batch.recipientsAmount,
+                workshops: batch.workshops.map(w => ({ id: w!.id, title: w!.title })),
+            };
+        } else {
+            return {
+                itemType: batch.item_type,
+                workshops: batch.workshopIds.map(id => {
+                    const w = workshops.getWorkshop(id, true);
+                    return { id: w!.id, title: w!.title }
+                }),
+                sendTime: batch.sendTime,
+            };
+        }
+    });
 
     res.json(mail_status);
 }
@@ -181,13 +198,22 @@ export function api_post_cancel(req: Request, res: Response) {
 }
 
 export async function send_from_queue() {
-    const mail_batch_index = mail_queue.findIndex(mail_batch => mail_batch.item_type !== "newsletter" || mail_batch.sendTime < getCurrentTimestamp());
+    const mail_batch_index = mail_queue.findIndex(mail_batch => mail_batch.item_type === "newsletter" || mail_batch.item_type === "confirm");
+
     if (mail_batch_index < 0) {
+        const pending_queue_item_index = mail_queue.findIndex(mail_batch => mail_batch.item_type === "pending_newsletter" && mail_batch.sendTime < getCurrentTimestamp());
+
+        if (pending_queue_item_index >= 0) {
+            const pending_queue_item = mail_queue[pending_queue_item_index] as QueueItemPendingNewsletter;
+            mail_queue.splice(pending_queue_item_index, 1);
+            queue_newsletter(pending_queue_item.workshopIds);
+        }
+
         setTimeout(send_from_queue, 4_000);
         return;
     }
 
-    const mail_batch = mail_queue[mail_batch_index];
+    const mail_batch = mail_queue[mail_batch_index] as QueueItemNewsletter | QueueItemConfirm;
 
     const recipient = mail_batch.recipients.shift()
     if (!recipient) {
@@ -259,28 +285,35 @@ export function load_mail_queue_from_file() {
     }
 }
 
-function queue_newsletter(workshop_ids: number[], subscribers: SubscriberLike[], allow_resend: boolean, sendTime: number) {
-    const workshops_to_send = workshop_ids.map(id => workshops.getWorkshop(id, true)).filter(w => w != undefined);
+function queue_newsletter(workshop_ids: number[], test_subscriber?: SubscriberLike) {
+    const workshops_to_send = workshop_ids.map(id => workshops.getWorkshop(id, true));
 
-    for (const workshop_to_send of workshops_to_send) {
-        if (!workshop_to_send) {
-            throw new utils.HTTPError(404);
-        }
-
-        if (workshop_to_send.newsletterSent && !allow_resend) {
-            throw new utils.HTTPError(409, "At least one workshop is already sent.");
-        }
+    if (workshops_to_send.some(w => !w)) {
+        throw new utils.HTTPError(404);
     }
 
     const validWorkshops = workshops_to_send as ExtendedWorkshop[];
     const workshop_type = validWorkshops.reduce((type, workshop) => type | workshop.type, 0);
-    const target_subscribers = subscribers.filter(({subscribedTo}) => subscribedTo & workshop_type);
+    const target_subscribers = test_subscriber
+        ? [test_subscriber]
+        : getSubscribers().filter(({subscribedTo}) => subscribedTo & workshop_type);
 
     mail_queue.push({
         recipients: target_subscribers,
         recipientsAmount: target_subscribers.length,
         item_type: "newsletter",
-        workshops: workshops_to_send,
+        workshops: workshops_to_send as ExtendedWorkshop[],
+    });
+}
+
+function queue_pending_newsletter(workshopIds: number[], sendTime: number) {
+    if (workshopIds.map(id => workshops.getWorkshop(id, true)).some(w => !w)) {
+        throw new utils.HTTPError(404);
+    }
+
+    mail_queue.push({
+        item_type: "pending_newsletter",
+        workshopIds,
         sendTime,
     });
 }
@@ -384,6 +417,14 @@ export async function send(req: Request, res: Response) {
 
     const workshop_ids_to_send = req.body.workshops.map((id: string | number) => parseInt(String(id)));
 
+    if (sendTime > getCurrentTimestamp()) {
+        if (req.body.test) {
+            throw new utils.HTTPError(400, "Can't queue test mail");
+        }
+        queue_pending_newsletter(workshop_ids_to_send, sendTime);
+        return;
+    }
+
     if (!req.body.test && mail_queue.some(mail_batch => {
         if (mail_batch.item_type !== "newsletter") return false;
         const workshop_ids = mail_batch.workshops.filter(w => w !== undefined).map(w => w!.id);
@@ -392,22 +433,21 @@ export async function send(req: Request, res: Response) {
         throw new utils.HTTPError(400, "Newsletter wird bereits gesendet");
     }
 
-    let subscribers: SubscriberLike[];
+    let test_subscriber: SubscriberLike | undefined = undefined;
     if (req.body.test) {
-        subscribers = [{
+        test_subscriber = {
             name: req.user.username,
             email: req.user.email,
             token: "",
             subscribedTo: 3
-        }];
+        };
     } else {
         for (const id of workshop_ids_to_send) {
             db.run("UPDATE workshop SET newsletterSent = 1 WHERE id = ?", id);
         }
-        subscribers = getSubscribers();
     }
 
-    queue_newsletter(workshop_ids_to_send, subscribers, true, sendTime);
+    queue_newsletter(workshop_ids_to_send, test_subscriber);
     res.sendStatus(200);
 }
 
