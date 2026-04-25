@@ -27,7 +27,6 @@ const routes = [
     "login",
     "user",
     "password_reset",
-    "shows",
     "newsletter_status"
 ];
 
@@ -239,8 +238,6 @@ function getRenderOptions(route: string, user: Express.Request["user"], query: R
     switch(route) {
         case "workshops":
             return { loggedIn, workshops: workshops.getWorkshops(loggedIn, 0, loggedIn ? workshops.WorkshopType.Both : workshops.WorkshopType.Itf), page: 0 };
-        case "shows":
-            return { loggedIn: false, workshops: workshops.getWorkshops(false, 0, workshops.WorkshopType.Improglycerin), page: 0 };
         case "newsletter":
             const token = query.token;
             const unsubscribe = query.unsubscribe;
