@@ -8,11 +8,14 @@ body {
     margin: var(--margin-side);
 }
 
+* {
+    box-sizing: border-box;
+}
+
 nav {
     position: fixed;
     top: 0;
     left: 0px;
-    box-sizing: border-box;
     padding-top: var(--menu-top-padding);
     padding-left: var(--margin-side);
     padding-right: var(--margin-side);
@@ -31,7 +34,6 @@ nav {
 
     & #logo {
         float: left;
-        box-sizing: border-box;
         height: 100%;
         width: 240px;
         max-height: 80px;
@@ -51,7 +53,6 @@ nav {
 
     & #main-menu a {
         display: inline-block;
-        box-sizing: border-box;
         color: var(--color-text);
         text-decoration: none;
         font-weight: 700;
@@ -240,8 +241,9 @@ footer {
 input, button, select {
     background-color: var(--color-bg);
     color: var(--color-text);
-    border: 1px solid #8f8f9d;
+    border: 1px solid var(--color-input-border);
     border-radius: 2px;
+    padding: 4px 8px;
 }
 
 input[type="text"]::placeholder, input[type="email"]::placeholder {

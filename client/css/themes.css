@@ -15,6 +15,7 @@
     --color-border: #ebeaea;
     --color-input: #f0f0f0;
     --color-input-hover: #e9e9ed;
+    --color-input-border: #b2b2b2;
     --color-code-bg: #c7c7c7;
     --color-nav-button: #54393b;
     --site-width: 1100px;
@@ -28,8 +29,8 @@
         --color-text: white;
         --color-text-light: #909090;
         --color-border: #282a2b;
-        --color-input: #787878;
-        --color-input-hover: #696981;
+        --color-input: #151718;
+        --color-input-hover: #46494a;
         --color-code-bg: #636363;
         --color-nav-button: #e8e6e3;
         --logo: url("/public/img/improtheater_frankfurt_logo_dark.svg");

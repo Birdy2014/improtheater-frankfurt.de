@@ -4,11 +4,13 @@ block routeContent
     h1 LOGIN
 
     form#login-form
-        label(for="login") Benutzername / Email:
-        input(type="text" name="login")
+        .input-row
+            label(for="login") Benutzername / Email:
+            input(type="text" name="login")
 
-        label(for="password") Passwort:
-        input(type="password" name="password")
+        .input-row
+            label(for="password") Passwort:
+            input(type="password" name="password")
 
         input(type="submit" value="Anmelden")
         a#password-reset-link(href="javascript:void(0)") Passwort zurücksetzen

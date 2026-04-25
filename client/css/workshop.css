@@ -69,22 +69,20 @@
 
     .workshop-right {
         float: none;
-        box-sizing: border-box;
         width: 100%;
     }
 }
 
 .workshop-input {
     width: calc(100% - 10px);
-    border: 1px solid #b2b2b2;
+    border: 1px solid var(--color-input-border);
     padding: 5px;
 }
 
 .edit-content {
     display: block;
-    box-sizing: border-box;
     resize: vertical;
-    border: 1px solid #b2b2b2;
+    border: 1px solid var(--color-input-border);
     background-color: var(--color-bg);
     color: var(--color-text);
     padding: 5px;
