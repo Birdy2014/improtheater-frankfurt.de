@@ -10,9 +10,9 @@ block head
 
 block routeContent
     h1
-        span.workshop-preview-field.workshop-title #{title}
+        span.workshop-preview-field(data-render="title") #{title}
         if loggedIn
-            input.workshop-input.workshop-edit-field.edit-title(type="text" autocomplete="off" value=title)
+            input.workshop-edit-field.edit-title(type="text" autocomplete="off" data-field="title" value=title)
 
     div
         img.workshop-image(src=img_url)
@@ -21,51 +21,51 @@ block routeContent
                 dl.workshop-right-item.workshop-properties(style=`background-color: ${color}; color: ${textColorResolved}`)
                     if loggedIn
                         .workshop-edit-field
-                            input.workshop-input-propertieshidden(type="checkbox" name=propertieshidden checked=propertiesHidden)
+                            input(type="checkbox" name=propertieshidden data-field="propertieshidden" checked=propertiesHidden)
                             label(for=propertieshidden) Infobox verstecken
-                            select.workshop-input-type(name=id)
+                            select(name=id data-field="type")
                                 each i in [1, 2, 3]
                                     option(value=i selected=(i==type))
                                         +newsletterName(i)
                     dt Wann?
                     dd
-                        span.workshop-preview-field.workshop-date #{dateText}
+                        span.workshop-preview-field.workshop-date(data-render="date") #{dateText}
                         if loggedIn
-                            input.workshop-edit-field.input-workshop-date(type="date" value=dateISO)
+                            input.workshop-edit-field(type="date" data-field="date" value=dateISO)
                     dd
-                        span.workshop-preview-field.workshop-time #{timeText}
+                        span.workshop-preview-field.workshop-time(data-render="time") #{timeText}
                         if loggedIn
                             .workshop-edit-field
-                                input.input-workshop-time-begin(type="time" value=beginTimeISO)
+                                input(type="time" data-field="beginTime" value=beginTimeISO)
                                 | -
-                                input.input-workshop-time-end(type="time" value=endTimeISO)
+                                input(type="time" data-field="endTime" value=endTimeISO)
                     dt Wo?
                     dd
-                        span.workshop-preview-field.workshop-location!= marked.parseInline(location)
+                        span.workshop-preview-field.workshop-location(data-render="location")!= marked.parseInline(location)
                         if loggedIn
-                            input.workshop-input.workshop-edit-field.edit-workshop-location(type="text" autocomplete="off" value=location)
+                            input.workshop-edit-field(type="text" autocomplete="off" data-field="location" value=location)
                     dt Kosten?
                     dd
-                        span.workshop-preview-field.workshop-price!= marked.parseInline(price)
+                        span.workshop-preview-field.workshop-price(data-render="price")!= marked.parseInline(price)
                         if loggedIn
-                            input.workshop-input.workshop-edit-field.edit-workshop-price(type="text" autocomplete="off" value=price)
+                            input.workshop-edit-field(type="text" autocomplete="off" data-field="price" value=price)
                     dt Anmelden?
                     dd
-                        span.workshop-preview-field.workshop-email!= marked.parseInline(email)
+                        span.workshop-preview-field.workshop-email(data-render="email")!= marked.parseInline(email)
                         if loggedIn
-                            input.workshop-input.workshop-edit-field.edit-workshop-email(type="text" autocomplete="off" value=email)
+                            input.workshop-edit-field(type="text" autocomplete="off" data-field="email" value=email)
                     if loggedIn
                         .workshop-edit-field
                             dt Farbe?
                             dd.workshop-color-edit-field
-                                input.input-workshop-color(type="color" value=color)
-                                a.workshop-color-set-default(href="javascript:void(0)") Standard
-                                a.workshop-color-set-dominant(href="javascript:void(0)") Automatisch
-                                a.workshop-color-set-reset(href="javascript:void(0)") Reset
+                                input(type="color" data-field="color" value=color)
+                                button.workshop-color-set-default(type="button") Standard
+                                button.workshop-color-set-dominant(type="button") Automatisch
+                                button.workshop-color-set-reset(type="button") Reset
                         .workshop-edit-field
                             dt Textfarbe?
                             dd
-                                select.input-workshop-text-color
+                                select(data-field="textColor")
                                     option(value="" selected=(textColor=="")) Automatisch
                                     option(value="#ffffff" selected=(textColor=="#ffffff")) Weiß
                                     option(value="#000000" selected=(textColor=="#000000")) Schwarz
@@ -83,36 +83,35 @@ block routeContent
                     code *Text*
 
     .workshop-content
-        .workshop-preview-field.workshop-content-preview!= marked.parse(content)
+        .workshop-preview-field.workshop-content-preview(data-render="content")!= marked.parse(content)
         if loggedIn
             .workshop-edit-field
                 p Die Bearbeitungsansicht unterstützt #[a(href="https://guides.github.com/features/mastering-markdown/") Markdown]
-                //- The textarea name is important, because the browser will autocomplete content from other textareas without it
-                textarea.edit-content(name="content-" + id) !{content}
+                textarea.edit-content(name="content-" + id data-field="content") !{content}
 
     if loggedIn
         .workshop-options
             = "Workshop: "
-            a.edit-button.edit-save(href="javascript:void(0)") Speichern
+            button.edit-button.edit-save(type="button") Speichern
             = " | "
-            a.edit-button.edit-edit(href="javascript:void(0)") Bearbeiten
+            button.edit-button.edit-edit(type="button") Bearbeiten
             = " | "
-            a.edit-button.edit-publish(href="javascript:void(0)") #{visible ? "Unsichtbar machen" : "Veröffentlichen"}
+            button.edit-button.edit-publish(type="button") #{visible ? "Unsichtbar machen" : "Veröffentlichen"}
             = " | "
-            a.edit-button.edit-delete(href="javascript:void(0)") Löschen
+            button.edit-button.edit-delete(type="button") Löschen
             = " | "
-            a.edit-button.edit-copy(href="javascript:void(0)") Kopieren
+            button.edit-button.edit-copy(type="button") Kopieren
             br
             span.edit-newsletter
                 = "Newsletter: "
                 strong.newsletter-sent
                     if newsletterSent
                         = "BEREITS VERSENDET "
-                a.edit-button.edit-send(href="javascript:void(0)") Senden
+                button.edit-button.edit-send(type="button") Senden
                 = " | "
-                a.edit-button.edit-preview(href="javascript:void(0)") Vorschau
+                button.edit-button.edit-preview(type="button") Vorschau
                 = " | "
-                a.edit-button.edit-send-test(href="javascript:void(0)") Testmail
+                button.edit-button.edit-send-test(type="button") Testmail
                 br
                 = "Später senden: "
                 input.edit-send-time(type="datetime-local")

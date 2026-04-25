@@ -3,9 +3,16 @@
     color: var(--color-text);
     font-weight: 700;
     transition: color .3s ease-out;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: inherit;
 }
 
 .edit-button:hover {
+    background: none;
     color: var(--color-fg);
 }
 
@@ -21,6 +28,13 @@
     width: 100%;
     font-family: inherit;
     font-size: inherit;
+    display: block;
+    resize: vertical;
+    border: 1px solid var(--color-input-border);
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    padding: 5px;
+    overflow: hidden;
 }
 
 .workshop-image {
@@ -73,29 +87,13 @@
     }
 }
 
-.workshop-input {
-    width: calc(100% - 10px);
-    border: 1px solid var(--color-input-border);
-    padding: 5px;
-}
-
-.edit-content {
-    display: block;
-    resize: vertical;
-    border: 1px solid var(--color-input-border);
-    background-color: var(--color-bg);
-    color: var(--color-text);
-    padding: 5px;
-    overflow: hidden;
+.workshop-edit-field {
+    width: 100%;
 }
 
 code {
     display: block;
     background-color: var(--color-code-bg);
-}
-
-.workshop-edit-field {
-    display: none;
 }
 
 .workshop-options {
@@ -113,5 +111,22 @@ code {
 }
 
 .workshop-attachment-dropdown {
-    max-width: 100%;
+    width: 100%;
+    max-width: 700px;
+}
+
+.workshop-preview-field {
+    display: block;
+}
+
+.workshop-edit-field {
+    display: none;
+}
+
+.container.is-editing .workshop-preview-field {
+    display: none;
+}
+
+.container.is-editing .workshop-edit-field {
+    display: block;
 }

@@ -1,6 +1,6 @@
 import { show_confirm_message, show_message, MESSAGE_SUCCESS, MESSAGE_ERROR, show_error, navigate } from "./navigator.js";
 import * as request from "./request.js";
-import { workshops } from "./workshops.js";
+import { getWorkshopEditor } from "./workshops.js";
 
 async function upload() {
     let file = document.getElementById("input-uploads-image").files[0];
@@ -33,7 +33,7 @@ function selectImage(image_id) {
     if (workshopRoute) {
         window.sessionStorage.removeItem("editWorkshop");
         let workshop_id = workshopRoute.substring(workshopRoute.indexOf("/") + 1);
-        workshops[workshop_id].current.img = image_id;
+        getWorkshopEditor(workshop_id).setImgId(image_id);
         let container = document.getElementById(workshopRoute);
         container.getElementsByClassName("workshop-image")[0].src = `/api/upload/${image_id}`
         navigate(workshopRoute);
