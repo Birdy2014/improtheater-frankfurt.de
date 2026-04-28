@@ -34,9 +34,28 @@ export const copy_prefix = "[KOPIE] ";
 export function api_get(req: Request, res: Response) {
     const limit = 20; // This is an arbitrary number
 
-    const workshops = req.user === undefined
-        ? db.all("SELECT id, title FROM workshop WHERE visible = 1 ORDER BY begin DESC LIMIT ?", limit) || []
-        : db.all("SELECT id, title FROM workshop ORDER BY begin DESC LIMIT ?", limit) || [];
+    const full = req.query.full !== undefined;
+    const type = req.query.type !== undefined ? parseInt(req.query.type as string) : undefined;
+    if (type !== undefined && typeof type !== "number") {
+        throw new utils.HTTPError(400);
+    }
+
+    const conditions: string[] = [];
+
+    if (req.user === undefined) {
+        conditions.push("visible = 1");
+    }
+    if (type !== undefined) {
+        conditions.push("type = @type");
+    }
+
+    const query = "select "
+        + (full ? "*" : "id, title")
+        + " from workshop "
+        + (conditions.length > 0 ? "where " + conditions.join(" and ") : "")
+        + " order by begin desc limit @limit";
+
+    const workshops = db.all(query, { type: type, limit: limit }) || [];
     res.json(workshops);
 }
 
