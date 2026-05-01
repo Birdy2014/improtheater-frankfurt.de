@@ -250,6 +250,7 @@ class WorkshopEditor {
 
         try {
             await request.post("/api/workshops", this.state);
+            invalidate_workshops_pages();
             show_message(MESSAGE_SUCCESS, "Daten gespeichert");
         } catch (error) {
             if (error.response && error.response.status === 400) {
@@ -272,6 +273,7 @@ class WorkshopEditor {
                 button.innerHTML = newVisibility ? "Unsichtbar machen" : "Veröffentlichen";
             }
 
+            invalidate_workshops_pages();
             show_message(MESSAGE_SUCCESS, newVisibility ? "Der Workshop ist jetzt sichtbar" : "Der Workshop ist jetzt nicht mehr sichtbar");
         } catch (error) {
             if (error.response && error.response.status === 400) {
@@ -453,7 +455,6 @@ export function getWorkshopEditor(id) {
 }
 
 function invalidate_workshops_pages() {
-    editors.clear();
     document.querySelectorAll(".container[id^='workshops']").forEach(c => c.remove());
 }
 
