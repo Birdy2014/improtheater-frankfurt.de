@@ -194,7 +194,7 @@ export function getWorkshops(loggedIn: boolean, page: number | string = 0, type 
         { type, publicOnly: !loggedIn ? 1 : 0 }
     ) || [];
 
-    const future = workshops.filter(w => w.end > currentTime);
+    const future = workshops.filter(w => w.end > currentTime).reverse();
     const past = workshops.filter(w => w.end <= currentTime);
 
     const extendedWorkshops: ExtendedWorkshop[] = [...future, ...past].slice(perPage * pageNum, perPage * pageNum + perPage).map(extendWorkshop);
