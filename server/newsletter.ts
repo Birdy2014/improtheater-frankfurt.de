@@ -189,9 +189,17 @@ export function api_post_cancel(req: Request, res: Response) {
     }
 
     const index = mail_queue.findIndex(mail_batch => {
-        if (mail_batch.item_type !== "newsletter") return false;
-        const workshop_ids = mail_batch.workshops.filter(w => w !== undefined).map(w => w!.id);
-        return arraysEqual(workshop_ids, req.body.workshops);
+        switch (mail_batch.item_type) {
+        case "newsletter": {
+            const workshop_ids = mail_batch.workshops.filter(w => w !== undefined).map(w => w!.id);
+            return arraysEqual(workshop_ids, req.body.workshops);
+        }
+        case "pending_newsletter": {
+            return arraysEqual(mail_batch.workshopIds, req.body.workshops);
+        }
+        default:
+            return false;
+        }
     });
 
     if (index < 0) {
