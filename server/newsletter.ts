@@ -427,6 +427,7 @@ export async function send(req: Request, res: Response) {
             throw new utils.HTTPError(400, "Can't queue test mail");
         }
         queue_pending_newsletter(workshop_ids_to_send, sendTime);
+        res.sendStatus(200);
         return;
     }
 
