@@ -425,6 +425,10 @@ function build_confirm_mail(subscriber: SubscriberLike) {
     };
 }
 
+function arraysOverlap(a: any[], b: any[]): boolean {
+    return a.some(elementA => b.some(elementB => elementA === elementB));
+}
+
 export async function send(req: Request, res: Response) {
     if (!req.user || !req.body.workshops || !Array.isArray(req.body.workshops)) {
         throw new utils.HTTPError(400);
@@ -444,11 +448,18 @@ export async function send(req: Request, res: Response) {
     }
 
     if (!req.body.test && mail_queue.some(mail_batch => {
-        if (mail_batch.item_type !== "newsletter") return false;
-        const workshop_ids = mail_batch.workshops.filter(w => w !== undefined).map(w => w!.id);
-        return arraysEqual(workshop_ids, workshop_ids_to_send);
+        switch (mail_batch.item_type) {
+        case "newsletter": {
+            const workshop_ids = mail_batch.workshops.filter(w => w !== undefined).map(w => w!.id);
+            return arraysOverlap(workshop_ids, workshop_ids_to_send);
+        }
+        case "pending_newsletter":
+            return arraysOverlap(mail_batch.workshopIds, workshop_ids_to_send);
+        default:
+            return false;
+        }
     })) {
-        throw new utils.HTTPError(400, "Newsletter wird bereits gesendet");
+        throw new utils.HTTPError(400, "Mindestens ein Workshop dieses Newsletters wird bereits gesendet");
     }
 
     let test_subscriber: SubscriberLike | undefined = undefined;
