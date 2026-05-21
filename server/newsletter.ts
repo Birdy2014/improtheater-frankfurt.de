@@ -306,7 +306,7 @@ function queue_newsletter(workshop_ids: number[], test_subscriber?: SubscriberLi
     }
 
     if (!test_subscriber) {
-        workshop_ids.forEach(id => workshops.editWorkshop({ id, visible: 1 }));
+        workshop_ids.forEach(id => workshops.editWorkshop({ id, visible: 1, newsletterSent: 1 }));
     }
 
     const validWorkshops = workshops_to_send as ExtendedWorkshop[];
@@ -470,10 +470,6 @@ export async function send(req: Request, res: Response) {
             token: "",
             subscribedTo: 3
         };
-    } else {
-        for (const id of workshop_ids_to_send) {
-            db.run("UPDATE workshop SET newsletterSent = 1 WHERE id = ?", id);
-        }
     }
 
     queue_newsletter(workshop_ids_to_send, test_subscriber);
