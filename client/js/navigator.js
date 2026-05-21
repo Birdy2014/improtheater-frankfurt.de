@@ -248,7 +248,9 @@ function toggle_message_details() {
 
 export function show_error(error) {
     let errorText = "Ein Fehler ist aufgetreten: ";
-    if (error.response) {
+    if (typeof error.response?.data === "string") {
+        errorText += error.response.data;
+    } else if (error.response) {
         errorText += "Status: " + error.response.statusText;
         if (error.response.data) {
             errorText += "; Data: " + JSON.stringify(error.response.data, null, 4);
