@@ -373,6 +373,11 @@ class WorkshopEditor {
                     if (container) {
                         const sentElement = container.querySelector(".newsletter-sent");
                         if (sentElement) sentElement.innerText = "BEREITS VERSENDET ";
+
+                        const publishButton = this.container.querySelector(".edit-publish");
+                        if (publishButton) {
+                            publishButton.innerHTML = "Unsichtbar machen";
+                        }
                     }
                 }
             }

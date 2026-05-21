@@ -305,6 +305,10 @@ function queue_newsletter(workshop_ids: number[], test_subscriber?: SubscriberLi
         throw new utils.HTTPError(404);
     }
 
+    if (!test_subscriber) {
+        workshop_ids.forEach(id => workshops.editWorkshop({ id, visible: 1 }));
+    }
+
     const validWorkshops = workshops_to_send as ExtendedWorkshop[];
     const workshop_type = validWorkshops.reduce((type, workshop) => type | workshop.type, 0);
     const target_subscribers = test_subscriber
