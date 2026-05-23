@@ -21,8 +21,9 @@ block routeContent
                 dl.workshop-right-item.workshop-properties(style=`background-color: ${color}; color: ${textColorResolved}`)
                     if loggedIn
                         .workshop-edit-field
-                            input(type="checkbox" name=propertieshidden data-field="propertieshidden" checked=propertiesHidden)
-                            label(for=propertieshidden) Infobox verstecken
+                            label
+                                input(type="checkbox" data-field="propertiesHidden" checked=propertiesHidden)
+                                | Infobox verstecken
                             select(name=id data-field="type")
                                 each i in [1, 2, 3]
                                     option(value=i selected=(i==type))

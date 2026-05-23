@@ -174,6 +174,10 @@ class WorkshopEditor {
 
     toggleEdit(enableEdit = !this.isEditMode()) {
         if (enableEdit) {
+            const properties = this.container.querySelector(".workshop-properties");
+            if (properties) {
+                properties.style.display = null;
+            }
             this.container.classList.add("is-editing");
         } else {
             this.renderPreview();
