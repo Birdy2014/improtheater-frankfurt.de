@@ -18,17 +18,17 @@
   "dependencies": {
     "@fontsource/roboto": "5.2.10",
     "bcryptjs": "3.0.3",
-    "better-sqlite3": "12.10.0",
+    "better-sqlite3": "12.11.1",
     "cookie-parser": "1.4.7",
-    "esbuild": "0.28.0",
+    "esbuild": "0.28.1",
     "express": "5.2.1",
     "express-fileupload": "1.5.2",
-    "marked": "18.0.4",
-    "node-addon-api": "8.7.0",
-    "nodemailer": "8.0.7",
+    "marked": "18.0.5",
+    "node-addon-api": "8.9.0",
+    "nodemailer": "9.0.1",
     "nprogress": "0.2.0",
     "pug": "3.0.4",
-    "sharp": "0.34.5"
+    "sharp": "0.35.2"
   },
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.13",
