@@ -19,7 +19,7 @@ block routeContent
                 each s in subscribers
                     tr(id=`subscriber-${s.token}`)
                         td #{i}
-                        td.subscribers-name #{s.name}
+                        td.subscribers-name(title=`Angemeldet seit ${s.subscribe_date}`) #{s.name}
                         td #{s.email}
                         td
                             select.subscribers-subscribedTo

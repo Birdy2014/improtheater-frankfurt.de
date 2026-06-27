@@ -250,6 +250,7 @@ function getRenderOptions(route: string, user: Express.Request["user"], query: R
                 const format = new Intl.DateTimeFormat("de-DE");
                 renderableSubscribers = subscribers.map(subscriber => ({
                     ...subscriber,
+                    subscribe_date: format.format(subscriber.timestamp * 1000),
                     last_viewed_newsletter_date: format.format(subscriber.last_viewed_newsletter * 1000),
                 }));
             }
