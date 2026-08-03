@@ -65,6 +65,8 @@ function create_element(newsletter) {
     const preview_link = element.querySelector(".preview-link");
     preview_link.innerText = newsletter.workshops.map(w => w.title).join(", ");
     preview_link.href = `/newsletter-preview?${newsletter.workshops.map(w => `workshops=${w.id}`).join("&")}`;
+    preview_link.target = "_blank";
+    preview_link.classList.add("forceReload");
 
     const delete_icon = element.querySelector(".icon-delete");
     delete_icon.addEventListener("click", async event => {
