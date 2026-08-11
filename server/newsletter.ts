@@ -486,7 +486,7 @@ export async function preview(req: Request, res: Response) {
         : [parseInt(String(req.query.workshops))];
 
     const workshops_to_send = workshop_ids_to_send.map(id => workshops.getWorkshop(id, true));
-    if (!req.user && workshops_to_send.some(w => w && w.newsletterSent)) {
+    if (!req.user && workshops_to_send.some(w => w && !w.newsletterSent)) {
         throw new utils.HTTPError(403);
     }
 
