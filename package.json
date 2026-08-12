@@ -16,29 +16,29 @@
   "author": "Moritz Vogel",
   "license": "",
   "dependencies": {
-    "@fontsource/roboto": "5.2.10",
+    "@fontsource/roboto": "5.3.0",
     "bcryptjs": "3.0.3",
-    "better-sqlite3": "12.11.1",
+    "better-sqlite3": "13.0.3",
     "cookie-parser": "1.4.7",
-    "esbuild": "0.28.1",
+    "esbuild": "0.28.2",
     "express": "5.2.1",
     "express-fileupload": "1.5.2",
-    "marked": "18.0.5",
-    "node-addon-api": "8.9.0",
-    "nodemailer": "9.0.1",
+    "marked": "18.0.9",
+    "node-addon-api": "8.9.1",
+    "nodemailer": "9.0.5",
     "nprogress": "0.2.0",
     "pug": "3.0.4",
-    "sharp": "0.35.2"
+    "sharp": "0.35.3"
   },
   "devDependencies": {
-    "@types/better-sqlite3": "^7.6.13",
-    "@types/cookie-parser": "^1.4.10",
-    "@types/express": "^5.0.6",
-    "@types/express-fileupload": "^1.5.1",
-    "@types/node": "^25.6.0",
-    "@types/nodemailer": "^8.0.0",
-    "@types/pug": "^2.0.10",
-    "tsx": "^4.21.0",
-    "typescript": "^6.0.3"
+    "@types/better-sqlite3": "9.6.0",
+    "@types/cookie-parser": "1.4.10",
+    "@types/express": "5.0.6",
+    "@types/express-fileupload": "1.5.1",
+    "@types/node": "24.13.3",
+    "@types/nodemailer": "8.0.1",
+    "@types/pug": "2.0.10",
+    "tsx": "4.23.12",
+    "typescript": "7.0.2"
   }
 }
