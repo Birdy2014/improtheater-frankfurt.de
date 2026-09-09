@@ -110,7 +110,7 @@ async function delete_user_handler(event) {
         await request.del("/api/user", { id });
 
         navigate("/user", { reload: true, push_history: false });
-        show_message(MESSAGE_SUCCESS, "Benutzer erstellt");
+        show_message(MESSAGE_SUCCESS, "Benutzer gelöscht");
     } catch (err) {
         show_error(err);
     }
