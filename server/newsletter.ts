@@ -91,7 +91,7 @@ export async function subscribe(req: Request, res: Response) {
         }
 
         removeExpiredSubscribers();
-        let token = utils.generateToken(20);
+        let token = utils.generateToken();
         let timestamp = getCurrentTimestamp();
         const subscriber: Subscriber = {
             name: body.name,
@@ -536,7 +536,7 @@ export function addSubscriber(req: Request, res: Response) {
 
     try {
         removeExpiredSubscribers();
-        let token = utils.generateToken(20);
+        let token = utils.generateToken();
         let timestamp = getCurrentTimestamp();
         db.run("INSERT INTO subscriber (name, email, token, timestamp, confirmed, subscribedTo) VALUES (?, ?, ?, ?, 1, ?)", req.body.name, req.body.email, token, timestamp, req.body.subscribedTo);
         res.sendStatus(200);

@@ -45,7 +45,7 @@ router.use((_: Request, res: Response, next: NextFunction) => {
     res.set("Content-Security-Policy", [
         "default-src 'self'",
         "style-src 'self' 'unsafe-inline'",
-        "script-src 'self' 'unsafe-inline' https://analytics.improglycerin.de https://challenges.cloudflare.com",
+        "script-src 'self' https://analytics.improglycerin.de https://challenges.cloudflare.com",
         "img-src 'self' https://improglycerin.de",
         "frame-ancestors https://improglycerin.de http://localhost:3000",
         "frame-src https://challenges.cloudflare.com",
@@ -143,6 +143,8 @@ router.use("/resource/:name", async (req: Request, res: Response) => {
         res.contentType("text/css").send(esbuild_result.outputFiles![1].text);
         return;
     }
+
+    throw new utils.HTTPError(404);
 });
 
 // Frontend

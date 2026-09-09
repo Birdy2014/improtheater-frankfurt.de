@@ -60,7 +60,11 @@ export async function login(req: Request, res: Response) {
     }
 
     const session_token = await create_session(user.id, session_expiration_time);
-    res.cookie("session", session_token);
+    res.cookie("session", session_token, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "strict",
+    });
     res.sendStatus(200);
 }
 
@@ -188,8 +192,9 @@ export async function api_request_password_reset(req: Request, res: Response) {
     }
     const user = db.get<User>("SELECT id, username, email FROM user WHERE username = ? OR email = ?", login, login);
     if (!user) {
-        // Return 200 to hide existing accounts?
-        throw new utils.HTTPError(404);
+        // Same response as in successful case to prevent account enumeration
+        res.sendStatus(200);
+        return;
     }
 
     const session_token = await create_session(user.id, 30 * 60);
@@ -215,9 +220,9 @@ export async function api_password_reset(req: Request, res: Response) {
 
     const password_hash = await bcrypt.hash(new_password, 12);
 
-    const session = db.get<Session>("SELECT user_id FROM session WHERE token = ?", token);
+    const session = db.get<Session>("SELECT user_id, expires FROM session WHERE token = ?", token);
 
-    if (!session) {
+    if (!session || session.expires < getCurrentTimestamp()) {
         throw new utils.HTTPError(400);
     }
 
@@ -232,7 +237,7 @@ async function create_session(user_id: string, expiration_time: number): Promise
     assert.strictEqual(typeof user_id, "string");
     assert.strictEqual(typeof expiration_time, "number");
 
-    const session_token = crypto.randomBytes(20).toString("hex");
+    const session_token = utils.generateToken();
     db.run("INSERT INTO session (user_id, token, expires) VALUES (?, ?, ?)", user_id, session_token, getCurrentTimestamp() + expiration_time);
     return session_token;
 }

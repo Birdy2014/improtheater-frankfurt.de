@@ -1,4 +1,5 @@
 import * as logger from "./logger.js";
+import crypto from "crypto";
 import { fileURLToPath } from "url";
 import path from "path";
 import fs from "fs";
@@ -45,15 +46,8 @@ export const project_path = path.dirname(path.join(fileURLToPath(import.meta.url
 const config_text = fs.readFileSync(process.env.ITF_CONFIG_FILE || path.join(project_path, "config.json"), "utf8");
 export const config: Config = JSON.parse(config_text);
 
-/**
- * Generates random string
- */
-export function generateToken(length: number): string {
-    let chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890";
-    let text = "";
-    for (let i = 0; i < length; i++)
-        text += chars.charAt(Math.floor(Math.random() * chars.length));
-    return text;
+export function generateToken(): string {
+    return crypto.randomBytes(20).toString("hex");
 }
 
 export function sleep(ms: number) {

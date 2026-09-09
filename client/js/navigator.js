@@ -212,7 +212,7 @@ export function show_message(type, message, autohide) {
     if (!element)
         throw new Error("Invalid message type");
     close_message();
-    element.querySelector(".message-text").innerHTML = message;
+    element.querySelector(".message-text").textContent = message;
     element.style.top = "10px";
     if (autohide || autohide === undefined)
         message_timeout = setTimeout(close_message, 3000);
