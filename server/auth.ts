@@ -11,6 +11,20 @@ import { EMailTransporter } from "./mail.js";
 const loggedInRoutes = [ "/uploads", "/subscribers", "/user", "/newsletter_status" ];
 
 const session_expiration_time = 10 * 24 * 60 * 60;
+const login_rate_limit_window = 15 * 60;
+const login_rate_limit_max_attempts = 5;
+
+const login_attempts = new Map<string, { count: number; reset_at: number }>();
+
+function record_failed_attempt(ip: string) {
+    const now = getCurrentTimestamp();
+    const entry = login_attempts.get(ip);
+    if (!entry || now >= entry.reset_at) {
+        login_attempts.set(ip, { count: 1, reset_at: now + login_rate_limit_window });
+    } else {
+        entry.count++;
+    }
+}
 
 const transporter = new EMailTransporter("auth");
 
@@ -46,18 +60,29 @@ export async function getUser(req: Request, res: Response, next: NextFunction) {
 }
 
 export async function login(req: Request, res: Response) {
+    const ip = req.ip!;
+    const entry = login_attempts.get(ip);
+    if (entry && getCurrentTimestamp() < entry.reset_at && entry.count >= login_rate_limit_max_attempts) {
+        logger.warn(`Rate limited login attempt for ip '${ip}'`);
+        throw new utils.HTTPError(429, "Zu viele Loginversuche");
+    }
+
     const login = req.body.login;
     const password = req.body.password;
 
     const user = db.get<User>("SELECT id, password_hash FROM user WHERE username = ? OR email = ?", login, login);
     if (!user) {
+        record_failed_attempt(ip);
         throw new utils.HTTPError(403);
     }
 
     if (!await bcrypt.compare(password, user.password_hash)) {
+        record_failed_attempt(ip);
         logger.warn(`Failed login attempt for user '${login}' from '${req.ip}'`);
         throw new utils.HTTPError(403);
     }
+
+    login_attempts.delete(ip);
 
     const session_token = await create_session(user.id, session_expiration_time);
     res.cookie("session", session_token, {
