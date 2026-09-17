@@ -54,6 +54,10 @@ export function get(req: Request, res: Response) {
 }
 
 export async function get_color(req: Request, res: Response) {
+    if (!req.user) {
+        throw new utils.HTTPError(401);
+    }
+
     const id = req.params.id as string;
 
     if (!id) {

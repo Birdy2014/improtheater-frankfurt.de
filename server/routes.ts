@@ -97,7 +97,7 @@ router.get("/api/newsletter/status", auth.getUser, newsletter.api_get_status);
 router.post("/api/newsletter/cancel", auth.getUser, newsletter.api_post_cancel);
 router.get("/api/upload", upload.get); // Old
 router.get("/api/upload/:id", upload.get);
-router.get("/api/upload-color/:id", upload.get_color);
+router.get("/api/upload-color/:id", auth.getUser, upload.get_color);
 router.post("/api/upload", auth.getUser, fileUpload({ limits: { fileSize: 10 * 1024 * 1024 } }), upload.post);
 router.delete("/api/upload/:id", auth.getUser, upload.del);
 
