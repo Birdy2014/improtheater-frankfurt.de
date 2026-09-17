@@ -65,7 +65,7 @@ function cors_allow_improglycerin(req: Request, res: Response, next: NextFunctio
         next();
         return;
     }
-    const allowed_origins = /^https:\/\/(.*\.)?improglycerin\.de|http:\/\/localhost(:[0-9]+)?$/;
+    const allowed_origins = /^https:\/\/(.*\.)?improglycerin\.de$|^http:\/\/localhost(:[0-9]+)?$/;
     if (allowed_origins.test(origin.toLowerCase())) {
         res.set("Access-Control-Allow-Origin", origin);
         res.set("Access-Control-Allow-Headers", "*");
