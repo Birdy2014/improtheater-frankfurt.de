@@ -514,7 +514,7 @@ export function exportSubscribers(req: Request, res: Response) {
         let nameparts = subscriber.name.split(" ");
         let lastname = nameparts.pop();
         let firstname = nameparts.join(" ");
-        let time = new Date(subscriber.timestamp).toISOString();
+        let time = new Date(subscriber.timestamp * 1000).toISOString();
         time = time.substring(0, time.lastIndexOf(":"));
         csv += `${subscriber.email},${subscriber.name},${firstname},${lastname},${time}\r\n`;
     }
