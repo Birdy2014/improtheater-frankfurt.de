@@ -68,12 +68,8 @@ export async function subscribe(req: Request, res: Response) {
         if (!body.cf_turnstile_response || !body.name || !body.email) {
             throw new utils.HTTPError(400);
         }
-        if (body.name.length > 200) {
-            throw new utils.HTTPError(400, "Name too long");
-        }
-        if (body.email.length > 254) {
-            throw new utils.HTTPError(400, "Email too long");
-        }
+        const name = sanitize_name(body.name);
+        const email = is_email(body.email);
         const form_data = new FormData();
         form_data.append("secret", cf_turnstile_secret);
         form_data.append("response", body.cf_turnstile_response);
@@ -94,8 +90,8 @@ export async function subscribe(req: Request, res: Response) {
         let token = utils.generateToken();
         let timestamp = getCurrentTimestamp();
         const subscriber: Subscriber = {
-            name: body.name,
-            email: body.email,
+            name: name,
+            email: email,
             token,
             timestamp,
             subscribedTo: body.subscribedTo,
@@ -534,11 +530,14 @@ export function addSubscriber(req: Request, res: Response) {
         throw new utils.HTTPError(400);
     }
 
+    const name = sanitize_name(req.body.name);
+    const email = is_email(req.body.email);
+
     try {
         removeExpiredSubscribers();
         let token = utils.generateToken();
         let timestamp = getCurrentTimestamp();
-        db.run("INSERT INTO subscriber (name, email, token, timestamp, confirmed, subscribedTo) VALUES (?, ?, ?, ?, 1, ?)", req.body.name, req.body.email, token, timestamp, req.body.subscribedTo);
+        db.run("INSERT INTO subscriber (name, email, token, timestamp, confirmed, subscribedTo) VALUES (?, ?, ?, ?, 1, ?)", name, email, token, timestamp, req.body.subscribedTo);
         res.sendStatus(200);
     } catch(e) {
         if (e instanceof SqliteError && e.code === "SQLITE_CONSTRAINT_PRIMARYKEY") {
@@ -569,4 +568,23 @@ function validNewsletterType(subscribedTo?: number) {
 async function sendMail(type: workshops.WorkshopType, options: EMailOptions) {
     const namedType = type == workshops.WorkshopType.Itf ? "itf" : "improglycerin";
     return await transporter[namedType].send(options);
+}
+
+function sanitize_name(name: string): string {
+    const cleaned = name.trim().replace(/\s+/g, " ").replace(/[<>]/g, "");
+    if (cleaned.length === 0 || cleaned.length > 200) {
+        throw new utils.HTTPError(400, "Ungültiger Name");
+    }
+    return cleaned;
+}
+
+function is_email(email: string): string {
+    const cleaned = email.trim();
+    if (cleaned.length === 0 || cleaned.length > 254) {
+        throw new utils.HTTPError(400, "Ungültige E-Mail Adresse");
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleaned)) {
+        throw new utils.HTTPError(400, "Ungültige E-Mail Adresse");
+    }
+    return cleaned;
 }
