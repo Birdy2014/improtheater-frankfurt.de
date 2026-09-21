@@ -18,6 +18,8 @@ interface MarkedLinkToken {
     href: string;
     title: string | null;
     tokens: Array<{ raw: string; text: string }>;
+    text: string;
+    autolink?: boolean;
 }
 
 interface MarkedCodeToken {
@@ -44,12 +46,14 @@ export function common_marked_options(link_style?: string | null): object {
         headerIds: false,
         mangle: false,
         renderer: {
-            link(this: MarkedLinkRenderer, { href, title, tokens }: MarkedLinkToken) {
-                const text = this.parser.parseInline(tokens);
+            link(this: MarkedLinkRenderer, { href, title, text, tokens, autolink }: MarkedLinkToken) {
+                const parsedText = autolink
+                    ? escape_html_entities(text)
+                    : this.parser.parseInline(tokens);
                 try {
                     href = encodeURI(href).replace(/%25/g, "%");
                 } catch {
-                    return text;
+                    return parsedText;
                 }
                 let out = `<a href="${href}"`;
                 if (title) {
@@ -58,7 +62,7 @@ export function common_marked_options(link_style?: string | null): object {
                 if (link_style) {
                     out += ` style="${link_style}"`;
                 }
-                out += `>${text}</a>`;
+                out += `>${parsedText}</a>`;
                 return out;
             },
             code(this: MarkedCodeRenderer, { text, escaped }: MarkedCodeToken) {

@@ -23,12 +23,12 @@
     "esbuild": "0.28.2",
     "express": "5.2.1",
     "express-fileupload": "1.5.2",
-    "marked": "18.0.9",
-    "node-addon-api": "8.9.1",
-    "nodemailer": "9.0.5",
+    "marked": "18.0.13",
+    "node-addon-api": "8.9.2",
+    "nodemailer": "10.0.10",
     "nprogress": "0.2.0",
     "pug": "3.0.4",
-    "sharp": "0.35.3"
+    "sharp": "0.35.4"
   },
   "devDependencies": {
     "@types/better-sqlite3": "9.6.0",
@@ -36,9 +36,9 @@
     "@types/express": "5.0.6",
     "@types/express-fileupload": "1.5.1",
     "@types/node": "24.13.3",
-    "@types/nodemailer": "8.0.1",
+    "@types/nodemailer": "8.0.2",
     "@types/pug": "2.0.10",
-    "tsx": "4.23.12",
+    "tsx": "4.23.15",
     "typescript": "7.0.2"
   }
 }
