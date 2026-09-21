@@ -119,9 +119,7 @@ export async function api_create_user(req: Request, res: Response) {
         throw new utils.HTTPError(400);
     }
 
-    if (password.length < 8) {
-        throw new utils.HTTPError(400, "Password too short");
-    }
+    validate_password(password);
 
     const id = crypto.randomUUID();
     const password_hash = await bcrypt.hash(password, 12);
@@ -178,9 +176,7 @@ export async function api_change_user(req: Request, res: Response) {
         db.run("UPDATE user SET username = ? WHERE id = ?", username, id);
     }
     if (password) {
-        if (password.length < 8) {
-            throw new utils.HTTPError(400, "Password too short");
-        }
+        validate_password(password);
         const password_hash = await bcrypt.hash(password, 12);
         db.run("UPDATE user SET password_hash = ? WHERE id = ?", password_hash, id);
     }
@@ -243,6 +239,8 @@ export async function api_password_reset(req: Request, res: Response) {
         throw new utils.HTTPError(400);
     }
 
+    validate_password(new_password);
+
     const password_hash = await bcrypt.hash(new_password, 12);
 
     const session = db.get<Session>("SELECT user_id, expires FROM session WHERE token = ?", token);
@@ -273,4 +271,10 @@ export function get_users() {
 
 export function clear_expired_sessions() {
     db.run("DELETE FROM session WHERE expires < ?", getCurrentTimestamp());
+}
+
+function validate_password(password: string) {
+    if (password.length < 10) {
+        throw new utils.HTTPError(400, "Password too short");
+    }
 }
