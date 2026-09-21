@@ -47,7 +47,6 @@ router.use((_: Request, res: Response, next: NextFunction) => {
         "style-src 'self' 'unsafe-inline'",
         "script-src 'self' https://analytics.improglycerin.de https://challenges.cloudflare.com",
         "img-src 'self' https://improglycerin.de",
-        "frame-ancestors https://improglycerin.de http://localhost:3000",
         "frame-src https://challenges.cloudflare.com",
         "connect-src 'self' https://analytics.improglycerin.de",
     ].map(line => line + ";").join(" "));
