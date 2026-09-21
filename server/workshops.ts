@@ -36,7 +36,7 @@ export function api_get(req: Request, res: Response) {
 
     const full = req.query.full !== undefined;
     const type = req.query.type !== undefined ? parseInt(req.query.type as string) : undefined;
-    if (type !== undefined && typeof type !== "number") {
+    if (type !== undefined && (isNaN(type) || type < 1 || type > 3)) {
         throw new utils.HTTPError(400);
     }
 

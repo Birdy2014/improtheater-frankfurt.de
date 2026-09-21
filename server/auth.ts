@@ -70,6 +70,10 @@ export async function login(req: Request, res: Response) {
     const login = req.body.login;
     const password = req.body.password;
 
+    if (!login || !password) {
+        throw new utils.HTTPError(400);
+    }
+
     const user = db.get<User>("SELECT id, password_hash FROM user WHERE username = ? OR email = ?", login, login);
     if (!user) {
         record_failed_attempt(ip);
