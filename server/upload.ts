@@ -25,14 +25,12 @@ export function get(req: Request, res: Response) {
 
     const uuid_regex = /^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/;
 
-    let file = uuid_regex.test(requested_id)
-        ? db.get<File>("SELECT id, name, data, mimetype FROM upload WHERE id = ?", requested_id)
-        : db.get<File>("SELECT upload.id, upload.name, upload.data, upload.mimetype FROM upload JOIN workshop ON upload.id = workshop.img WHERE workshop.id = ?", requested_id);
+    let requested_id_is_workshop_id = !uuid_regex.test(requested_id);
 
-    if (!file) {
-        // Compatibility for old newsletters using names to identify images
-        file = db.get<File>("SELECT id, name, data, mimetype FROM upload WHERE name = ?", requested_id);
-    }
+    let file = requested_id_is_workshop_id
+        ? db.get<File>("SELECT upload.id, upload.name, upload.data, upload.mimetype FROM upload JOIN workshop ON upload.id = workshop.img WHERE workshop.id = ?", requested_id)
+        // Compatibility for old newsletters using uuids to identify images
+        : db.get<File>("SELECT id, name, data, mimetype FROM upload WHERE id = ?", requested_id);
 
     if (!file) {
         throw new utils.HTTPError(404);
@@ -44,12 +42,8 @@ export function get(req: Request, res: Response) {
         .send(file.data);
 
     const token = req.query.token as string | undefined;
-    if (token) {
-        const workshop = db.get<{ id: number }>("SELECT id FROM workshop WHERE img = ? ORDER BY begin DESC", file.id);
-
-        if (workshop) {
-            db.run("UPDATE subscriber SET last_viewed_newsletter = ? WHERE token = ? AND last_viewed_newsletter < ?", workshop.id, token, workshop.id);
-        }
+    if (token && requested_id_is_workshop_id) {
+        db.run("UPDATE subscriber SET last_viewed_newsletter = ? WHERE token = ? AND last_viewed_newsletter < ?", requested_id, token, requested_id);
     }
 }
 
