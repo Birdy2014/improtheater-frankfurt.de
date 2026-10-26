@@ -22,7 +22,7 @@ const app = express();
 
 app.set("views", utils.project_path + "/client/views");
 app.set("view engine", "pug");
-app.use(express.json());
+app.use(express.json({ inflate: false }));
 app.use(cookieParser());
 app.set("trust proxy", "loopback");
 
