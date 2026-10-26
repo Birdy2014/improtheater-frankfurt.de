@@ -123,7 +123,7 @@ export function del(req: Request, res: Response) {
 
 export function getAll(): UploadCacheItem[] {
     if (!uploads_cache) {
-        uploads_cache = db.all<UploadCacheItem>("select upload.id, upload.name from upload left outer join workshop on upload.id = workshop.img group by upload.id order by max(workshop.begin) desc nulls first;");
+        uploads_cache = db.all<UploadCacheItem>("select upload.id, upload.name from upload left outer join workshop on upload.id = workshop.img group by upload.id order by max(workshop.begin) desc nulls first, upload.time desc;");
     }
     return uploads_cache;
 }
